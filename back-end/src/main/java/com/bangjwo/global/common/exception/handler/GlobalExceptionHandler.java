@@ -1,9 +1,9 @@
 package com.bangjwo.global.common.exception.handler;
 
-import com.chunsun.template.common.error.ErrorCode;
-import com.chunsun.template.common.error.ErrorResponseDto;
-import com.chunsun.template.common.error.GlobalErrorCodes;
-import com.chunsun.template.common.exception.BusinessException;
+import com.bangjwo.global.common.error.ErrorCode;
+import com.bangjwo.global.common.error.ErrorResponseDto;
+import com.bangjwo.global.common.error.GlobalErrorCodes;
+import com.bangjwo.global.common.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
