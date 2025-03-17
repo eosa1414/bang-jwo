@@ -5,19 +5,19 @@ USE bangjwo;
 CREATE TABLE IF NOT EXISTS `LIKES` (
     `like_id`						BIGINT  		NOT NULL    AUTO_INCREMENT PRIMARY KEY,
     `room_id`						BIGINT	    	NOT NULL,
-    `user_id`						BIGINT		    NOT NULL
+    `member_id`						BIGINT		    NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS `MEMO` (
     `memo_id`						BIGINT		    NOT NULL	AUTO_INCREMENT PRIMARY KEY,
-    `user_id`						BIGINT		    NOT NULL,
+    `member_id`						BIGINT		    NOT NULL,
     `room_id`						BIGINT		    NOT NULL,
     `content`						VARCHAR(255)	NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS `PAYMENT` (
     `payment_id`					BIGINT		    NOT NULL	AUTO_INCREMENT PRIMARY KEY,
-    `user_id`						BIGINT		    NOT NULL,
+    `member_id`						BIGINT		    NOT NULL,
     `amount`						BIGINT		    NOT NULL,
     `created_at`				    TIMESTAMP	    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`					TIMESTAMP	    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -70,8 +70,8 @@ CREATE TABLE IF NOT EXISTS `LANDLORD_INFO` (
 
 CREATE TABLE IF NOT EXISTS `CONTRACT` (
     `contract_id`					BIGINT		    NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `user_id`						BIGINT		    NOT NULL,
-    `user_id2`						BIGINT		    NOT NULL,
+    `member_id`						BIGINT		    NOT NULL,
+    `member_id2`						BIGINT		    NOT NULL,
     `room_id`						BIGINT		    NOT NULL,
     `tenant_info_id`				BIGINT		    NOT NULL,
     `landload_info_id`				BIGINT		    NOT NULL,
@@ -91,8 +91,8 @@ CREATE TABLE IF NOT EXISTS `TENANT_INFO` (
 `tenant_signature_url`			VARCHAR(255)	NULL
 );
 
-CREATE TABLE IF NOT EXISTS `USER` (
-    `user_id`						BIGINT		    NOT NULL AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS `MEMBER` (
+    `member_id`						BIGINT		    NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `kakao_id`						BIGINT		    NOT NULL,
     `name`						    VARCHAR(20)	    NOT NULL,
     `birthday`						VARCHAR(20)	    NULL,
@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS `ADDRESS` (
 
 CREATE TABLE IF NOT EXISTS `ROOM` (
     `room_id`						BIGINT		    NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `user_id`						BIGINT		    NOT NULL,
+    `member_id`						BIGINT		    NOT NULL,
     `building_type`					ENUM('ONEROOM_TWOROOM', 'APARTMENT', 'VILLA_HOUSE', 'OFFICETEL')		NULL,
     `real_estate_id`				VARCHAR(20) 	NOT NULL,
     `room_number`					VARCHAR(20) 	NOT NULL,
