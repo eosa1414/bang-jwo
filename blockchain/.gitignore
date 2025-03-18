@@ -1,0 +1,49 @@
+# Ignore node_modules directory
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Environment variables
+.env
+
+# Editor-specific files
+.vscode/
+.idea/
+.DS_Store
+
+# Build outputs
+dist/
+out/
+build/
+
+# Typescript
+*.tsbuildinfo
+
+# Debug files
+*.pid
+*.seed
+*.pid.lock
+
+# Misc
+*.swp
+*.swo
+
+# Blochchain
+artifacts/
+cache/
+out/
+dist/
+*.log
+.env
