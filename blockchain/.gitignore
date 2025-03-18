@@ -39,3 +39,11 @@ build/
 # Misc
 *.swp
 *.swo
+
+# Blochchain
+artifacts/
+cache/
+out/
+dist/
+*.log
+.env
