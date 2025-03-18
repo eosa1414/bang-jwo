@@ -41,13 +41,10 @@ services:
     restart: always
     user: root
     ports:
-      - "8081:8080"   # 웹 UI 접속 포트
-      - "50000:50000" # 에이전트 포트 (필요 시)
+      - "9000:8080"
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
 
 volumes:
   db-volume:
