@@ -19,13 +19,13 @@ CREATE TABLE IF NOT EXISTS `PAYMENT` (
     `payment_id`					BIGINT		    NOT NULL	AUTO_INCREMENT PRIMARY KEY,
     `member_id`						BIGINT		    NOT NULL,
     `amount`						BIGINT		    NOT NULL,
+    'payment_no'                    VARCHAR(50)     NOT NULL,
+    'appr_no'                       VARCHAR(50)     NOT NULL,
     `created_at`				    TIMESTAMP	    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at`					TIMESTAMP	    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `deleted_at`					TIMESTAMP	    NULL
 );
 
 CREATE TABLE IF NOT EXISTS `LANDLORD_INFO` (
-    `landload_info_id`				BIGINT		    NOT NULL 	AUTO_INCREMENT PRIMARY KEY,
+    `landlord_info_id`				BIGINT		    NOT NULL 	AUTO_INCREMENT PRIMARY KEY,
     `name`					    	VARCHAR(20)	    NOT NULL,
     `phone_number`					VARCHAR(20)	    NOT NULL,
     `address`						TEXT			NOT NULL,
@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS `SPECIAL_CLAUSE` (
     `etc`							VARCHAR(255)	NULL
 );
 
-CREATE TABLE IF NOT EXISTS `OPTION` (
+CREATE TABLE IF NOT EXISTS `OPTIONS` (
     `option_id`						BIGINT	    	NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `room_id`						BIGINT	    	NOT NULL,
     `option_name`					ENUM('ELEVATOR', 'ROOFTOP', 'AIR_CONDITIONER', 'WASHING_MACHINE', 'REFRIGERATOR', 'MICROWAVE', 'GAS_RANGE', 'INDUCTION', 'BED')		NOT NULL
@@ -184,5 +184,16 @@ CREATE TABLE IF NOT EXISTS `ROOM` (
     `registry_paid`					BOOLEAN		    NOT NULL	DEFAULT FALSE,
     `created_at`                    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`					TIMESTAMP			NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at`					TIMESTAMP		NULL
+);
+
+CREATE TABLE IF NOT EXISTS `REAL_ESTATE_PDF` (
+    `pdf_id`					    BIGINT	    	NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `user_id`					    BIGINT         	NOT NULL,
+    `room_id`						BIGINT	    	NOT NULL,
+    `pdf_url    `					VARCHAR(255) 	NOT NULL,
+    `created_at`                    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `created_at`                    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`					TIMESTAMP		NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `deleted_at`					TIMESTAMP		NULL
 );
