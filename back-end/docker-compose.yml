@@ -15,6 +15,7 @@ services:
       - "13306:3306"
     volumes:
       - db-volume:/var/lib/mysql
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
@@ -25,13 +26,28 @@ services:
     build: .
     container_name: bangjwo
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/bangjwo?serverTimezone=UTC&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: bangjwo
       SPRING_DATASOURCE_PASSWORD: 1234
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    restart: always
+    user: root
+    ports:
+      - "8080:8080"   # 웹 UI 접속 포트
+      - "50000:50000" # 에이전트 포트 (필요 시)
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
 
 volumes:
   db-volume:
