@@ -16,9 +16,6 @@ front-end/
 │   ├── services/             # 비즈니스 로직, 상태 관리, 외부 서비스 연동 등 애플리케이션의 서비스 관련 코드, API 호출을 추상화하여 관리
 
 │   ├── store/                # 상태 관리 (ex. Redux, Zustand, Recoil 등)
-│   │   └── store.ts
-│   ├── types/                # 타입 정의
-│   │   └── index.d.ts
 │   ├── utils/                # 유틸리티 함수들
 │   ├── App.tsx               # 주요 애플리케이션 컴포넌트
 │   ├── App.css               # App 컴포넌트 스타일 (리액트 프로젝트 기본 파일)
@@ -34,7 +31,5 @@ front-end/
 ├── tsconfig.app.json         # 애플리케이션에서 쓰는 TypeScript 설정
 ├── tsconfig.json             # TypeScript 설정
 ├── tsconfig.json             # node 환경에서 쓰는 TypeScript 설정
-├── vite.config.ts            # vite 빌드 도구 설정정
-└── README.md                 # 프로젝트 설명 파일
-
+└── vite.config.ts            # vite 빌드 도구 설정
 ```
