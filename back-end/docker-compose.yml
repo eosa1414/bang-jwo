@@ -35,5 +35,19 @@ services:
       SPRING_DATASOURCE_USERNAME: bangjwo
       SPRING_DATASOURCE_PASSWORD: 1234
 
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    restart: always
+    user: root
+    ports:
+      - "8080:8080"   # 웹 UI 접속 포트
+      - "50000:50000" # 에이전트 포트 (필요 시)
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+
 volumes:
   db-volume:
