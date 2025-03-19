@@ -32,7 +32,7 @@ public class MaintenanceInclude {
 	private Long maintenanceId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "room_id", nullable = false)
 	private Room room;
 
 	@Enumerated(EnumType.STRING)

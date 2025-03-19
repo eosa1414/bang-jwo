@@ -32,7 +32,7 @@ public class Options {
 	private Long optionId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "room_id", nullable = false)
 	private Room room;
 
 	@Column(nullable = false)
