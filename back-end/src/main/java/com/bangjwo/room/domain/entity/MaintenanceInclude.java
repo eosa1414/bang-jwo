@@ -1,6 +1,6 @@
 package com.bangjwo.room.domain.entity;
 
-import com.bangjwo.room.domain.vo.RoomOption;
+import com.bangjwo.room.domain.vo.MaintenanceIncludeName;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,23 +24,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@Table(name = "OPTIONS")
-public class Options {
+@Table(name = "MAINTENANCE_INCLUDE")
+public class MaintenanceInclude {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long optionId;
+	private Long maintenanceId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	private Room room;
 
-	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private RoomOption optionName;
+	@Column(nullable = false)
+	private MaintenanceIncludeName maintenanceIncludeName;
 
 	protected void setRoom(Room room) {
 		this.room = room;
 	}
 }
-

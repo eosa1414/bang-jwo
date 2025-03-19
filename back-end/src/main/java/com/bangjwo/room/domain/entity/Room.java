@@ -2,22 +2,35 @@ package com.bangjwo.room.domain.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.bangjwo.global.common.entity.BaseEntity;
+import com.bangjwo.room.domain.vo.RoomBuildingType;
+import com.bangjwo.room.domain.vo.RoomDirection;
+import com.bangjwo.room.domain.vo.RoomStatus;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Table(name = "ROOM")
 public class Room extends BaseEntity {
 
@@ -28,13 +41,13 @@ public class Room extends BaseEntity {
 	@Column(nullable = false)
 	private Long memberId;
 
-	// ENUM('원룸투룸','아파트','빌라주택','오피스텔') → String으로 매핑
 	@Column
-	private String buildingType;
+	@Enumerated(EnumType.STRING)
+	private RoomBuildingType buildingType;
 
-	// ENUM('집주인 인증 중','판매 중','판매 완료') → String으로 매핑
 	@Column(nullable = false)
-	private String status;
+	@Enumerated(EnumType.STRING)
+	private RoomStatus status;
 
 	@Column(length = 20, nullable = false)
 	private String realEstateId;
@@ -70,7 +83,7 @@ public class Room extends BaseEntity {
 	private LocalDate availableFrom;
 
 	@Column(nullable = false)
-	private LocalDate permitionDate;
+	private LocalDate permissionDate;
 
 	@Column
 	private String simpleDescription;
@@ -81,23 +94,38 @@ public class Room extends BaseEntity {
 	@Column(nullable = false)
 	private Integer maintenanceCost;
 
-	@Column
-	private String maintenanceIncludedItems;
+	@Column(nullable = false)
+	private Integer roomCnt;
 
 	@Column(nullable = false)
-	private Byte roomCnt;
+	private Integer bathroomCnt;
 
 	@Column(nullable = false)
-	private Byte bathroomCnt;
-
-	// ENUM('북향','남향','동향','서향','남동향','북서향','북동향') → String으로 매핑
-	@Column(nullable = false)
-	private String direction;
+	@Enumerated(EnumType.STRING)
+	private RoomDirection direction;
 
 	@Column(nullable = false)
 	private Boolean verified;
 
 	@Column(nullable = false)
 	private Boolean registryPaid;
+
+	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<MaintenanceInclude> maintenanceIncludes = new ArrayList<>();
+
+	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<Options> roomOptions = new ArrayList<>();
+
+	public void addMaintenanceInclude(MaintenanceInclude include) {
+		this.maintenanceIncludes.add(include);
+		include.setRoom(this);
+	}
+
+	public void addRoomOption(Options option) {
+		this.roomOptions.add(option);
+		option.setRoom(this);
+	}
 }
 
