@@ -170,12 +170,11 @@ CREATE TABLE IF NOT EXISTS `ROOM` (
     `max_floor`						INT			    NULL,
     `parking_spaces`				INT			    NOT NULL,
     `available_from`				DATE			NOT NULL,
-    `permition_date`				DATE			NOT NULL,
+    `permission_date`				DATE			NOT NULL,
     `simple_description`			VARCHAR(255)	NULL,
     `description`					TEXT			NULL,
     `maintenance_cost`				INT			    NOT NULL,
     `maintenance_included_items`	VARCHAR(255)	NULL,
-    `maintenance_excluded_items`	VARCHAR(255)	NULL,
     `status`						ENUM('UNDER_VERIFICATION', 'ON_SALE', 'SOLD_OUT')		NOT NULL,
     `room_cnt`						TINYINT	    	NOT NULL,
     `bathroom_cnt`					TINYINT	    	NOT NULL,
@@ -196,4 +195,10 @@ CREATE TABLE IF NOT EXISTS `REAL_ESTATE_PDF` (
     `created_at`                    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`					TIMESTAMP		NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `deleted_at`					TIMESTAMP		NULL
+);
+
+CREATE TABLE IF NOT EXISTS `MAINTENANCE_INCLUDE` (
+    `maintenance_id`           BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `room_id`                  BIGINT NOT NULL,
+    `maintenance_include_name` ENUM('WATER', 'ELECTRICITY', 'INTERNET', 'GAS', 'CLEANING', 'CABLE_TV', 'PARKING', 'HEATING', 'ELEVATOR_MAINTENANCE') NOT NULL
 );
