@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bangjwo.room.application.convert.RoomConverter;
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
+import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
 import com.bangjwo.room.application.dto.response.CreateRoomResponseDto;
 import com.bangjwo.room.domain.entity.Room;
 import com.bangjwo.room.domain.repository.RoomRepository;
@@ -23,4 +24,9 @@ public class RoomService {
 
 		return RoomConverter.from(savedRoom);
 	}
+
+	public void updateRoom(Long roomId, UpdateRoomRequestDto requestDto) {
+
+	}
+
 }

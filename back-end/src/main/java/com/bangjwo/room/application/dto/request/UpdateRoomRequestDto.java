@@ -1,4 +1,4 @@
-package com.bangjwo.room.application.dto.response;
+package com.bangjwo.room.application.dto.request;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -8,18 +8,16 @@ import com.bangjwo.room.domain.vo.MaintenanceIncludeName;
 import com.bangjwo.room.domain.vo.RoomBuildingType;
 import com.bangjwo.room.domain.vo.RoomDirection;
 import com.bangjwo.room.domain.vo.RoomOption;
-import com.bangjwo.room.domain.vo.RoomStatus;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-@Builder
-@AllArgsConstructor
-public class CreateRoomResponseDto {
+@Setter
+public class UpdateRoomRequestDto {
+	private Long roomId;
+	private Long memberId;
 	private RoomBuildingType buildingType;
-	private RoomStatus status;
 	private String realEstateId;
 	private String roomNumber;
 	private Integer deposit;
@@ -38,9 +36,6 @@ public class CreateRoomResponseDto {
 	private Integer roomCnt;
 	private Integer bathroomCnt;
 	private RoomDirection direction;
-	private Boolean verified;
-	private Boolean registryPaid;
-
-	private List<RoomOption> options;
 	private List<MaintenanceIncludeName> maintenanceIncludes;
+	private List<RoomOption> options;
 }
