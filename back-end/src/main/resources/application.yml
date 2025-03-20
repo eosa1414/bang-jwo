@@ -6,7 +6,7 @@ spring:
     name: bangjwo
 
   datasource:
-    url: jdbc:mysql://localhost:3306/bangjwo?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:13306/bangjwo?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: 1234
     hikari:
@@ -26,5 +26,5 @@ spring:
         format_sql: true
         use_sql_comments: true
         hbm2ddl:
-          auto: none
+          auto: create
         default_batch_fetch_size: 1000
