@@ -22,6 +22,9 @@ public class RSAService {
 		this.privateKey = getPrivateKeyFromBase64();
 	}
 
+	/**
+	 * RSA 암호화
+	 */
 	public String encrypt(String plainText) {
 		try {
 			Cipher cipher = Cipher.getInstance("RSA");
@@ -33,6 +36,9 @@ public class RSAService {
 		}
 	}
 
+	/**
+	 * RSA 복호화
+	 */
 	public String decrypt(String encryptedText) {
 		try {
 			Cipher cipher = Cipher.getInstance("RSA");
