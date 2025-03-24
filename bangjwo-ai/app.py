@@ -1,0 +1,224 @@
+import requests
+import time
+import re
+import os
+
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from datetime import datetime, timezone
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+from langchain.chat_models import ChatOpenAI
+from langchain.chains import RetrievalQA
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
+from dotenv import load_dotenv
+
+# 환경 변수 세팅
+load_dotenv()
+openai_api_key = os.getenv('OPENAI_API_KEY')
+if not openai_api_key:
+    raise ValueError("OPENAI_API_KEY가 설정되지 않았습니다.")
+
+stored_final_url = None
+vectorstore = None
+retriever = None
+qa_chain = None
+
+base_url = "https://www.law.go.kr"
+main_url = "https://www.law.go.kr/법령/주택임대차보호법"
+headers = {"User-Agent": "Mozilla/5.0"}
+
+# GPT 모델 초기화
+llm = ChatOpenAI(model_name="gpt-4o", temperature=0, openai_api_key=openai_api_key)
+
+def crawl_and_update_vector_db(final_url: str):
+    """
+    주어진 final_url로 Selenium을 이용해 법령 데이터를 크롤링한 후,
+    조문 단위로 분리하여 Chroma 벡터 DB를 업데이트합니다.
+    """
+    global vectorstore, retriever, qa_chain
+
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--no-sandbox')
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    
+    driver.get(final_url)
+    time.sleep(3)
+    
+    try:
+        driver.switch_to.frame("lawService")
+        time.sleep(1)
+    except Exception as e:
+        print("iframe 전환 실패:", e)
+    
+    html = driver.page_source
+    driver.quit()
+    
+    # 법령 본문 추출
+    soup_final = BeautifulSoup(html, "html.parser")
+    container = soup_final.find("div", class_="law_text")
+    if container is None:
+        container = soup_final.body  
+    full_text = container.get_text(separator="\n", strip=True)
+    
+    # 정규표현식으로 '제 X조' 단위로 분리
+    pattern = r"(제\s*\d+\s*조)"
+    splits = re.split(pattern, full_text)
+    articles = []
+    if len(splits) > 1:
+        for i in range(1, len(splits), 2):
+            header = splits[i].strip()
+            content = splits[i+1].strip() if i+1 < len(splits) else ""
+            article_text = f"{header} {content}"
+            articles.append(article_text)
+    else:
+        articles.append(full_text)
+    
+    # 문서 데이터 생성
+    documents = []
+    for idx, article in enumerate(articles):
+        doc = {"id": str(idx), "content": article}
+        documents.append(doc)
+    
+    texts = [doc["content"] for doc in documents]
+    metadatas = [{"id": doc["id"]} for doc in documents]
+    ids = [doc["id"] for doc in documents]
+    
+    # OpenAI 임베딩 모델을 이용해 Chroma 벡터 DB 생성 및 저장
+    embeddings = OpenAIEmbeddings(api_key=openai_api_key)
+    vectorstore = Chroma.from_texts(
+        texts,
+        embeddings,
+        metadatas=metadatas,
+        ids=ids,
+        collection_name="law_articles",
+        persist_directory="./law_db"
+    )
+    vectorstore.persist()
+    
+    print("새 벡터 DB 업데이트 완료!")
+    
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+    qa_chain = RetrievalQA.from_chain_type(
+        llm=llm,
+        chain_type="stuff",
+        retriever=retriever,
+        return_source_documents=True
+    )
+    return vectorstore
+
+def check_and_update_vector_db():
+    """
+    메인 페이지에서 최신 final_url을 추출하고, 전역 stored_final_url과 비교합니다.
+    변경되었을 경우, 새로운 final_url로 벡터 DB를 업데이트합니다.
+    """
+    global stored_final_url, vectorstore, retriever, qa_chain
+
+    # 법령 url 추출
+    response = requests.get(main_url, headers=headers)
+    soup = BeautifulSoup(response.text, "html.parser")
+    iframe = soup.find("iframe", id="lawService")
+    if iframe and iframe.has_attr("src"):
+        relative_src = iframe["src"].replace("&amp;", "&")
+        new_final_url = base_url + relative_src
+        print("새 final_url 추출:", new_final_url)
+    else:
+        print("iframe의 src를 찾지 못했습니다.")
+        new_final_url = None
+
+    # 기존 법령 url과 비교
+    if new_final_url != stored_final_url:
+        print("final_url이 변경되었습니다. 벡터 DB를 업데이트합니다.")
+        stored_final_url = new_final_url
+        if stored_final_url:
+            vectorstore = crawl_and_update_vector_db(stored_final_url)
+    else:
+        print("final_url이 변경되지 않았습니다.")
+    return stored_final_url, vectorstore, retriever, qa_chain
+
+# 초기 벡터 DB 설정
+response = requests.get(main_url, headers=headers)
+soup = BeautifulSoup(response.text, "html.parser")
+iframe = soup.find("iframe", id="lawService")
+if iframe and iframe.has_attr("src"):
+    relative_src = iframe["src"].replace("&amp;", "&")
+    stored_final_url = base_url + relative_src
+    print("초기 final_url 추출 성공:", stored_final_url)
+    vectorstore = crawl_and_update_vector_db(stored_final_url)
+else:
+    print("초기 iframe의 src를 찾지 못했습니다.")
+    stored_final_url = None
+
+app = FastAPI()
+
+class Question(BaseModel):
+    question: str
+
+# 페르소나 설정
+persona_context = (
+    "당신은 부동산 계약 전문가 '방이'입니다. "
+    "사용자가 부동산 계약과 관련된 질문을 하면, 전문가로서 친절하고 명확하게 답변해 주세요. "
+    "특히 임대차 계약서와 관련된 특약사항에 대한 질문에 대해 전문적인 조언을 제공하세요. "
+    "충분한 근거 없이 답변하지 말고, 정보가 불확실한 경우 '알 수 없습니다.'라고 명시하세요. "
+    "답변 전에 단계별로 정보를 검증하고, 모호하거나 출처가 불분명한 부분은 '확실하지 않음'이라고 표시하세요. "
+    "최종적으로 확실한 정보만 사용하여 간결한 답변을 완성하세요. "
+    "사용자의 문의가 모호하거나 추가 정보가 필요하면, 먼저 추가 정보를 요청하세요. "
+    "각 답변마다 출처나 근거가 있는 경우 해당 정보를 명시하고, 관련 링크나 참고 자료를 간단히 요약해 주세요."
+)
+
+special_conditions_script = """
+1. 본 계약 당사자들은 계약에 필요한 개인 정보제공 및 활용에 동의한다.
+2. 임차인은 임차물건 현장확인 및 등기사항전부증명서, 건축물대장, 신분증 등을 확인하고 체결하는 계약이다.
+3. 당사자의 일방적인 이유로 계약해제 시 임대인은 계약금 배액상환, 임차인은 계약금을 포기하기로 한다. (계약금은 위약금의 성격을 갖는다.)
+4. 관리비가 있을 경우, 금액과 관리비에 포함되는 내역, 후불인지 선불인지를 자세히 기재한다.
+5. 옵션(~ 등)을 제공하고, 임차인의 사용부주의로 인한 옵션 및 기타 시설파손 시 임차인이 책임(원상복구 혹은 전액배상)을 진다. 단, 자연(생활) 마모는 제외한다.
+6. 퇴실 청소비가 있을 경우, 퇴실 청소비 금액과 입금 방식을 기재한다.
+7. 임차인은 건물 내 실내흡연을 금지한다.
+8. 반려동물 금지 시, '임차인은 반려동물 사육을 금지한다. 지켜지지 않을 시 계약해지의 사유가 될 수 있으며, 문제발생에 관한 모든 비용은 임차인이 부담한다.'
+9. 본 계약에 포함되지 않는 내용은 관련 법규나 관례에 따른다.
+"""
+
+@app.post("/api/v1/chatbot/message")
+async def ask_question(question: Question):
+    user_question = question.question
+    current_time = datetime.now(timezone.utc).isoformat()
+
+    try:
+        # 특약사항 관련 질문 분기 처리
+        if "특약사항" in user_question and "조언" in user_question:
+            answer = f"다음은 임대차 계약서에 포함할 수 있는 특약사항입니다:\n{special_conditions_script}"
+        elif "특약사항" in user_question:
+            # 최신 법령 url 확인 후, 필요시 벡터 DB 업데이트
+            check_and_update_vector_db()
+            gpt_query = (
+                f"{persona_context}\n\n"
+                f"사용자가 부동산 특약사항에 대해 질문했습니다: {user_question}\n\n"
+                "다음은 임대차 계약서에 포함할 수 있는 특약사항입니다:"
+            )
+            result = qa_chain({"query": gpt_query})
+            answer = result.get("result", "답변을 생성할 수 없습니다.")
+        else:
+            # 최신 법령 url 확인 후, 필요시 벡터 DB 업데이트
+            check_and_update_vector_db()
+            query = f"{persona_context}\n\n{user_question}"
+            result = qa_chain({"query": query})
+            answer = result.get("result", "답변을 생성할 수 없습니다.")
+    except Exception as e:
+        error_message = f"qa_chain 호출 중 오류: {str(e)}"
+        raise HTTPException(status_code=500, detail=error_message)
+    
+    answer_current_time = datetime.now(timezone.utc).isoformat()
+    response = {
+        "data": [
+            {"sender": "user", "message": user_question, "timestamp": current_time},
+            {"sender": "chatbot", "message": answer, "timestamp": answer_current_time}
+        ]
+    }
+    return response
