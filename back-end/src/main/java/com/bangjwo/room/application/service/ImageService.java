@@ -17,10 +17,7 @@ import com.bangjwo.room.domain.repository.ImageRepository;
 import com.bangjwo.room.domain.repository.RoomRepository;
 
 import lombok.RequiredArgsConstructor;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
@@ -31,14 +28,10 @@ public class ImageService {
 	private final ImageRepository imageRepository;
 	private final RoomRepository roomRepository;
 
+	private final S3Client s3Client;
+
 	@Value("${aws.s3.bucket}")
 	private String bucketName;
-
-	@Value("${aws.access.key}")
-	private String awsAccessKey;
-
-	@Value("${aws.secret.key}")
-	private String awsSecretKey;
 
 	@Value("${aws.region}")
 	private String awsRegion;
@@ -51,12 +44,6 @@ public class ImageService {
 	 */
 	public void uploadAndSaveImage(Room room, MultipartFile file) {
 		try {
-			S3Client s3 = S3Client.builder()
-				.region(Region.of(awsRegion))
-				.credentialsProvider(StaticCredentialsProvider.create(
-					AwsBasicCredentials.create(awsAccessKey, awsSecretKey)))
-				.build();
-
 			String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
 			PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -64,7 +51,7 @@ public class ImageService {
 				.key(fileName)
 				.build();
 
-			s3.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
+			s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
 
 			String imageUrl = "https://" + bucketName + ".s3." + awsRegion + ".amazonaws.com/" + fileName;
 
@@ -88,5 +75,28 @@ public class ImageService {
 				uploadAndSaveImage(savedRoom, file);
 			}
 		}
+	}
+
+	@Transactional
+	public void updateImages(Room room, List<Long> deleteImageIds, List<MultipartFile> images) {
+		if (deleteImageIds != null) {
+			deleteImageIds.forEach(this::deleteById);
+		}
+
+		if (images != null) {
+			uploadAndSaveImages(room, images);
+		}
+	}
+
+	@Transactional
+	public void deleteById(Long imageId) {
+		imageRepository.deleteByImageId(imageId).orElseThrow(
+			() -> new BusinessException(RoomErrorCode.NOT_FOUND_SEARCH_ROOM_IMAGE)
+		);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Image> findByRoom(Room room) {
+		return imageRepository.findAllByRoom(room);
 	}
 }

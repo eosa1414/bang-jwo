@@ -28,7 +28,18 @@ public class OptionService {
 				optionsRepository.save(optionEntity);
 			}
 		}
+	}
 
-		System.out.println(room.getRoomId());
+	@Transactional
+	public void updateOptions(Room room, List<RoomOption> optionList) {
+		if (optionList != null && !optionList.isEmpty()) {
+			optionsRepository.deleteByRoom(room);
+			saveOptions(room, optionList);
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public List<Options> findByRoom(Room room) {
+		return optionsRepository.findAllByRoom(room);
 	}
 }
