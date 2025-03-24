@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LayoutMain from "./layouts/LayoutMain";
 //pages
 import Home from "./pages/home/Home";
+import RoomFind from "./pages/room-find/RoomFind";
 
 function App() {
   return (
@@ -19,7 +20,11 @@ function App() {
         />
         <Route
           path="/room/find"
-          element={<LayoutMain>집 찾기 화면</LayoutMain>}
+          element={
+            <LayoutMain mainClassName="flex flex-row" hasFooter={false}>
+              <RoomFind />
+            </LayoutMain>
+          }
         />
         <Route
           path="/room/sell"
