@@ -16,7 +16,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateRoomRequestDto {
-	private String roomId;
 	private Long memberId;    // 해당 ID는 이후 토큰 처리로 대체 예정
 	private Integer deposit;
 	private Integer monthlyRent;
@@ -41,5 +40,6 @@ public class UpdateRoomRequestDto {
 
 	private List<MaintenanceIncludeName> maintenanceIncludes;
 	private List<RoomOption> options;
-	private List<MultipartFile> images; // image 엔티티
+	private List<MultipartFile> images; // 추가 저장 매물 이미지
+	private List<Long> deleteImageIds;    // 삭제할 기존 매물 이미지 ID 리스트
 }

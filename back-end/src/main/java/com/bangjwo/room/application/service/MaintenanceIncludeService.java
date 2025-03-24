@@ -29,7 +29,18 @@ public class MaintenanceIncludeService {
 				maintenanceIncludeRepository.save(mi);
 			}
 		}
+	}
 
-		System.out.println(room.getRoomId());
+	@Transactional
+	public void updateMaintenanceIncludes(Room room, List<MaintenanceIncludeName> maintenanceList) {
+		if (maintenanceList != null && !maintenanceList.isEmpty()) {
+			maintenanceIncludeRepository.deleteByRoom(room);
+			saveMaintenanceIncludes(room, maintenanceList);
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public List<MaintenanceInclude> findByRoom(Room room) {
+		return maintenanceIncludeRepository.findAllByRoom(room);
 	}
 }

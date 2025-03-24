@@ -3,6 +3,8 @@ package com.bangjwo.room.application.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bangjwo.global.common.error.room.RoomErrorCode;
+import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.room.domain.entity.Address;
 import com.bangjwo.room.domain.entity.Room;
 import com.bangjwo.room.domain.repository.AddressRepository;
@@ -13,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AddressService {
-
 	private final KakaoAddressService kakaoAddressService;
 	private final AddressRepository addressRepository;
 
@@ -40,5 +41,11 @@ public class AddressService {
 			.build();
 
 		addressRepository.save(address);
+	}
+
+	@Transactional(readOnly = true)
+	public Address findByRoom(Room room) {
+		return addressRepository.findByRoom(room)
+			.orElseThrow(() -> new BusinessException(RoomErrorCode.NOT_FOUND_SEARCH_ROOM_ADDRESS));
 	}
 }
