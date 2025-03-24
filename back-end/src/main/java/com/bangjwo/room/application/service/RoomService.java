@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.bangjwo.room.application.convert.RoomConverter;
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
-import com.bangjwo.room.application.dto.response.CreateRoomResponseDto;
 import com.bangjwo.room.domain.entity.Room;
 import com.bangjwo.room.domain.repository.RoomRepository;
 
@@ -17,12 +16,20 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class RoomService {
 	private final RoomRepository roomRepository;
+	private final AddressService addressService;
+	private final OptionService optionService;
+	private final MaintenanceIncludeService maintenanceIncludeService;
+	private final ImageService imageService;
 
-	public CreateRoomResponseDto createRoom(CreateRoomRequestDto requestDto) {
-		Room room = RoomConverter.convert(requestDto);
-		Room savedRoom = roomRepository.save(room);
+	@Transactional
+	public void createRoom(CreateRoomRequestDto requestDto) {
+		Room savedRoom = roomRepository.save(RoomConverter.convert(requestDto));
 
-		return RoomConverter.from(savedRoom);
+		addressService.createAndSaveAddress(savedRoom, requestDto.getAddress(),
+			requestDto.getAddressDetail(), requestDto.getPostalCode());
+		optionService.saveOptions(savedRoom, requestDto.getOptions());
+		maintenanceIncludeService.saveMaintenanceIncludes(savedRoom, requestDto.getMaintenanceIncludes());
+		imageService.uploadAndSaveImages(savedRoom, requestDto.getImages());
 	}
 
 	public void updateRoom(Long roomId, UpdateRoomRequestDto requestDto) {
