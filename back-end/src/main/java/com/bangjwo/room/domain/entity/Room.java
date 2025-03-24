@@ -52,9 +52,6 @@ public class Room extends BaseEntity {
 	@Column(length = 20, nullable = false)
 	private String realEstateId;
 
-	@Column(length = 20, nullable = false)
-	private String roomNumber;
-
 	@Column(nullable = false)
 	private Integer deposit;
 
@@ -110,6 +107,18 @@ public class Room extends BaseEntity {
 	@Column(nullable = false)
 	private Boolean registryPaid;
 
+	@Column(nullable = false)
+	private Boolean discussable;
+
+	@Column
+	private String discussDetail;
+
+	@Column(nullable = false)
+	private Boolean reviewable;
+
+	@Column(nullable = false)
+	private Boolean isPhonePublic;
+
 	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<MaintenanceInclude> maintenanceIncludes = new ArrayList<>();
@@ -117,6 +126,10 @@ public class Room extends BaseEntity {
 	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<Options> roomOptions = new ArrayList<>();
+
+	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<Image> images = new ArrayList<>();
 
 	public void addMaintenanceInclude(MaintenanceInclude include) {
 		this.maintenanceIncludes.add(include);

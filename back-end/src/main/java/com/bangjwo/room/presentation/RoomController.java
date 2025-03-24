@@ -1,7 +1,9 @@
 package com.bangjwo.room.presentation;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
-import com.bangjwo.room.application.dto.response.CreateRoomResponseDto;
 import com.bangjwo.room.application.service.RoomService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,11 +25,11 @@ import lombok.extern.slf4j.Slf4j;
 public class RoomController {
 	private final RoomService roomService;
 
-	@PostMapping
-	public ResponseEntity<CreateRoomResponseDto> createRoom(@RequestBody CreateRoomRequestDto requestDto) {
-		CreateRoomResponseDto responseDto = roomService.createRoom(requestDto);
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<Void> createRoom(@ModelAttribute CreateRoomRequestDto requestDto) {
+		roomService.createRoom(requestDto);
 
-		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
 	@PatchMapping("/{roomId}")
