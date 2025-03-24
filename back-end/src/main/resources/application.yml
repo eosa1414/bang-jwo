@@ -28,3 +28,18 @@ spring:
         hbm2ddl:
           auto: create
         default_batch_fetch_size: 1000
+
+
+kakao:
+  rest:
+    api:
+      key: ${KAKAO_REST_API_KEY}
+
+aws:
+  access:
+    key: ${AWS_ACCESS_KEY}
+  secret:
+    key: ${AWS_SECRET_KEY}
+  s3:
+    bucket: "bangjwo-s3"
+  region: "ap-northeast-2"
