@@ -223,8 +223,22 @@ async def ask_question(question: Question):
 
     try:
         # 특약사항 관련 질문 분기 처리
-        if "특약사항" in user_question and "조언" in user_question:
+        if "특약사항" in user_question and "가이드라인" in user_question:
             answer = f"다음은 임대차 계약서에 포함할 수 있는 특약사항입니다:\n{special_conditions_script}"
+        elif "특약사항" in user_question and ( 
+            "평가" in user_question or "유리" in user_question or "불리" in user_question 
+        ):
+            evaluation_prompt = (
+                f"{persona_context}\n\n"
+                "다음 특약사항 조항에 대해 평가해 주세요.\n"
+                "1. 이 조항이 임차인에게 **유리한지** 혹은 **불리한지** 판정해 주세요. "
+                "즉, '유리하다' 또는 '불리하다'라고 명시해 주세요.\n"
+                "2. 개선해야 할 점이나 주의사항이 있다면 구체적으로 조언해 주세요.\n\n"
+                f"특약사항 조항: {user_question}"
+            )
+            check_and_update_vector_db()
+            result = qa_chain({"query": evaluation_prompt})
+            answer = result.get("result", "답변을 생성할 수 없습니다.")
         elif "특약사항" in user_question:
             # 최신 법령 url 확인 후, 필요시 벡터 DB 업데이트
             check_and_update_vector_db()
