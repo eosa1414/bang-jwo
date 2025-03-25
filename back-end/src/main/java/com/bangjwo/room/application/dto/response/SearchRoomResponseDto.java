@@ -20,6 +20,7 @@ import lombok.Getter;
 public class SearchRoomResponseDto {
 	private Long roomId;
 	private Long memberId;
+	private Boolean isLiked;
 	private RoomStatus roomStatus;
 	private RoomBuildingType buildingType;
 	private String realEstateId;

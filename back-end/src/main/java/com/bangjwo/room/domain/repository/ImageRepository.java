@@ -12,4 +12,6 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
 	Optional<Image> deleteByImageId(Long imageId);
 
 	List<Image> findAllByRoom(Room room);
+
+	Image findFirstByRoomOrderByRoomDesc(Room room);
 }
