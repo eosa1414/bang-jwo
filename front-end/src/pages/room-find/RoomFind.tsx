@@ -1,6 +1,7 @@
 import SideBar from "./SideBar";
 import ImageItem from "../../components/ImageItem";
 import KakaoMap from "../../components/KakaoMap";
+import SearchBar from "../../components/SearchBar";
 
 const RoomFind = () => {
   return (
@@ -8,7 +9,8 @@ const RoomFind = () => {
       <SideBar />
 
       {/* pannel */}
-      <div className="bg-real-white relative w-[340px] border-r-1 border-neutral-light100">
+      <div className="flex flex-col items-center bg-real-white relative w-[340px] border-r-1 border-neutral-light100">
+        <SearchBar />
         <ImageItem />
         <ImageItem />
 

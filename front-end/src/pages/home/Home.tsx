@@ -1,5 +1,11 @@
+import SearchBar from "../../components/SearchBar";
+
 const Home = () => {
-  return <div>이곳은 메인 페이지입니다.</div>;
+  return (
+    <div>
+      <SearchBar />
+    </div>
+  );
 };
 
 export default Home;
