@@ -191,7 +191,7 @@ CREATE TABLE IF NOT EXISTS `ROOM` (
 
 CREATE TABLE IF NOT EXISTS `REAL_ESTATE_PDF` (
     `pdf_id`					    BIGINT	    	NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `user_id`					    BIGINT         	NOT NULL,
+    `member_id`					    BIGINT         	NOT NULL,
     `room_id`						BIGINT	    	NOT NULL,
     `pdf_url`					    VARCHAR(255) 	NOT NULL,
     `created_at`                    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
