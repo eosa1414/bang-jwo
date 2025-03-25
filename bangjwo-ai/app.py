@@ -223,9 +223,9 @@ async def ask_question(question: Question):
 
     try:
         # 특약사항 관련 질문 분기 처리
-        if "특약사항" in user_question and "가이드라인" in user_question:
+        if "특약" in user_question and "가이드라인" in user_question:
             answer = f"다음은 임대차 계약서에 포함할 수 있는 특약사항입니다:\n{special_conditions_script}"
-        elif "특약사항" in user_question and ( 
+        elif "특약" in user_question and ( 
             "평가" in user_question or "유리" in user_question or "불리" in user_question 
         ):
             evaluation_prompt = (
@@ -239,7 +239,7 @@ async def ask_question(question: Question):
             check_and_update_vector_db()
             result = qa_chain({"query": evaluation_prompt})
             answer = result.get("result", "답변을 생성할 수 없습니다.")
-        elif "특약사항" in user_question:
+        elif "특약" in user_question:
             # 최신 법령 url 확인 후, 필요시 벡터 DB 업데이트
             check_and_update_vector_db()
             gpt_query = (
