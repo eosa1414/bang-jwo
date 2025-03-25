@@ -8,9 +8,12 @@ import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.global.common.exception.RoomException;
 import com.bangjwo.room.application.convert.RoomConverter;
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
+import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
+import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomResponseDto;
 import com.bangjwo.room.domain.entity.Room;
+import com.bangjwo.room.domain.repository.MemoRepository;
 import com.bangjwo.room.domain.repository.RoomRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class RoomService {
 	private final RoomRepository roomRepository;
+	private final MemoRepository memoRepository;
 	private final AddressService addressService;
 	private final OptionService optionService;
 	private final MaintenanceIncludeService maintenanceIncludeService;
@@ -27,7 +31,7 @@ public class RoomService {
 
 	@Transactional
 	public void createRoom(CreateRoomRequestDto requestDto) {
-		Room savedRoom = roomRepository.save(RoomConverter.convert(requestDto));
+		var savedRoom = roomRepository.save(RoomConverter.convert(requestDto));
 
 		addressService.createAndSaveAddress(savedRoom, requestDto.getAddress(),
 			requestDto.getAddressDetail(), requestDto.getPostalCode());
@@ -38,7 +42,7 @@ public class RoomService {
 
 	@Transactional
 	public void updateRoom(Long roomId, UpdateRoomRequestDto requestDto) {
-		Room searchRoom = findByRoomId(roomId);
+		var searchRoom = findRoom(roomId);
 
 		if (!searchRoom.getMemberId().equals(requestDto.getMemberId())) {
 			throw new BusinessException(RoomErrorCode.NO_AUTH_TO_UPDATE_ROOM);
@@ -52,25 +56,54 @@ public class RoomService {
 
 	@Transactional
 	public void deleteRoom(Long roomId) {
-		Room searchRoom = findByRoomId(roomId);
+		var searchRoom = findRoom(roomId);
 
 		searchRoom.softDelete();
 	}
 
 	@Transactional(readOnly = true)
-	public Room findByRoomId(Long roomId) {
+	public Room findRoom(Long roomId) {
 		return roomRepository.findByRoomIdAndDeletedAtIsNull(roomId)
 			.orElseThrow(() -> new RoomException(RoomErrorCode.NOT_FOUND_SEARCH_ROOM));
 	}
 
 	@Transactional(readOnly = true)
 	public SearchRoomResponseDto searchRoom(Long roomId) {
-		var room = findByRoomId(roomId);
+		var room = findRoom(roomId);
 		var address = addressService.findByRoom(room);
 		var options = optionService.findByRoom(room);
 		var maintenanceIncludes = maintenanceIncludeService.findByRoom(room);
 		var images = imageService.findByRoom(room);
 
 		return RoomConverter.convert(room, address, options, maintenanceIncludes, images);
+	}
+
+	@Transactional(readOnly = true)
+	public SearchRoomMemoResponseDto searchRoomMemo(Long roomId, Long memberId) {
+		return memoRepository.findByRoomIdAndMemberId(roomId, memberId)
+			.map(RoomConverter::convert)
+			.orElse(new SearchRoomMemoResponseDto(roomId, ""));    // 현재 생성된 메모가 없다면 빈 문자열 응답
+	}
+
+	@Transactional
+	public void updateRoomMemo(Long roomId, UpdateRoomMemoRequestDto requestDto) {
+		var memo = memoRepository.findByRoomIdAndMemberId(roomId, requestDto.getMemberId());
+
+		if (memo.isPresent()) {
+			memo.get().updateContent(requestDto.getContent());
+		} else {
+			createRoomMemo(roomId, requestDto);
+		}
+	}
+
+	@Transactional
+	public void createRoomMemo(Long roomId, UpdateRoomMemoRequestDto requestDto) {
+		memoRepository.save(RoomConverter.convert(roomId, requestDto));
+	}
+
+	@Transactional
+	public void clearMemo(Long roomId, Long memberId) {
+		memoRepository.findByRoomIdAndMemberId(roomId, memberId)
+			.ifPresent(memo -> memo.updateContent(""));
 	}
 }

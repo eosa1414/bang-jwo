@@ -4,11 +4,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
+import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.response.ImageResponseDto;
+import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomResponseDto;
 import com.bangjwo.room.domain.entity.Address;
 import com.bangjwo.room.domain.entity.Image;
 import com.bangjwo.room.domain.entity.MaintenanceInclude;
+import com.bangjwo.room.domain.entity.Memo;
 import com.bangjwo.room.domain.entity.Options;
 import com.bangjwo.room.domain.entity.Room;
 import com.bangjwo.room.domain.vo.MaintenanceIncludeName;
@@ -110,6 +113,21 @@ public class RoomConverter {
 			.options(optionList)
 			.images(imageDtoList)
 
+			.build();
+	}
+
+	public static Memo convert(Long roomId, UpdateRoomMemoRequestDto requestDto) {
+		return Memo.builder()
+			.roomId(roomId)
+			.memberId(requestDto.getMemberId())
+			.content(requestDto.getContent())
+			.build();
+	}
+
+	public static SearchRoomMemoResponseDto convert(Memo memo) {
+		return SearchRoomMemoResponseDto.builder()
+			.roomId(memo.getRoomId())
+			.content(memo.getContent())
 			.build();
 	}
 }
