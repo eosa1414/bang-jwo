@@ -44,7 +44,7 @@ public class ImageService {
 	 */
 	public void uploadAndSaveImage(Room room, MultipartFile file) {
 		try {
-			String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+			String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
 			PutObjectRequest putObjectRequest = PutObjectRequest.builder()
 				.bucket(bucketName)
@@ -98,5 +98,10 @@ public class ImageService {
 	@Transactional(readOnly = true)
 	public List<Image> findByRoom(Room room) {
 		return imageRepository.findAllByRoom(room);
+	}
+
+	@Transactional(readOnly = true)
+	public Image findMainImageByRoom(Room room) {
+		return imageRepository.findFirstByRoomOrderByRoomDesc(room);
 	}
 }
