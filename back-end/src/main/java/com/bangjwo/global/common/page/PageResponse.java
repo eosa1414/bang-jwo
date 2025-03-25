@@ -2,22 +2,19 @@ package com.bangjwo.global.common.page;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import lombok.Getter;
 
 /**
  * DB에서 일부만 조회한 결과를 감싸는 페이지네이션 응답 클래스입니다.
  * <p>
  * 응답 데이터는 전체 항목 수(totalItems), 총 페이지 수(totalPages),
- * 현재 페이지(currentPage), 페이지당 아이템 수(size), 그리고 해당 페이지의 데이터(items)를 포함합니다.
- * 사용 예시:
- * <pre>
- *     // DB에서 일부 데이터 조회 후
- *     int totalItems = postRepository.countAll();
- *     List<PostDto> posts = postRepository.findPage(offset, size);
- *     PageResponse<PostDto> response = new PageResponse<>(totalItems, currentPage, size, posts);
- * </pre>
+ * 현재 페이지(currentPage), 페이지당 아이템 수(size), 현재 페이지 아이템 개수(currentPageItemCount),
+ * 그리고 해당 페이지의 데이터(items)를 포함합니다.
  */
 @Getter
+@JsonPropertyOrder({"totalItems", "totalPages", "currentPage", "size", "currentPageItemCount", "offset", "items"})
 public class PageResponse<T> {
 	private static final int DEFAULT_SIZE = 15;
 
@@ -29,6 +26,8 @@ public class PageResponse<T> {
 	private final int currentPage;
 	/** 페이지당 아이템 수 */
 	private final int size;
+	/** 현재 페이지에 실제 포함된 아이템 개수 */
+	private final int currentPageItemCount;
 	/** 현재 페이지에 해당하는 데이터 리스트 */
 	private final List<T> items;
 
@@ -47,7 +46,7 @@ public class PageResponse<T> {
 		this.totalItems = totalItems;
 		this.currentPage = cp;
 		this.size = s;
-		// totalItems가 0이면 총 페이지 수는 0, 아니면 올림하여 계산
+		this.currentPageItemCount = (items == null) ? 0 : items.size();
 		this.totalPages = (totalItems == 0) ? 0 : (int)Math.ceil((double)totalItems / s);
 		this.items = items;
 	}
@@ -81,6 +80,7 @@ public class PageResponse<T> {
 			", totalPages=" + totalPages +
 			", currentPage=" + currentPage +
 			", size=" + size +
+			", currentPageItemCount=" + currentPageItemCount +
 			", offset=" + getOffset() +
 			", items=" + items +
 			'}';
