@@ -44,7 +44,7 @@ public class ImageService {
 	 */
 	public void uploadAndSaveImage(Room room, MultipartFile file) {
 		try {
-			String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+			String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
 			PutObjectRequest putObjectRequest = PutObjectRequest.builder()
 				.bucket(bucketName)
