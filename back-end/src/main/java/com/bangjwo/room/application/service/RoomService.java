@@ -1,18 +1,24 @@
 package com.bangjwo.room.application.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bangjwo.global.common.error.room.RoomErrorCode;
 import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.global.common.exception.RoomException;
+import com.bangjwo.global.common.page.PaginationRequest;
 import com.bangjwo.room.application.convert.RoomConverter;
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
+import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
+import com.bangjwo.room.application.dto.response.RoomListResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomResponseDto;
+import com.bangjwo.room.domain.entity.Likes;
 import com.bangjwo.room.domain.entity.Room;
+import com.bangjwo.room.domain.repository.LikeRepository;
 import com.bangjwo.room.domain.repository.MemoRepository;
 import com.bangjwo.room.domain.repository.RoomRepository;
 
@@ -24,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class RoomService {
 	private final RoomRepository roomRepository;
 	private final MemoRepository memoRepository;
+	private final LikeRepository likeRepository;
 	private final AddressService addressService;
 	private final OptionService optionService;
 	private final MaintenanceIncludeService maintenanceIncludeService;
@@ -68,14 +75,17 @@ public class RoomService {
 	}
 
 	@Transactional(readOnly = true)
-	public SearchRoomResponseDto searchRoom(Long roomId) {
+	public SearchRoomResponseDto searchRoom(Long roomId, Long memberId) {
 		var room = findRoom(roomId);
 		var address = addressService.findByRoom(room);
 		var options = optionService.findByRoom(room);
 		var maintenanceIncludes = maintenanceIncludeService.findByRoom(room);
 		var images = imageService.findByRoom(room);
+		var isLiked = likeRepository.findByRoomIdAndMemberId(roomId, memberId)
+			.map(Likes::getFlag)
+			.orElse(false);
 
-		return RoomConverter.convert(room, address, options, maintenanceIncludes, images);
+		return RoomConverter.convert(room, isLiked, address, options, maintenanceIncludes, images);
 	}
 
 	@Transactional(readOnly = true)
@@ -105,5 +115,43 @@ public class RoomService {
 	public void clearMemo(Long roomId, Long memberId) {
 		memoRepository.findByRoomIdAndMemberId(roomId, memberId)
 			.ifPresent(memo -> memo.updateContent(""));
+	}
+
+	@Transactional
+	public IsRoomLikedResponseDto toggleLike(Long roomId, Long memberId) {
+		var roomLike = likeRepository.findByRoomIdAndMemberId(roomId, memberId)
+			.map(like -> {
+				like.toggleFlag();
+				return like;
+			})
+			.orElseGet(() -> likeRepository.save(RoomConverter.convertLike(roomId, memberId)));
+
+		return RoomConverter.convert(roomLike);
+	}
+
+	@Transactional(readOnly = true)
+	public RoomListResponseDto getMyListedRooms(Long memberId, int page, int size) {
+		var pageable = PaginationRequest.toPageable(page, size);
+		var roomPage = roomRepository.findAllByMemberId(memberId, pageable);
+
+		return createRoomListResponseDto(roomPage, memberId, page);
+	}
+
+	private RoomListResponseDto createRoomListResponseDto(Page<Room> roomPage, Long memberId, int page) {
+		int totalItems = (int)roomPage.getTotalElements();
+		var paginatedRooms = roomPage.getContent();
+
+		var roomSummaryList = paginatedRooms.stream()
+			.map(room -> {
+				boolean like = likeRepository.findByRoomIdAndMemberId(room.getRoomId(), memberId)
+					.map(Likes::getFlag)
+					.orElse(false);
+				String imageUrl = imageService.findMainImageByRoom(room).getImageUrl();
+
+				return RoomConverter.convertToRoomSummary(room, like, imageUrl);
+			})
+			.toList();
+
+		return new RoomListResponseDto(totalItems, page, roomSummaryList);
 	}
 }

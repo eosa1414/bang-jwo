@@ -6,10 +6,13 @@ import java.util.stream.Collectors;
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.response.ImageResponseDto;
+import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
+import com.bangjwo.room.application.dto.response.RoomSummaryResponse;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomResponseDto;
 import com.bangjwo.room.domain.entity.Address;
 import com.bangjwo.room.domain.entity.Image;
+import com.bangjwo.room.domain.entity.Likes;
 import com.bangjwo.room.domain.entity.MaintenanceInclude;
 import com.bangjwo.room.domain.entity.Memo;
 import com.bangjwo.room.domain.entity.Options;
@@ -56,6 +59,7 @@ public class RoomConverter {
 	}
 
 	public static SearchRoomResponseDto convert(Room room,
+		Boolean isLiked,
 		Address address,
 		List<Options> options,
 		List<MaintenanceInclude> maintenanceIncludes,
@@ -79,6 +83,7 @@ public class RoomConverter {
 		return SearchRoomResponseDto.builder()
 			.roomId(room.getRoomId())
 			.memberId(room.getMemberId())
+			.isLiked(isLiked)
 			.roomStatus(room.getStatus())
 			.buildingType(room.getBuildingType())
 			.realEstateId(room.getRealEstateId())
@@ -128,6 +133,38 @@ public class RoomConverter {
 		return SearchRoomMemoResponseDto.builder()
 			.roomId(memo.getRoomId())
 			.content(memo.getContent())
+			.build();
+	}
+
+	public static Likes convertLike(Long roomId, Long memberId) {
+		return Likes.builder()
+			.roomId(roomId)
+			.memberId(memberId)
+			.flag(true)
+			.build();
+	}
+
+	public static IsRoomLikedResponseDto convert(Likes roomLike) {
+		return IsRoomLikedResponseDto.builder()
+			.roomId(roomLike.getRoomId())
+			.isLiked(roomLike.getFlag())
+			.build();
+	}
+
+	public static RoomSummaryResponse convertToRoomSummary(Room room, Boolean isLiked, String ImageUrl) {
+		return RoomSummaryResponse.builder()
+			.roomId(room.getRoomId())
+			.memberId(room.getMemberId())
+			.isLiked(isLiked)
+			.buildingType(room.getBuildingType())
+			.status(room.getStatus())
+			.deposit(room.getDeposit())
+			.monthlyRent(room.getMonthlyRent())
+			.exclusiveArea(room.getExclusiveArea())
+			.supplyArea(room.getSupplyArea())
+			.maintenanceCost(room.getMaintenanceCost())
+			.floor(room.getFloor())
+			.imageUrl(ImageUrl)
 			.build();
 	}
 }

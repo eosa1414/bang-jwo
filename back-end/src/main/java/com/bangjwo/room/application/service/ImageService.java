@@ -99,4 +99,9 @@ public class ImageService {
 	public List<Image> findByRoom(Room room) {
 		return imageRepository.findAllByRoom(room);
 	}
+
+	@Transactional(readOnly = true)
+	public Image findMainImageByRoom(Room room) {
+		return imageRepository.findFirstByRoomOrderByRoomDesc(room);
+	}
 }
