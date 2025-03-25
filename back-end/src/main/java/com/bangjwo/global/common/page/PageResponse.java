@@ -9,7 +9,6 @@ import lombok.Getter;
  * <p>
  * 응답 데이터는 전체 항목 수(totalItems), 총 페이지 수(totalPages),
  * 현재 페이지(currentPage), 페이지당 아이템 수(size), 그리고 해당 페이지의 데이터(items)를 포함합니다.
- *
  * 사용 예시:
  * <pre>
  *     // DB에서 일부 데이터 조회 후
