@@ -6,7 +6,7 @@ spring:
     name: bangjwo
 
   datasource:
-    url: jdbc:mysql://localhost:3306/bangjwo?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:13306/bangjwo?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: 1234
     hikari:
@@ -14,10 +14,9 @@ spring:
 
   sql:
     init:
-      schema-locations:
-        classpath: schema.sql
-      data-locations:
-        classpath: data.sql
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
 
   jpa:
     properties:
@@ -29,3 +28,18 @@ spring:
         hbm2ddl:
           auto: create
         default_batch_fetch_size: 1000
+
+
+kakao:
+  rest:
+    api:
+      key: ${KAKAO_REST_API_KEY}
+
+aws:
+  access:
+    key: ${AWS_ACCESS_KEY}
+  secret:
+    key: ${AWS_SECRET_KEY}
+  s3:
+    bucket: "bangjwo-s3"
+  region: "ap-northeast-2"

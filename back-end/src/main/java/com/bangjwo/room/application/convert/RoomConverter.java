@@ -1,0 +1,115 @@
+package com.bangjwo.room.application.convert;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
+import com.bangjwo.room.application.dto.response.ImageResponseDto;
+import com.bangjwo.room.application.dto.response.SearchRoomResponseDto;
+import com.bangjwo.room.domain.entity.Address;
+import com.bangjwo.room.domain.entity.Image;
+import com.bangjwo.room.domain.entity.MaintenanceInclude;
+import com.bangjwo.room.domain.entity.Options;
+import com.bangjwo.room.domain.entity.Room;
+import com.bangjwo.room.domain.vo.MaintenanceIncludeName;
+import com.bangjwo.room.domain.vo.RoomOption;
+import com.bangjwo.room.domain.vo.RoomStatus;
+
+import lombok.Builder;
+
+public class RoomConverter {
+
+	@Builder
+	public static Room convert(CreateRoomRequestDto requestDto) {
+		return Room.builder()
+			.memberId(requestDto.getMemberId())
+			.buildingType(requestDto.getBuildingType())
+			.status(RoomStatus.UNDER_VERIFICATION)
+			.realEstateId(requestDto.getRealEstateId())
+			.deposit(requestDto.getDeposit())
+			.monthlyRent(requestDto.getMonthlyRent())
+			.exclusiveArea(requestDto.getExclusiveArea())
+			.supplyArea(requestDto.getSupplyArea())
+			.totalUnits(requestDto.getTotalUnits())
+			.floor(requestDto.getFloor())
+			.maxFloor(requestDto.getMaxFloor())
+			.parkingSpaces(requestDto.getParkingSpaces())
+			.availableFrom(requestDto.getAvailableFrom())
+			.permissionDate(requestDto.getPermissionDate())
+			.simpleDescription(requestDto.getSimpleDescription())
+			.description(requestDto.getDescription())
+			.maintenanceCost(requestDto.getMaintenanceCost())
+			.roomCnt(requestDto.getRoomCnt())
+			.bathroomCnt(requestDto.getBathroomCnt())
+			.direction(requestDto.getDirection())
+			.discussable(requestDto.getDiscussable())
+			.discussDetail(requestDto.getDiscussDetail())
+			.reviewable(requestDto.getReviewable())
+			.isPhonePublic(requestDto.getIsPhonePublic())
+			// 기본값 설정
+			.verified(false)
+			.registryPaid(false)
+			.build();
+	}
+
+	public static SearchRoomResponseDto convert(Room room,
+		Address address,
+		List<Options> options,
+		List<MaintenanceInclude> maintenanceIncludes,
+		List<Image> images) {
+
+		List<RoomOption> optionList = options.stream()
+			.map(Options::getOptionName)
+			.collect(Collectors.toList());
+
+		List<MaintenanceIncludeName> maintenanceIncludeList = maintenanceIncludes.stream()
+			.map(MaintenanceInclude::getMaintenanceIncludeName)
+			.collect(Collectors.toList());
+
+		List<ImageResponseDto> imageDtoList = images.stream()
+			.map(img -> ImageResponseDto.builder()
+				.imageId(img.getImageId())
+				.imageUrl(img.getImageUrl())
+				.build())
+			.collect(Collectors.toList());
+
+		return SearchRoomResponseDto.builder()
+			.roomId(room.getRoomId())
+			.memberId(room.getMemberId())
+			.roomStatus(room.getStatus())
+			.buildingType(room.getBuildingType())
+			.realEstateId(room.getRealEstateId())
+			.postalCode(address.getPostalCode())
+			.address(address.getName())
+			.addressDetail(address.getAddressDetail())
+			.lat(address.getLat())
+			.lng(address.getLng())
+			.deposit(room.getDeposit())
+			.monthlyRent(room.getMonthlyRent())
+			.exclusiveArea(room.getExclusiveArea())
+			.supplyArea(room.getSupplyArea())
+			.totalUnits(room.getTotalUnits())
+			.floor(room.getFloor())
+			.maxFloor(room.getMaxFloor())
+			.parkingSpaces(room.getParkingSpaces())
+			.availableFrom(room.getAvailableFrom())
+			.permissionDate(room.getPermissionDate())
+			.simpleDescription(room.getSimpleDescription())
+			.description(room.getDescription())
+			.maintenanceCost(room.getMaintenanceCost())
+			.roomCnt(room.getRoomCnt())
+			.bathroomCnt(room.getBathroomCnt())
+			.direction(room.getDirection())
+			.discussable(room.getDiscussable())
+			.discussDetail(room.getDiscussDetail())
+			.reviewable(room.getReviewable())
+			.isPhonePublic(room.getIsPhonePublic())
+
+			// 변환된 리스트들
+			.maintenanceIncludes(maintenanceIncludeList)
+			.options(optionList)
+			.images(imageDtoList)
+
+			.build();
+	}
+}
