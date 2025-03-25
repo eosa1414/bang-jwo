@@ -10,11 +10,12 @@ interface LayoutMainProps {
 
 const LayoutMain = ({
   children,
+  wrapperClassName = "",
   mainClassName = "",
   hasFooter = true,
 }: LayoutMainProps) => {
   return (
-    <div className="w-full min-h-screen flex flex-col">
+    <div className={`w-full min-h-screen flex flex-col ${wrapperClassName}`}>
       <HeaderDefault />
       <main className={`flex-grow ${mainClassName}`}>{children}</main>
       {hasFooter && <FooterDefault />}

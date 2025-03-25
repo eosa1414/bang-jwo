@@ -25,6 +25,26 @@
   @apply shadow-[0_0_12px_0_rgba(0,0,0,0.25)];
 }
 
+.scroll-custom::-webkit-scrollbar {
+  width: 8px;
+}
+.scroll-custom::-webkit-scrollbar-thumb {
+  background-color: var(--color-neutral-gray);
+  border-radius: 10px;
+}
+.scroll-custom::-webkit-scrollbar-track {
+  background-color: var(--color-real-white);
+}
+
+.scroll-custom::-webkit-scrollbar-button:vertical:end:increment {
+  display: block;
+  height: 10px;
+}
+.scroll-custom::-webkit-scrollbar-button:vertical:start:decrement {
+  display: block;
+  height: 10px;
+}
+
 :root {
   font-family: Pretendard Variable, system-ui, Avenir, Helvetica, Arial,
     sans-serif;
