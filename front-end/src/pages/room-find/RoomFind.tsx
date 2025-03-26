@@ -10,6 +10,7 @@ import {
 import SideBar from "./SideBar";
 import ListRoom from "../../components/ListRoom";
 import KakaoMap from "../../components/KakaoMap";
+import SearchBar from "../../components/SearchBar";
 
 const RoomFind = () => {
   const [params, setParams] = useState<RoomQueryParams>(defaultParams);
@@ -127,11 +128,13 @@ const RoomFind = () => {
       <SideBar />
 
       {/* pannel */}
-      <div className="bg-real-white relative w-[340px] border-r-1 border-neutral-light100">
+      <div className="flex flex-col items-center bg-real-white relative w-[340px] border-r-1 border-neutral-light100">
+        <SearchBar />
         <ListRoom
           listClassName="h-full overflow-y-auto"
           rooms={data?.data || []}
         />
+
         {/* modal */}
         <div className="absolute z-2 w-[320px] h-full left-[340px] top-0 bottom-0 p-[10px]">
           <div className="bg-real-white w-full h-full rounded-xl shadow-custom"></div>
