@@ -23,8 +23,8 @@ function App() {
           path="/room/find"
           element={
             <LayoutMain
-              wrapperClassName="h-screen"
-              mainClassName="flex flex-row overflow-y-auto"
+              wrapperClassName="h-screen min-h-[calc(24rem+55px+7.9rem)] min-w-[calc(5.035rem+660px)]"
+              mainClassName="flex flex-row overflow-hidden"
               hasFooter={false}
             >
               <RoomFind />

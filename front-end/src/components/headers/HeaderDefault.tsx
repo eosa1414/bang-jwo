@@ -26,7 +26,7 @@ const Header = ({ title }: HeaderProps) => {
   };
 
   return (
-    <header className="flex w-full h-[55px] p-[12px_14px] justify-center items-center gap-[16px]">
+    <header className="flex w-full h-[55px] p-[12px_14px] justify-center items-center gap-[16px] border-b-1 border-neutral-light100">
       {/* Logo */}
       <div>
         <Link to="/" className="flex gap-2 items-center">
@@ -60,8 +60,8 @@ const Header = ({ title }: HeaderProps) => {
             {/* 임시 로그인/로그아웃 버튼 */}
             {isLoggedIn ? (
               <>
-                <i class="material-symbols-rounded">chat</i>
-                <i class="material-symbols-rounded">account_circle</i>
+                <i className="material-symbols-rounded">chat</i>
+                <i className="material-symbols-rounded">account_circle</i>
                 <button onClick={handleLogout}>임시 로그아웃</button>
               </>
             ) : (

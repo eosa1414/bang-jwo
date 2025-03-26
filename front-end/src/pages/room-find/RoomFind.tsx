@@ -11,6 +11,8 @@ import SideBar from "./SideBar";
 import ListRoom from "../../components/ListRoom";
 import KakaoMap from "../../components/KakaoMap";
 import SearchBar from "../../components/SearchBar";
+import InfoText from "../../components/InfoText";
+import FilterPannel from "../../components/FilterPannel";
 
 const RoomFind = () => {
   const [params, setParams] = useState<RoomQueryParams>(defaultParams);
@@ -129,11 +131,17 @@ const RoomFind = () => {
 
       {/* pannel */}
       <div className="flex flex-col items-center bg-real-white relative w-[340px] border-r-1 border-neutral-light100">
-        <SearchBar />
-        <ListRoom
-          listClassName="h-full overflow-y-auto"
-          rooms={data?.data || []}
-        />
+        <div className="flex flex-col w-full h-full overflow-hidden">
+          <FilterPannel
+            childrenTop={<SearchBar />}
+            childrenBottom={<InfoText text="'방줘'에는 월세만 있습니다." />}
+          />
+
+          <ListRoom
+            listClassName="flex-1 overflow-y-auto"
+            rooms={data?.data || []}
+          />
+        </div>
 
         {/* modal */}
         <div className="absolute z-2 w-[320px] h-full left-[340px] top-0 bottom-0 p-[10px]">
