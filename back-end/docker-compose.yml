@@ -97,6 +97,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/bangjwo?serverTimezone=UTC&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: bangjwo
       SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
       RSA_PUBLIC_KEY: "${RSA_PUBLIC_KEY}"
       RSA_PRIVATE_KEY: "${RSA_PRIVATE_KEY}"
     networks:

@@ -28,3 +28,15 @@ spring:
         hbm2ddl:
           auto: create
         default_batch_fetch_size: 1000
+
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+
+    mongodb:
+      uri: mongodb://${MONGO_INITDB_ROOT_USERNAME:bangjwo}:${MONGO_INITDB_ROOT_PASSWORD:1234}@localhost:27017/admin
+
+
+  main:
+    allow-bean-definition-overriding: true
