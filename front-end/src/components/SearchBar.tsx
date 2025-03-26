@@ -12,7 +12,7 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="flex w-full max-w-sm border border-neutral-light100 rounded-full overflow-hidden p-[4px_8px_4px_14px]">
+    <div className="flex w-full max-w-sm border border-neutral-light100 rounded-full overflow-hidden p-[0.25rem_0.5rem_0.25rem_0.875rem]">
       <input
         type="text"
         value={searchQuery}

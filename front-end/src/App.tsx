@@ -23,7 +23,7 @@ function App() {
           element={
             <LayoutMain
               wrapperClassName="h-screen"
-              mainClassName="flex flex-row overflow-y-auto"
+              mainClassName="flex flex-row overflow-y-auto min-h-[calc(24rem+55px+7.9rem)] min-w-[calc(5.035rem+660px)]"
               hasFooter={false}
             >
               <RoomFind />

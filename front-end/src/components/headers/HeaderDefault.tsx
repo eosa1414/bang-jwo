@@ -26,7 +26,7 @@ const Header = ({ title }: HeaderProps) => {
   };
 
   return (
-    <header className="flex w-full h-[55px] p-[12px_14px] justify-center items-center gap-[16px]">
+    <header className="flex w-full h-[55px] p-[12px_14px] justify-center items-center gap-[16px] border-b-1 border-neutral-light100">
       {/* Logo */}
       <div>
         <Link to="/" className="flex gap-2 items-center">
