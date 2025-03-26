@@ -5,6 +5,7 @@ import LayoutMain from "./layouts/LayoutMain";
 //pages
 import Home from "./pages/home/Home";
 import TestPage from "./pages/TestPage";
+import RoomFind from "./pages/room-find/RoomFind";
 
 function App() {
   return (
@@ -20,7 +21,15 @@ function App() {
         />
         <Route
           path="/room/find"
-          element={<LayoutMain>집 찾기 화면</LayoutMain>}
+          element={
+            <LayoutMain
+              wrapperClassName="h-screen"
+              mainClassName="flex flex-row overflow-y-auto"
+              hasFooter={false}
+            >
+              <RoomFind />
+            </LayoutMain>
+          }
         />
         <Route
           path="/room/sell"

@@ -1,24 +1,48 @@
 @import "tailwindcss";
 
 @theme {
-  --color-gold: #F5C400;
-  --color-gold-dark: #E2A600;
-  --color-gold-light: #FFDA45;
+  --color-gold: #f5c400;
+  --color-gold-dark: #e2a600;
+  --color-gold-light: #ffda45;
 
-  --color-real-white: #FFFFFF;
-  --color-neutral-white: #FEFDFC;
+  --color-real-white: #ffffff;
+  --color-neutral-white: #fefdfc;
 
-  --color-neutral-black: #0B0B0C;
+  --color-neutral-black: #0b0b0c;
   --color-neutral-dark200: #535257;
-  --color-neutral-dark100: #6C6C6D;
-  --color-neutral-gray: #B4B3BA;
-  --color-neutral-light100: #ECEBED;
-  --color-neutral-light200: #F3F2F2;
-  --color-neutral-light300: #FCFCFE;
+  --color-neutral-dark100: #6c6c6d;
+  --color-neutral-gray: #b4b3ba;
+  --color-neutral-light100: #ecebed;
+  --color-neutral-light200: #f3f2f2;
+  --color-neutral-light300: #fcfcfe;
 
-  --color-coral-red: #FF5E5E;
+  --color-coral-red: #ff5e5e;
   --color-avocado: #568203;
-  --color-pistachio: #84B067;
+  --color-pistachio: #84b067;
+}
+
+.shadow-custom {
+  @apply shadow-[0_0_12px_0_rgba(0,0,0,0.25)];
+}
+
+.scroll-custom::-webkit-scrollbar {
+  width: 8px;
+}
+.scroll-custom::-webkit-scrollbar-thumb {
+  background-color: var(--color-neutral-gray);
+  border-radius: 10px;
+}
+.scroll-custom::-webkit-scrollbar-track {
+  background-color: var(--color-real-white);
+}
+
+.scroll-custom::-webkit-scrollbar-button:vertical:end:increment {
+  display: block;
+  height: 10px;
+}
+.scroll-custom::-webkit-scrollbar-button:vertical:start:decrement {
+  display: block;
+  height: 10px;
 }
 
 :root {
