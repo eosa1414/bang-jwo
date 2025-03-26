@@ -1,5 +1,6 @@
 package com.bangjwo.room.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -14,4 +15,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 	Optional<Room> findByRoomIdAndDeletedAtIsNull(Long roomId);
 
 	Page<Room> findAllByMemberId(Long memberId, Pageable pageable);
+
+	List<Room> findByRoomIdIn(List<Long> roomIds);
 }

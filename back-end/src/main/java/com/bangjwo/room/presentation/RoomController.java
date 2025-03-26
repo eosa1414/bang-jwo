@@ -100,11 +100,21 @@ public class RoomController {
 	}
 
 	@GetMapping("/me")
-	public ResponseEntity<RoomListResponseDto> getMyListedRooms(@RequestParam(required = false) int page,
-		@RequestParam(required = false) int size,
+	public ResponseEntity<RoomListResponseDto> getMyListedRooms(@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "0") int size,
 		@RequestBody Map<String, Long> body) {
 		Long memberId = body.get("memberId");    // 이후 로그인 토큰의 memberId로 로직 확인하도록 변경 예정
 		var result = roomService.getMyListedRooms(memberId, page, size);
+
+		return ResponseEntity.ok(result);
+	}
+
+	@GetMapping("/like")
+	public ResponseEntity<RoomListResponseDto> getLikedRooms(@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "0") int size,
+		@RequestBody Map<String, Long> body) {
+		Long memberId = body.get("memberId");    // 이후 로그인 토큰의 memberId로 로직 확인하도록 변경 예정
+		var result = roomService.getLikeRooms(memberId, page, size);
 
 		return ResponseEntity.ok(result);
 	}

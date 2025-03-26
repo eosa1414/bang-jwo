@@ -1,5 +1,7 @@
 package com.bangjwo.room.application.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
 import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
+import com.bangjwo.room.application.dto.response.RoomSummaryResponse;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomResponseDto;
 import com.bangjwo.room.domain.entity.Likes;
@@ -130,16 +133,40 @@ public class RoomService {
 	}
 
 	@Transactional(readOnly = true)
-	public RoomListResponseDto getMyListedRooms(Long memberId, int page, int size) {
+	public RoomListResponseDto getMyListedRooms(Long memberId, Integer page, Integer size) {
 		var pageable = PaginationRequest.toPageable(page, size);
 		var roomPage = roomRepository.findAllByMemberId(memberId, pageable);
 
-		return createRoomListResponseDto(roomPage, memberId, page);
+		return createRoomListResponseDto(roomPage, memberId, page, size);
 	}
 
-	private RoomListResponseDto createRoomListResponseDto(Page<Room> roomPage, Long memberId, int page) {
-		int totalItems = (int)roomPage.getTotalElements();
+	@Transactional(readOnly = true)
+	public RoomListResponseDto getLikeRooms(Long memberId, Integer page, Integer size) {
+		var pageable = PaginationRequest.toPageable(page, size);
+		var likePages = likeRepository.findAllByMemberIdAndFlagTrue(memberId, pageable);
+		int totalItems = (int)likePages.getTotalElements();
+
+		List<Long> roomIds = likePages.getContent().stream()
+			.map(Likes::getRoomId)
+			.toList();
+
+		List<Room> rooms = roomRepository.findByRoomIdIn(roomIds);
+
+		List<RoomSummaryResponse> roomSummaryList = rooms.stream()
+			.map(room -> {
+				String imageUrl = imageService.findMainImageByRoom(room).getImageUrl();
+
+				return RoomConverter.convertToRoomSummary(room, true, imageUrl);
+			})
+			.toList();
+
+		return new RoomListResponseDto(totalItems, page, size, roomSummaryList);
+	}
+
+	private RoomListResponseDto createRoomListResponseDto(Page<Room> roomPage, Long memberId, Integer page,
+		Integer size) {
 		var paginatedRooms = roomPage.getContent();
+		int totalItems = (int)roomPage.getTotalElements();
 
 		var roomSummaryList = paginatedRooms.stream()
 			.map(room -> {
@@ -152,6 +179,7 @@ public class RoomService {
 			})
 			.toList();
 
-		return new RoomListResponseDto(totalItems, page, roomSummaryList);
+		return new RoomListResponseDto(totalItems, page, size, roomSummaryList);
 	}
+
 }
