@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LayoutMain from "./layouts/LayoutMain";
 //pages
 import Home from "./pages/home/Home";
+import TestPage from "./pages/TestPage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           path="/mypage"
           element={<LayoutMain>마이페이지 화면</LayoutMain>}
         />
+        <Route path='/test' element={<TestPage />} />
       </Routes>
     </BrowserRouter>
   );
