@@ -21,7 +21,11 @@ function App() {
         <Route
           path="/room/find"
           element={
-            <LayoutMain mainClassName="flex flex-row" hasFooter={false}>
+            <LayoutMain
+              wrapperClassName="h-screen"
+              mainClassName="flex flex-row overflow-y-auto"
+              hasFooter={false}
+            >
               <RoomFind />
             </LayoutMain>
           }
