@@ -13,7 +13,7 @@ docker-compose down -v
 # workbench 에서 접속 하는 경우 필요 없음
 
 # 실행
-docker exec -it chunsun-db bash
+docker exec -it mysql-db bash
 
 # 터미널에서 접속
 mysql -u root -p

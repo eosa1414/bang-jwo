@@ -1,16 +1,27 @@
 package com.bangjwo.room.domain.entity;
 
-import com.bangjwo.global.common.entity.BaseEntity;
-import jakarta.persistence.*;
+import java.math.BigDecimal;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Table(name = "ADDRESS")
 public class Address {
 
@@ -18,11 +29,15 @@ public class Address {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long addressId;
 
-	@Column(nullable = false)
-	private Long roomId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "room_id", nullable = false)
+	private Room room;
 
 	@Column
 	private String name;
+
+	@Column
+	private String addressDetail;
 
 	@Column(length = 10)
 	private String postalCode;
@@ -41,7 +56,4 @@ public class Address {
 
 	@Column(length = 100)
 	private String district;
-
-	@Column(length = 100)
-	private String neighborhood;
 }

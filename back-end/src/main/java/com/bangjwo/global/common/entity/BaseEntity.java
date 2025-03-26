@@ -1,16 +1,16 @@
 package com.bangjwo.global.common.entity;
 
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Column;
-import jakarta.persistence.PreRemove;
-import lombok.Getter;
-import lombok.Setter;
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -18,19 +18,18 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
-    @CreatedDate
-    @Column(updatable = false, nullable = false)
-    private LocalDateTime createdAt;
+	@CreatedDate
+	@Column(updatable = false, nullable = false)
+	private LocalDateTime createdAt;
 
-    @LastModifiedDate
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+	@LastModifiedDate
+	@Column(nullable = false)
+	private LocalDateTime updatedAt;
 
-    @Column
-    private LocalDateTime deletedAt;
+	@Column
+	private LocalDateTime deletedAt;
 
-    @PreRemove
-    public void markDeleted() {
-        this.deletedAt = LocalDateTime.now();
-    }
+	public void softDelete() {
+		this.deletedAt = LocalDateTime.now();
+	}
 }

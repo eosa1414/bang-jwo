@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bangjwo.global.common.entity.BaseEntity;
+import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
 import com.bangjwo.room.domain.vo.RoomBuildingType;
 import com.bangjwo.room.domain.vo.RoomDirection;
 import com.bangjwo.room.domain.vo.RoomStatus;
@@ -51,9 +52,6 @@ public class Room extends BaseEntity {
 
 	@Column(length = 20, nullable = false)
 	private String realEstateId;
-
-	@Column(length = 20, nullable = false)
-	private String roomNumber;
 
 	@Column(nullable = false)
 	private Integer deposit;
@@ -110,6 +108,19 @@ public class Room extends BaseEntity {
 	@Column(nullable = false)
 	private Boolean registryPaid;
 
+	@Column(nullable = false)
+	private Boolean discussable;
+
+	@Column
+	private String discussDetail;
+
+	@Column(nullable = false)
+	private Boolean reviewable;
+
+	@Column(nullable = false)
+	private Boolean isPhonePublic;
+
+	// 해당 자식 테이블에 대해 일단 이후에 성능 측정 후 변경 결정 예정
 	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<MaintenanceInclude> maintenanceIncludes = new ArrayList<>();
@@ -117,6 +128,10 @@ public class Room extends BaseEntity {
 	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<Options> roomOptions = new ArrayList<>();
+
+	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<Image> images = new ArrayList<>();
 
 	public void addMaintenanceInclude(MaintenanceInclude include) {
 		this.maintenanceIncludes.add(include);
@@ -126,6 +141,97 @@ public class Room extends BaseEntity {
 	public void addRoomOption(Options option) {
 		this.roomOptions.add(option);
 		option.setRoom(this);
+	}
+
+	public void addRoomImage(Image image) {
+		this.images.add(image);
+		image.setRoom(this);
+	}
+
+	/**
+	 * PATCH 형태 업데이트 전용 메서드
+	 * - UpdateRoomRequestDto의 null이 아닌 필드만 엔티티에 반영
+	 */
+	public void updateRoom(UpdateRoomRequestDto dto) {
+		if (dto.getDeposit() != null) {
+			this.deposit = dto.getDeposit();
+		}
+
+		if (dto.getMonthlyRent() != null) {
+			this.monthlyRent = dto.getMonthlyRent();
+		}
+
+		if (dto.getExclusiveArea() != null) {
+			this.exclusiveArea = dto.getExclusiveArea();
+		}
+
+		if (dto.getSupplyArea() != null) {
+			this.supplyArea = dto.getSupplyArea();
+		}
+
+		if (dto.getTotalUnits() != null) {
+			this.totalUnits = dto.getTotalUnits();
+		}
+
+		if (dto.getFloor() != null) {
+			this.floor = dto.getFloor();
+		}
+
+		if (dto.getMaxFloor() != null) {
+			this.maxFloor = dto.getMaxFloor();
+		}
+
+		if (dto.getParkingSpaces() != null) {
+			this.parkingSpaces = dto.getParkingSpaces();
+		}
+
+		if (dto.getAvailableFrom() != null) {
+			this.availableFrom = dto.getAvailableFrom();
+		}
+
+		if (dto.getPermissionDate() != null) {
+			this.permissionDate = dto.getPermissionDate();
+		}
+
+		if (dto.getSimpleDescription() != null) {
+			this.simpleDescription = dto.getSimpleDescription();
+		}
+
+		if (dto.getDescription() != null) {
+			this.description = dto.getDescription();
+		}
+
+		if (dto.getMaintenanceCost() != null) {
+			this.maintenanceCost = dto.getMaintenanceCost();
+		}
+
+		if (dto.getRoomCnt() != null) {
+			this.roomCnt = dto.getRoomCnt();
+		}
+
+		if (dto.getBathroomCnt() != null) {
+			this.bathroomCnt = dto.getBathroomCnt();
+		}
+
+		if (dto.getDirection() != null) {
+			this.direction = dto.getDirection();
+		}
+
+		if (dto.getDiscussable() != null) {
+			this.discussable = dto.getDiscussable();
+		}
+
+		if (dto.getDiscussDetail() != null) {
+			this.discussDetail = dto.getDiscussDetail();
+		}
+
+		if (dto.getReviewable() != null) {
+			this.reviewable = dto.getReviewable();
+		}
+
+		if (dto.getIsPhonePublic() != null) {
+			this.isPhonePublic = dto.getIsPhonePublic();
+		}
 	}
 }
 

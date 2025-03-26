@@ -5,7 +5,8 @@ USE bangjwo;
 CREATE TABLE IF NOT EXISTS `LIKES` (
     `like_id`						BIGINT  		NOT NULL    AUTO_INCREMENT PRIMARY KEY,
     `room_id`						BIGINT	    	NOT NULL,
-    `member_id`						BIGINT		    NOT NULL
+    `member_id`						BIGINT		    NOT NULL,
+    `flag`                          BOOLEAN         NOT NULL    DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS `MEMO` (
@@ -135,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `REVIEW` (
     `lessee_id`						BIGINT	       	NOT NULL,
     `room_id`						BIGINT	    	NOT NULL,
     `real_estate_id`				VARCHAR(255)	NOT NULL,
-    `room_number`					VARCHAR(255)	NOT NULL,
+    `address_detail`				VARCHAR(255)	NOT NULL,
     `content`						VARCHAR(255)	NULL,
     `created_at`					TIMESTAMP		NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`					TIMESTAMP		NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -146,21 +147,21 @@ CREATE TABLE IF NOT EXISTS `ADDRESS` (
     `address_id`					BIGINT	    	NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `room_id`						BIGINT	    	NOT NULL,
     `name`						    VARCHAR(255)	NULL,
+    `address_detail`                VARCHAR(255)    NULL,
     `postal_code`					VARCHAR(10) 	NULL,
     `lat`							DECIMAL(9,6)	NULL,
     `lng`							DECIMAL(9,6)	NULL,
     `province`						VARCHAR(100)	NULL,
     `city`							VARCHAR(100)	NULL,
-    `district`						VARCHAR(100)	NULL,
-    `neighborhood`					VARCHAR(100)	NULL
+    `district`						VARCHAR(100)	NULL
 );
 
 CREATE TABLE IF NOT EXISTS `ROOM` (
     `room_id`						BIGINT		    NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `member_id`						BIGINT		    NOT NULL,
     `building_type`					ENUM('ONEROOM_TWOROOM', 'APARTMENT', 'VILLA_HOUSE', 'OFFICETEL')		NULL,
+    `status`						ENUM('UNDER_VERIFICATION', 'ON_SALE', 'SOLD_OUT')		NOT NULL,
     `real_estate_id`				VARCHAR(20) 	NOT NULL,
-    `room_number`					VARCHAR(20) 	NOT NULL,
     `deposit`						INT			    NOT NULL,
     `monthly_rent`					INT			    NOT NULL,
     `exclusive_area`				DECIMAL		    NULL,
@@ -174,13 +175,15 @@ CREATE TABLE IF NOT EXISTS `ROOM` (
     `simple_description`			VARCHAR(255)	NULL,
     `description`					TEXT			NULL,
     `maintenance_cost`				INT			    NOT NULL,
-    `maintenance_included_items`	VARCHAR(255)	NULL,
-    `status`						ENUM('UNDER_VERIFICATION', 'ON_SALE', 'SOLD_OUT')		NOT NULL,
     `room_cnt`						TINYINT	    	NOT NULL,
     `bathroom_cnt`					TINYINT	    	NOT NULL,
     `direction`						Enum('EAST', 'WEST', 'SOUTH', 'NORTH', 'NORTHWEST', 'NORTHEAST', 'SOUTHWEST', 'SOUTHEAST')			NOT NULL,
     `verified`						BOOLEAN	      	NOT NULL	DEFAULT FALSE,
     `registry_paid`					BOOLEAN		    NOT NULL	DEFAULT FALSE,
+    `discussable`                   BOOLEAN		    NOT NULL	DEFAULT FALSE,
+    `discuss_detail`                VARCHAR(255)    NULL,
+    `reviewable`                    BOOLEAN         NOT NULL    DEFAULT FALSE,
+    `is_phone_public`               BOOLEAN         NOT NULL    DEFAULT FALSE,
     `created_at`                    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`					TIMESTAMP			NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `deleted_at`					TIMESTAMP		NULL
@@ -188,7 +191,7 @@ CREATE TABLE IF NOT EXISTS `ROOM` (
 
 CREATE TABLE IF NOT EXISTS `REAL_ESTATE_PDF` (
     `pdf_id`					    BIGINT	    	NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `user_id`					    BIGINT         	NOT NULL,
+    `member_id`					    BIGINT         	NOT NULL,
     `room_id`						BIGINT	    	NOT NULL,
     `pdf_url`					    VARCHAR(255) 	NOT NULL,
     `created_at`                    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,

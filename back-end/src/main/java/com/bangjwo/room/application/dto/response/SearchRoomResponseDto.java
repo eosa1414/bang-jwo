@@ -17,11 +17,18 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class CreateRoomResponseDto {
+public class SearchRoomResponseDto {
+	private Long roomId;
+	private Long memberId;
+	private Boolean isLiked;
+	private RoomStatus roomStatus;
 	private RoomBuildingType buildingType;
-	private RoomStatus status;
 	private String realEstateId;
-	private String roomNumber;
+	private String postalCode;
+	private String address;
+	private String addressDetail;
+	private BigDecimal lat;
+	private BigDecimal lng;
 	private Integer deposit;
 	private Integer monthlyRent;
 	private BigDecimal exclusiveArea;
@@ -38,9 +45,13 @@ public class CreateRoomResponseDto {
 	private Integer roomCnt;
 	private Integer bathroomCnt;
 	private RoomDirection direction;
-	private Boolean verified;
-	private Boolean registryPaid;
+	private Boolean discussable;
+	private String discussDetail;
+	private Boolean reviewable;
+	private Boolean isPhonePublic;
 
-	private List<RoomOption> options;
 	private List<MaintenanceIncludeName> maintenanceIncludes;
+	private List<RoomOption> options;
+	private List<ImageResponseDto> images;
 }
+

@@ -40,3 +40,18 @@ spring:
 
   main:
     allow-bean-definition-overriding: true
+
+
+  kakao:
+    rest:
+      api:
+        key: ${KAKAO_REST_API_KEY}
+
+  aws:
+    access:
+      key: ${AWS_ACCESS_KEY}
+    secret:
+      key: ${AWS_SECRET_KEY}
+    s3:
+      bucket: "bangjwo-s3"
+    region: "ap-northeast-2"
