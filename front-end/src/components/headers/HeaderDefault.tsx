@@ -60,8 +60,8 @@ const Header = ({ title }: HeaderProps) => {
             {/* 임시 로그인/로그아웃 버튼 */}
             {isLoggedIn ? (
               <>
-                <i class="material-symbols-rounded">chat</i>
-                <i class="material-symbols-rounded">account_circle</i>
+                <i className="material-symbols-rounded">chat</i>
+                <i className="material-symbols-rounded">account_circle</i>
                 <button onClick={handleLogout}>임시 로그아웃</button>
               </>
             ) : (
