@@ -1,57 +1,90 @@
-import React from "react";
 import classNames from "classnames";
+import { ButtonHTMLAttributes, ReactNode } from "react";
 
 type ButtonSize = "basic" | "small" | "medium";
-type ButtonColor =
-  | "neutral-light100"
-  | "neutral-dark200"
-  | "coral-red"
-  | "gold-light";
-type TextColor = "neutral-black" | "neutral-white" | "neutral-dark100";
+type Variant =
+  | "default"
+  | "dark"
+  | "warning"
+  | "neutral"
+  | "point"
+  | "gold"
+  | "opaque";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
-  bgColor?: ButtonColor;
-  textColor?: TextColor;
-  children: React.ReactNode;
+  variant?: Variant;
+  children: ReactNode;
+  isAngular?: boolean;
+  isLine?: boolean;
 }
 
+const baseClasses =
+  "inline-flex items-center justify-center w-fit flex-shrink-0";
 const sizeClasses = {
-  basic: "inline-flex items-center justify-center h-9 w-fit min-w-[64px] px-3 text-base rounded-lg flex-shrink-0",
-  small: "inline-flex items-center justify-center h-7 w-fit min-w-[48px] px-2 text-sm rounded-lg flex-shrink-0",
-  medium: "inline-flex items-center justify-center h-12 w-fit min-w-[160px] px-4 text-lg rounded-2xl flex-shrink-0"
+  basic: `${baseClasses} h-9 min-w-[64px] px-3 text-base`,
+  small: `${baseClasses} h-7 min-w-[48px] px-2 text-sm`,
+  medium: `${baseClasses} h-12 min-w-[160px] px-4 text-lg`,
 };
 
-const bgColorClasses = {
-  "neutral-light100": "bg-[var(--color-neutral-light100)]",
-  "neutral-dark200": "bg-[var(--color-neutral-dark200)]",
-  "coral-red": "bg-[var(--color-coral-red)]",
-  "gold-light": "bg-[var(--color-gold-light)]",
+const variantClasses = {
+  default: {
+    defaultstyle: "text-neutral-black bg-neutral-light100",
+    linestyle: "text-neutral-black border-neutral-gray",
+  },
+  dark: {
+    defaultstyle: "text-neutral-white bg-neutral-dark200",
+    linestyle: "text-neutral-dark200 border-neutral-dark200",
+  },
+  warning: {
+    defaultstyle: "text-neutral-white bg-coral-red",
+    linestyle: "text-coral-red border-coral-red",
+  },
+  neutral: {
+    defaultstyle: "text-neutral-dark100 bg-neutral-light100",
+    linestyle: "text-neutral-gray border-neutral-light100",
+  },
+  point: {
+    defaultstyle: "text-neutral-black bg-gold-light",
+    linestyle: "text-neutral-black border-neutral-black bg-gold-light",
+  },
+  gold: {
+    defaultstyle: "text-gold-dark bg-gold-light/20",
+    linestyle: "text-gold-dark border-gold",
+  },
+  opaque: {
+    defaultstyle: "text-neutral-light200 bg-neutral-black/30",
+    linestyle: "text-neutral-dark100 border-neutral-black/30",
+  },
 };
 
-const textColorClasses = {
-  "neutral-black": "text-[var(--color-neutral-black)]",
-  "neutral-white": "text-[var(--color-neutral-white)]",
-  "neutral-dark100": "text-[var(--color-neutral-dark100)]",
-};
-
-const Button: React.FC<ButtonProps> = ({
+const Button = ({
   size = "basic",
-  bgColor = "neutral-light100",
-  textColor = "neutral-black",
+  variant = "default",
   children,
+  isAngular = false,
+  isLine = false,
   className,
   disabled,
   ...props
-}) => {
+}: ButtonProps) => {
+  const { defaultstyle, linestyle } = variantClasses[variant];
+
   return (
     <button
       className={classNames(
-        "font-semibold inline-flex items-center justify-center whitespace-nowrap", 
+        "font-semibold inline-flex items-center justify-center whitespace-nowrap",
         disabled ? "cursor-not-allowed" : "cursor-pointer",
         sizeClasses[size],
-        bgColorClasses[bgColor],
-        textColorClasses[textColor],
+        !isAngular &&
+          (size === "basic"
+            ? "rounded-lg"
+            : size === "small"
+            ? "rounded-lg"
+            : size === "medium"
+            ? "rounded-2xl"
+            : "rounded-lg"),
+        isLine ? `border-1 ${linestyle}` : defaultstyle,
         className
       )}
       disabled={disabled}
