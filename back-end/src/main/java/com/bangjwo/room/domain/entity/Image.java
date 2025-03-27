@@ -46,9 +46,5 @@ public class Image extends BaseEntity {
 	@CreatedDate
 	@Column(updatable = false, nullable = false)
 	private LocalDateTime createdAt;
-
-	protected void setRoom(Room room) {
-		this.room = room;
-	}
 }
 

@@ -41,8 +41,4 @@ public class MaintenanceInclude {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private MaintenanceIncludeName maintenanceIncludeName;
-
-	protected void setRoom(Room room) {
-		this.room = room;
-	}
 }

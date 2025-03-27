@@ -21,7 +21,6 @@ public class RoomSpecification {
 
 	public static Specification<Room> exclusiveAreaIn(List<RoomAreaType> areaTypes) {
 		return (root, query, cb) -> {
-			// areaTypes가 null이거나 비어있거나 ALL이 포함되면 조건 없이 전체 조회
 			if (areaTypes == null || areaTypes.isEmpty() || areaTypes.contains(RoomAreaType.ALL)) {
 				return cb.conjunction();
 			}
@@ -30,7 +29,7 @@ public class RoomSpecification {
 			for (RoomAreaType areaType : areaTypes) {
 				BigDecimal min = areaType.getMin();
 				BigDecimal max = areaType.getMax();
-				// 평 단위를 m²로 변환
+
 				if (min != null && max != null) {
 					BigDecimal minM2 = min.multiply(conversionFactor);
 					BigDecimal maxM2 = max.multiply(conversionFactor);
@@ -43,7 +42,7 @@ public class RoomSpecification {
 					predicates.add(cb.lessThanOrEqualTo(root.get("exclusiveArea"), maxM2));
 				}
 			}
-			// OR 조건으로 결합
+
 			return cb.or(predicates.toArray(new Predicate[0]));
 		};
 	}
@@ -51,7 +50,6 @@ public class RoomSpecification {
 	public static Specification<Room> roomInAddressBounds(BigDecimal minLat, BigDecimal maxLat, BigDecimal minLng,
 		BigDecimal maxLng) {
 		return (root, query, cb) -> {
-			// Address 엔티티에 대한 서브쿼리 작성
 			Subquery<Long> subquery = query.subquery(Long.class);
 			var addressRoot = subquery.from(Address.class);
 			subquery.select(addressRoot.get("room").get("roomId"))

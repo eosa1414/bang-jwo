@@ -15,8 +15,6 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
 
 	List<Image> findAllByRoom(Room room);
 
-	Image findFirstByRoomOrderByRoomDesc(Room room);
-
 	@Query("""
 		    SELECT i
 		    FROM Image i
