@@ -208,4 +208,14 @@ CREATE TABLE IF NOT EXISTS `MAINTENANCE_INCLUDE` (
     `maintenance_include_name` ENUM('WATER','ELECTRICITY','INTERNET','GAS','CLEANING','CABLE_TV','PARKING','HEATING','ELEVATOR_MAINTENANCE') NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS `CHAT_ROOM` (
+    `chat_room_id`                  BIGINT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `landlord_id`                   BIGINT          NOT NULL,
+    `tenant_id`                     BIGINT          NOT NULL,
+    `room_id`                       BIGINT          NOT NULL,
+    `landload_unread_count`         BIGINT          NOT NULL DEFAULT 0,
+    `tenant_unread_count`           BIGINT          NOT NULL DEFAULT 0,
+    `created_at`                    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP
+)
+
 
