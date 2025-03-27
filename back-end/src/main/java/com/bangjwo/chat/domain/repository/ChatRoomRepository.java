@@ -17,8 +17,13 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 	@Query("SELECT r FROM ChatRoom r WHERE r.id = :chatRoomId AND (r.landlordId = :userId OR r.tenantId = :userId)")
 	ChatRoom findByChatRoomIdAndUserId(@Param("chatRoomId") Long chatRoomId, @Param("userId") Long userId);
 
+	@Query("SELECT CASE WHEN cr.landlordId = :userId THEN cr.tenantId ELSE cr.landlordId END " +
+		"FROM ChatRoom cr WHERE cr.id = :chatRoomId AND (:userId = cr.landlordId OR :userId = cr.tenantId)")
+	Long findOtherUserId(@Param("chatRoomId") Long chatRoomId, @Param("userId") Long userId);
 
-	List<ChatRoom> findByLandlordIdOrTenantId(Long landlordId, Long tenantId);
+	@Query("SELECT cr.id FROM ChatRoom cr WHERE cr.roomId = :roomId AND (cr.landlordId = :userId OR cr.tenantId = :userId)")
+	Long findChatRoomIdByRoomIdAndUserId(@Param("roomId") Long roomId, @Param("userId") Long userId);
+
 
 	boolean existsByRoomIdAndTenantId(Long roomId, Long tenantId);
 }

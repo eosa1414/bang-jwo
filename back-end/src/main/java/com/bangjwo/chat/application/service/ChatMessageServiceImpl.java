@@ -37,6 +37,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 			.build());
 	}
 
+	@Override
 	public void markMessagesAsRead(Long chatRoomId, Long userId) {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("chatRoomId").is(chatRoomId)

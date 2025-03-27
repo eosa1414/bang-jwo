@@ -40,9 +40,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 			.createdAt(LocalDateTime.now()).build()));
 
 		// 인메모리에 저장
-		enterRoom(chatRoom.getId(), chatRoom.getTenantId());
-		////여기에 채팅방 생성 메세지 전송 로직////
-		System.out.println(chatRoom.getRoomId());
+		// enterRoom(chatRoom.getId(), chatRoom.getTenantId());
 
 		return ChatRoomDto.ResponseDto.builder()
 			.landlordId(chatRoom.getLandlordId())
@@ -51,6 +49,17 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 			.chatRoomId(chatRoom.getId()).build();
 	}
 
+	@Override
+	public Long getOtherId(Long chatRoomId, Long userId) {
+		return chatRoomRepository.findOtherUserId(chatRoomId, userId);
+	}
+
+	@Override
+	public Long getChatRoomId(Long roomId, Long tenantId) {
+		return chatRoomRepository.findChatRoomIdByRoomIdAndUserId(roomId, tenantId);
+	}
+
+	// 추후 적용
 	@Override
 	public ChatRoom enterRoom(Long chatRoomId, Long userId) {
 		return chatRoomMemoryStore.get(chatRoomId)

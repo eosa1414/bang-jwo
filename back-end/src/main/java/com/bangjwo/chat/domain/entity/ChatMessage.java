@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class ChatMessage {
 
 	@Id
-	private Long id;
+	private String id;
 
 	private Long chatRoomId;
 
