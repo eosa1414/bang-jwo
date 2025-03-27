@@ -1,5 +1,7 @@
 package com.bangjwo.room.presentation;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import com.bangjwo.room.application.dto.response.RoomListResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomResponseDto;
 import com.bangjwo.room.application.service.RoomService;
+import com.bangjwo.room.domain.vo.RoomAreaType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,13 +38,19 @@ import lombok.extern.slf4j.Slf4j;
 public class RoomController {
 	private final RoomService roomService;
 
-	@GetMapping("/{roomId}")
-	public ResponseEntity<SearchRoomResponseDto> searchRoomDetail(@PathVariable Long roomId,
+	@GetMapping
+	public ResponseEntity<RoomListResponseDto> searchRooms(
+		@RequestParam(required = false) Integer price,
+		@RequestParam(required = false) List<RoomAreaType> areaTypes,
+		@RequestParam BigDecimal lat,
+		@RequestParam BigDecimal lng,
+		@RequestParam(required = false) Integer zoom,
+		@RequestParam(required = false) Integer page,
 		@RequestBody Map<String, Long> body) {
-		Long memberId = body.get("memberId");    // 이후 로그인 토큰의 memberId로 로직 확인하도록 변경 예정
-		var searchRoom = roomService.searchRoom(roomId, memberId);
+		Long memberId = body.get("memberId");    // 이후 로그인 토큰의 memberId로 로직 확인하도록 변경 예정)
+		RoomListResponseDto response = roomService.searchRooms(price, areaTypes, lat, lng, zoom, page, memberId);
 
-		return ResponseEntity.ok(searchRoom);
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -56,6 +65,15 @@ public class RoomController {
 		roomService.updateRoom(roomId, requestDto);
 
 		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/{roomId}")
+	public ResponseEntity<SearchRoomResponseDto> searchRoomDetail(@PathVariable Long roomId,
+		@RequestBody Map<String, Long> body) {
+		Long memberId = body.get("memberId");    // 이후 로그인 토큰의 memberId로 로직 확인하도록 변경 예정
+		var searchRoom = roomService.searchRoomDetail(roomId, memberId);
+
+		return ResponseEntity.ok(searchRoom);
 	}
 
 	@DeleteMapping("/{roomId}")
@@ -100,8 +118,8 @@ public class RoomController {
 	}
 
 	@GetMapping("/me")
-	public ResponseEntity<RoomListResponseDto> getMyListedRooms(@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "0") int size,
+	public ResponseEntity<RoomListResponseDto> getMyListedRooms(@RequestParam(required = false) Integer page,
+		@RequestParam(required = false) Integer size,
 		@RequestBody Map<String, Long> body) {
 		Long memberId = body.get("memberId");    // 이후 로그인 토큰의 memberId로 로직 확인하도록 변경 예정
 		var result = roomService.getMyListedRooms(memberId, page, size);
@@ -110,8 +128,8 @@ public class RoomController {
 	}
 
 	@GetMapping("/like")
-	public ResponseEntity<RoomListResponseDto> getLikedRooms(@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "0") int size,
+	public ResponseEntity<RoomListResponseDto> getLikedRooms(@RequestParam(required = false) Integer page,
+		@RequestParam(required = false) Integer size,
 		@RequestBody Map<String, Long> body) {
 		Long memberId = body.get("memberId");    // 이후 로그인 토큰의 memberId로 로직 확인하도록 변경 예정
 		var result = roomService.getLikeRooms(memberId, page, size);

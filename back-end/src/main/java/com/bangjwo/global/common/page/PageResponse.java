@@ -70,19 +70,6 @@ public class PageResponse<T> {
 	 * @return 0부터 시작하는 조회 offset 값
 	 */
 	public int getOffset() {
-		return (currentPage - 1) * size;
-	}
-
-	@Override
-	public String toString() {
-		return "PageResponse{" +
-			"totalItems=" + totalItems +
-			", totalPages=" + totalPages +
-			", currentPage=" + currentPage +
-			", size=" + size +
-			", currentPageItemCount=" + currentPageItemCount +
-			", offset=" + getOffset() +
-			", items=" + items +
-			'}';
+		return (currentPage - 1) * size + 1;
 	}
 }

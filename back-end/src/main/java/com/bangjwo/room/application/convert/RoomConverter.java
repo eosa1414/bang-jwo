@@ -121,9 +121,9 @@ public class RoomConverter {
 			.build();
 	}
 
-	public static Memo convert(Long roomId, UpdateRoomMemoRequestDto requestDto) {
+	public static Memo convert(Room room, UpdateRoomMemoRequestDto requestDto) {
 		return Memo.builder()
-			.roomId(roomId)
+			.room(room)
 			.memberId(requestDto.getMemberId())
 			.content(requestDto.getContent())
 			.build();
@@ -131,14 +131,14 @@ public class RoomConverter {
 
 	public static SearchRoomMemoResponseDto convert(Memo memo) {
 		return SearchRoomMemoResponseDto.builder()
-			.roomId(memo.getRoomId())
+			.roomId(memo.getRoom().getRoomId())
 			.content(memo.getContent())
 			.build();
 	}
 
-	public static Likes convertLike(Long roomId, Long memberId) {
+	public static Likes convertLike(Room room, Long memberId) {
 		return Likes.builder()
-			.roomId(roomId)
+			.room(room)
 			.memberId(memberId)
 			.flag(true)
 			.build();
@@ -146,7 +146,7 @@ public class RoomConverter {
 
 	public static IsRoomLikedResponseDto convert(Likes roomLike) {
 		return IsRoomLikedResponseDto.builder()
-			.roomId(roomLike.getRoomId())
+			.roomId(roomLike.getRoom().getRoomId())
 			.isLiked(roomLike.getFlag())
 			.build();
 	}
