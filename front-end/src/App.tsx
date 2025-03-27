@@ -6,6 +6,7 @@ import LayoutMain from "./layouts/LayoutMain";
 import Home from "./pages/home/Home";
 import TestPage from "./pages/TestPage";
 import RoomFind from "./pages/room-find/RoomFind";
+import TestButtonPage from "./pages/TestButtonPage";
 
 function App() {
   return (
@@ -39,7 +40,8 @@ function App() {
           path="/mypage"
           element={<LayoutMain>마이페이지 화면</LayoutMain>}
         />
-        <Route path='/test' element={<TestPage />} />
+        <Route path="/test" element={<TestPage />} />
+        <Route path="/test/button" element={<TestButtonPage />} />
       </Routes>
     </BrowserRouter>
   );
