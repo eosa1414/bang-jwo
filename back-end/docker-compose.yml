@@ -84,6 +84,8 @@ services:
   bangjwo:
     build: .
     container_name: bangjwo
+    env_file:
+      - .env
     depends_on:
       mysql-db:
         condition: service_healthy
@@ -101,6 +103,9 @@ services:
       SPRING_DATA_REDIS_PORT: 6379
       RSA_PUBLIC_KEY: "${RSA_PUBLIC_KEY}"
       RSA_PRIVATE_KEY: "${RSA_PRIVATE_KEY}"
+      AWS_ACCESS_KEY: "${AWS_ACCESS_KEY}"
+      AWS_SECRET_KEY: "${AWS_SECRET_KEY}"
+      AWS_REGION: "${AWS_REGION}"
     networks:
       - bangjwo-network
 
