@@ -90,12 +90,12 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mysql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\SSAFY\Desktop\S12P21A404\back-end\src\main\java\com\bangjwo\global\config\interceptor" />
@@ -180,6 +180,7 @@
       <workItem from="1742771551826" duration="22051000" />
       <workItem from="1742857968075" duration="49211000" />
       <workItem from="1743035725466" duration="19788000" />
+      <workItem from="1743061681380" duration="1716000" />
     </task>
     <servers />
   </component>
