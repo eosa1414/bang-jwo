@@ -8,8 +8,8 @@ import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.response.ImageResponseDto;
 import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomSummaryResponse;
+import com.bangjwo.room.application.dto.response.SearchDetailRoomResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
-import com.bangjwo.room.application.dto.response.SearchRoomResponseDto;
 import com.bangjwo.room.domain.entity.Address;
 import com.bangjwo.room.domain.entity.Image;
 import com.bangjwo.room.domain.entity.Likes;
@@ -58,7 +58,7 @@ public class RoomConverter {
 			.build();
 	}
 
-	public static SearchRoomResponseDto convert(Room room,
+	public static SearchDetailRoomResponseDto convert(Room room,
 		Boolean isLiked,
 		Address address,
 		List<Options> options,
@@ -80,7 +80,7 @@ public class RoomConverter {
 				.build())
 			.collect(Collectors.toList());
 
-		return SearchRoomResponseDto.builder()
+		return SearchDetailRoomResponseDto.builder()
 			.roomId(room.getRoomId())
 			.memberId(room.getMemberId())
 			.isLiked(isLiked)

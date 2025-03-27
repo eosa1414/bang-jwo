@@ -11,6 +11,7 @@ import com.bangjwo.room.domain.vo.RoomBuildingType;
 import com.bangjwo.room.domain.vo.RoomDirection;
 import com.bangjwo.room.domain.vo.RoomOption;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,95 +21,128 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Schema(description = "새로운 매물(Room) 생성 요청 DTO")
 public class CreateRoomRequestDto {
-	@NotNull
-	@Min(0)
-	private Long memberId;    // 해당 ID는 이후 토큰 처리로 대체 예정
 
+	@Schema(description = "회원 ID (이후 토큰 처리로 대체 예정)", example = "1001", requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0")
+	@NotNull
+	@Min(1)
+	private Long memberId;
+
+	@Schema(description = "건물 유형", example = "APARTMENT", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
 	private RoomBuildingType buildingType;
 
+	@Schema(description = "부동산 고유 번호", example = "1146-1996-006588", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
 	private String realEstateId;
 
+	@Schema(description = "우편번호", example = "06220", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
-	private String postalCode;    // 주소 엔티티
+	private String postalCode;
 
+	@Schema(description = "주소 명", example = "서울특별시 강남구 테헤란로 212 (역삼동)", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
-	private String address;    // 주소 엔티티
+	private String address;
 
+	@Schema(description = "상세 주소", example = "101동 202호", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
-	private String addressDetail;    // 주소 엔티티
+	private String addressDetail;
 
+	@Schema(description = "보증금", example = "10000000", requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0")
 	@NotNull
 	@Min(0)
 	private Integer deposit;
 
+	@Schema(description = "월세", example = "500000", requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0")
 	@NotNull
 	@Min(0)
 	private Integer monthlyRent;
 
+	@Schema(description = "전용면적", example = "300.12", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
+	@Min(0)
 	private BigDecimal exclusiveArea;
 
+	@Schema(description = "공급면적", example = "400.50", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
+	@Min(0)
 	private BigDecimal supplyArea;
 
+	@Schema(description = "세대수", example = "80", minimum = "0")
 	@Min(0)
 	private Integer totalUnits;
 
+	@Schema(description = "층수(문자열)", example = "5층/반지하", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotBlank
 	private String floor;
 
+	@Schema(description = "최고 층수", example = "20", requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0")
 	@NotNull
 	@Min(0)
 	private Integer maxFloor;
 
+	@Schema(description = "주차 가능 대수", example = "100", requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0")
 	@NotNull
 	@Min(0)
 	private Integer parkingSpaces;
 
+	@Schema(description = "입주 가능일", example = "2025-04-01", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
 	private LocalDate availableFrom;
 
+	@Schema(description = "사용 승인일", example = "2024-12-31", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
 	private LocalDate permissionDate;
 
+	@Schema(description = "간단한 매물 설명", example = "역세권, 풀옵션")
 	private String simpleDescription;
 
+	@Schema(description = "매물 상세 설명", example = "지하철 5분 거리, 1층 편의점 연결이 가능하고 SSAFY 가기가 편합니다.")
 	private String description;
 
+	@Schema(description = "관리비", example = "50000", requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0")
 	@NotNull
 	@Min(0)
 	private Integer maintenanceCost;
 
+	@Schema(description = "방 개수", example = "1", requiredMode = Schema.RequiredMode.REQUIRED, minimum = "1")
 	@NotNull
 	@Min(1)
 	private Integer roomCnt;
 
+	@Schema(description = "화장실 개수", example = "1", requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0")
 	@NotNull
 	@Min(0)
 	private Integer bathroomCnt;
 
+	@Schema(description = "방 향", example = "SOUTH", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
 	private RoomDirection direction;
 
+	@Schema(description = "협의 가능 여부", example = "true")
 	private Boolean discussable;
 
+	@Schema(description = "협의 상세 정보", example = "보증금 조정 가능")
 	@NotNull
 	private String discussDetail;
 
+	@Schema(description = "리뷰 작성 가능 여부", example = "true", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
 	private Boolean reviewable;
 
+	@Schema(description = "전화번호 공개 여부", example = "false", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
 	private Boolean isPhonePublic;
 
+	@Schema(description = "관리비 포함 항목 리스트", example = "[\"INTERNET\", \"GAS\"]")
 	private List<MaintenanceIncludeName> maintenanceIncludes;
 
+	@Schema(description = "매물 옵션 리스트", example = "[\"BED\", \"AIR_CONDITIONER\"]")
 	private List<RoomOption> options;
 
+	@Schema(description = "매물 이미지 파일 리스트(최소 3개 이상 등록)", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
 	@Size(min = 3, message = "이미지는 최소 3개 이상 등록해야 합니다.")
-	private List<MultipartFile> images; // image 엔티티
+	private List<MultipartFile> images;
 }

@@ -22,8 +22,8 @@ import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
 import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
 import com.bangjwo.room.application.dto.response.RoomSummaryResponse;
+import com.bangjwo.room.application.dto.response.SearchDetailRoomResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
-import com.bangjwo.room.application.dto.response.SearchRoomResponseDto;
 import com.bangjwo.room.domain.entity.Image;
 import com.bangjwo.room.domain.entity.Likes;
 import com.bangjwo.room.domain.entity.Room;
@@ -83,7 +83,7 @@ public class RoomService {
 	}
 
 	@Transactional(readOnly = true)
-	public SearchRoomResponseDto searchRoomDetail(Long roomId, Long memberId) {
+	public SearchDetailRoomResponseDto searchRoomDetail(Long roomId, Long memberId) {
 		var room = findRoom(roomId);
 		var address = addressService.findByRoom(room);
 		var options = optionService.findByRoom(room);
@@ -204,6 +204,7 @@ public class RoomService {
 			.map(room -> {
 				boolean liked = likeMap.getOrDefault(room.getRoomId(), false);
 				String imageUrl = imageMap.getOrDefault(room.getRoomId(), null);
+				
 				return RoomConverter.convertToRoomSummary(room, liked, imageUrl);
 			})
 			.toList();
