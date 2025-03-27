@@ -1,56 +1,81 @@
-package com.bangjwo.room.application.dto.request;
+package com.bangjwo.room.application.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.bangjwo.room.domain.vo.MaintenanceIncludeName;
+import com.bangjwo.room.domain.vo.RoomBuildingType;
 import com.bangjwo.room.domain.vo.RoomDirection;
 import com.bangjwo.room.domain.vo.RoomOption;
+import com.bangjwo.room.domain.vo.RoomStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
-@Schema(description = "매물 정보 수정 요청 DTO")
-public class UpdateRoomRequestDto {
+@Builder
+@AllArgsConstructor
+@Schema(description = "매물 상세 조회 응답 DTO")
+public class SearchDetailRoomResponseDto {
 
-	@Schema(description = "회원 ID (이후 토큰 처리로 대체 예정)", example = "1001")
+	@Schema(description = "매물(Room) ID", example = "101")
+	private Long roomId;
+
+	@Schema(description = "매물 등록자(회원) ID", example = "1001")
 	private Long memberId;
 
-	@Schema(description = "보증금", example = "10000000", minimum = "0")
+	@Schema(description = "좋아요 여부", example = "false")
+	private Boolean isLiked;
+
+	@Schema(description = "매물 상태", example = "ACTIVE")
+	private RoomStatus roomStatus;
+
+	@Schema(description = "건물 유형", example = "APARTMENT")
+	private RoomBuildingType buildingType;
+
+	@Schema(description = "부동산 고유 번호", example = "1146-1996-006588")
+	private String realEstateId;
+
+	@Schema(description = "우편번호", example = "06220")
+	private String postalCode;
+
+	@Schema(description = "주소 명", example = "서울특별시 강남구 테헤란로 212 (역삼동)")
+	private String address;
+
+	@Schema(description = "상세 주소", example = "101동 202호")
+	private String addressDetail;
+
+	@Schema(description = "위도(위치정보)", example = "37.5665")
+	private BigDecimal lat;
+
+	@Schema(description = "경도(위치정보)", example = "126.9780")
+	private BigDecimal lng;
+
+	@Schema(description = "보증금", example = "10000000")
 	private Integer deposit;
 
-	@Schema(description = "월세", example = "500000", minimum = "0")
-	@Min(0)
+	@Schema(description = "월세", example = "500000")
 	private Integer monthlyRent;
 
 	@Schema(description = "전용면적", example = "300.12")
-	@Min(0)
 	private BigDecimal exclusiveArea;
 
 	@Schema(description = "공급면적", example = "400.50")
-	@Min(0)
 	private BigDecimal supplyArea;
 
-	@Schema(description = "세대수", example = "80", minimum = "0")
-	@Min(0)
+	@Schema(description = "세대수", example = "80")
 	private Integer totalUnits;
 
 	@Schema(description = "층수(문자열)", example = "5층 or 반지하 or 지하1층")
 	private String floor;
 
-	@Schema(description = "최고 층수", example = "20", minimum = "0")
-	@Min(0)
+	@Schema(description = "최고 층수", example = "20")
 	private Integer maxFloor;
 
-	@Schema(description = "주차 가능 대수", example = "100", minimum = "0")
-	@Min(0)
+	@Schema(description = "주차 가능 대수", example = "100")
 	private Integer parkingSpaces;
 
 	@Schema(description = "입주 가능일", example = "2025-04-01")
@@ -65,13 +90,13 @@ public class UpdateRoomRequestDto {
 	@Schema(description = "매물 상세 설명", example = "지하철 5분 거리, 1층 편의점 연결이 가능하고 SSAFY 가기가 편합니다.")
 	private String description;
 
-	@Schema(description = "관리비", example = "50000", minimum = "0")
+	@Schema(description = "관리비", example = "50000")
 	private Integer maintenanceCost;
 
-	@Schema(description = "방 개수", example = "1", minimum = "1")
+	@Schema(description = "방 개수", example = "1")
 	private Integer roomCnt;
 
-	@Schema(description = "화장실 개수", example = "1", minimum = "0")
+	@Schema(description = "화장실 개수", example = "1")
 	private Integer bathroomCnt;
 
 	@Schema(description = "방 향", example = "SOUTH")
@@ -95,9 +120,6 @@ public class UpdateRoomRequestDto {
 	@Schema(description = "매물 옵션 리스트", example = "[\"BED\", \"AIR_CONDITIONER\"]")
 	private List<RoomOption> options;
 
-	@Schema(description = "매물 이미지 파일 리스트(최소 3개 이상 등록)", example = "[File1, File2, File3]")
-	private List<MultipartFile> images;
-
-	@Schema(description = "삭제할 매물 이미지 ID 리스트", example = "[1, 2]")
-	private List<Long> deleteImageIds;
+	@Schema(description = "매물 이미지 리스트")
+	private List<ImageResponseDto> images;
 }

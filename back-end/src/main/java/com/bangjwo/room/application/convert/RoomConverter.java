@@ -8,8 +8,8 @@ import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.response.ImageResponseDto;
 import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomSummaryResponse;
+import com.bangjwo.room.application.dto.response.SearchDetailRoomResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
-import com.bangjwo.room.application.dto.response.SearchRoomResponseDto;
 import com.bangjwo.room.domain.entity.Address;
 import com.bangjwo.room.domain.entity.Image;
 import com.bangjwo.room.domain.entity.Likes;
@@ -58,7 +58,7 @@ public class RoomConverter {
 			.build();
 	}
 
-	public static SearchRoomResponseDto convert(Room room,
+	public static SearchDetailRoomResponseDto convert(Room room,
 		Boolean isLiked,
 		Address address,
 		List<Options> options,
@@ -80,7 +80,7 @@ public class RoomConverter {
 				.build())
 			.collect(Collectors.toList());
 
-		return SearchRoomResponseDto.builder()
+		return SearchDetailRoomResponseDto.builder()
 			.roomId(room.getRoomId())
 			.memberId(room.getMemberId())
 			.isLiked(isLiked)
@@ -121,9 +121,9 @@ public class RoomConverter {
 			.build();
 	}
 
-	public static Memo convert(Long roomId, UpdateRoomMemoRequestDto requestDto) {
+	public static Memo convert(Room room, UpdateRoomMemoRequestDto requestDto) {
 		return Memo.builder()
-			.roomId(roomId)
+			.room(room)
 			.memberId(requestDto.getMemberId())
 			.content(requestDto.getContent())
 			.build();
@@ -131,14 +131,14 @@ public class RoomConverter {
 
 	public static SearchRoomMemoResponseDto convert(Memo memo) {
 		return SearchRoomMemoResponseDto.builder()
-			.roomId(memo.getRoomId())
+			.roomId(memo.getRoom().getRoomId())
 			.content(memo.getContent())
 			.build();
 	}
 
-	public static Likes convertLike(Long roomId, Long memberId) {
+	public static Likes convertLike(Room room, Long memberId) {
 		return Likes.builder()
-			.roomId(roomId)
+			.room(room)
 			.memberId(memberId)
 			.flag(true)
 			.build();
@@ -146,7 +146,7 @@ public class RoomConverter {
 
 	public static IsRoomLikedResponseDto convert(Likes roomLike) {
 		return IsRoomLikedResponseDto.builder()
-			.roomId(roomLike.getRoomId())
+			.roomId(roomLike.getRoom().getRoomId())
 			.isLiked(roomLike.getFlag())
 			.build();
 	}

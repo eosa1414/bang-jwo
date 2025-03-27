@@ -66,7 +66,10 @@ CREATE TABLE IF NOT EXISTS `LANDLORD_INFO` (
     `facilities_repair_content`		VARCHAR(255)	NULL,
     `landlord_burden`				VARCHAR(255)	NULL,
     `tenant_burden`					VARCHAR(255)	NULL,
-    `landlord_signature_url`		VARCHAR(255)	NULL
+    `landlord_signature_url_1`		VARCHAR(255)	NULL,
+    `landlord_signature_url_2`		VARCHAR(255)	NULL,
+    `landlord_signature_url_3`		VARCHAR(255)	NULL,
+    `landlord_signature_url_4`		VARCHAR(255)	NULL
 );
 
 CREATE TABLE IF NOT EXISTS `CONTRACT` (

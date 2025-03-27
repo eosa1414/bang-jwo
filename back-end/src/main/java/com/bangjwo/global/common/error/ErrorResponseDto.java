@@ -1,26 +1,34 @@
 package com.bangjwo.global.common.error;
 
-import lombok.Data;
-import org.springframework.http.ResponseEntity;
-
 import java.time.LocalDateTime;
 
+import org.springframework.http.ResponseEntity;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
 @Data
+@Schema(description = "공통 에러 응답 DTO")
 public class ErrorResponseDto {
-    private String code;
-    private String message;
-    private final LocalDateTime serverDateTime;
+	@Schema(description = "서버 에러코드")
+	private String code;
 
-    public ErrorResponseDto(ErrorCode errorCode) {
-        this.code = errorCode.getCode();
-        this.message = errorCode.getMessage();
-        this.serverDateTime = LocalDateTime.now();
-    }
+	@Schema(description = "에러 메시지")
+	private String message;
 
-    public static ResponseEntity<ErrorResponseDto> of(ErrorCode errorCode) {
+	@Schema(description = "에러 발생 서버 시간")
+	private final LocalDateTime serverDateTime;
 
-        return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(new ErrorResponseDto(errorCode));
-    }
+	public ErrorResponseDto(ErrorCode errorCode) {
+		this.code = errorCode.getCode();
+		this.message = errorCode.getMessage();
+		this.serverDateTime = LocalDateTime.now();
+	}
+
+	public static ResponseEntity<ErrorResponseDto> of(ErrorCode errorCode) {
+
+		return ResponseEntity
+			.status(errorCode.getHttpStatus())
+			.body(new ErrorResponseDto(errorCode));
+	}
 }
