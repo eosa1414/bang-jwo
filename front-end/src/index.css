@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gold: #f5c400;
+  --color-gold-dark: #e2a600;
+  --color-gold-light: #ffda45;
+
+  --color-real-white: #ffffff;
+  --color-neutral-white: #fefdfc;
+
+  --color-neutral-black: #0b0b0c;
+  --color-neutral-dark200: #535257;
+  --color-neutral-dark100: #6c6c6d;
+  --color-neutral-gray: #b4b3ba;
+  --color-neutral-light100: #ecebed;
+  --color-neutral-light200: #f3f2f2;
+  --color-neutral-light300: #fcfcfe;
+
+  --color-coral-red: #ff5e5e;
+  --color-avocado: #568203;
+  --color-pistachio: #84b067;
+}
+
+.shadow-custom {
+  @apply shadow-[0_0_12px_0_rgba(0,0,0,0.25)];
+}
+
+.scroll-custom::-webkit-scrollbar {
+  width: 8px;
+}
+.scroll-custom::-webkit-scrollbar-thumb {
+  background-color: var(--color-neutral-gray);
+  border-radius: 10px;
+}
+.scroll-custom::-webkit-scrollbar-track {
+  background-color: var(--color-real-white);
+}
+
+.scroll-custom::-webkit-scrollbar-button:vertical:end:increment {
+  display: block;
+  height: 10px;
+}
+.scroll-custom::-webkit-scrollbar-button:vertical:start:decrement {
+  display: block;
+  height: 10px;
+}
+
+/*구글 머티리얼 아이콘 사이즈 커스텀*/
+.material-symbols-rounded.text-base {
+  @apply text-base;
+}
+.material-symbols-rounded.font-bold {
+  @apply font-bold;
+}
+
+:root {
+  font-family: Pretendard Variable, system-ui, Avenir, Helvetica, Arial,
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(0, 0, 0, 0.87);
+  background-color: #ffffff;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+}
