@@ -29,11 +29,21 @@ spring:
           auto: create
         default_batch_fetch_size: 1000
 
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST}
+      port: ${SPRING_DATA_REDIS_PORT}
 
-kakao:
-  rest:
-    api:
-      key: ${KAKAO_REST_API_KEY}
+    mongodb:
+      uri: mongodb://${MONGO_INITDB_ROOT_USERNAME:bangjwo}:${MONGO_INITDB_ROOT_PASSWORD:1234}@localhost:27017/admin
+
+  kakao:
+    rest:
+      api:
+        key: ${KAKAO_REST_API_KEY}
+
+  main:
+    allow-bean-definition-overriding: true
 
 aws:
   access:
@@ -43,3 +53,5 @@ aws:
   s3:
     bucket: "bangjwo-s3"
   region: "ap-northeast-2"
+
+
