@@ -4,7 +4,8 @@ import FooterDefault from "../components/footers/FooterDefault";
 
 interface LayoutMainProps {
   children: ReactNode;
-  mainClassName?: string; //main 추가 스타일
+  wrapperClassName?: string;
+  mainClassName?: string;
   hasFooter?: boolean;
 }
 
