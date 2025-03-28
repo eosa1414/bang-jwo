@@ -1,4 +1,3 @@
-import React from "react";
 import ContractNotice from "../components/notices/ContractNotice";
 
 const TestPage = () => {
