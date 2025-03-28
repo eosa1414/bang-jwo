@@ -40,7 +40,7 @@ public class RoomService {
 	private final AddressService addressService;
 	private final OptionService optionService;
 	private final MaintenanceIncludeService maintenanceIncludeService;
-	private final ImageService imageService;
+	private final RoomImageService imageService;
 	private final LikeService likeService;
 	private final MemoService memoService;
 
@@ -204,7 +204,7 @@ public class RoomService {
 			.map(room -> {
 				boolean liked = likeMap.getOrDefault(room.getRoomId(), false);
 				String imageUrl = imageMap.getOrDefault(room.getRoomId(), null);
-				
+
 				return RoomConverter.convertToRoomSummary(room, liked, imageUrl);
 			})
 			.toList();

@@ -16,6 +16,8 @@ public enum GlobalErrorCodes implements ErrorCode {
 
 	INVALID_HEADER_DATA(HttpStatus.BAD_REQUEST, "COMMON4004", "잘못된 형식의 Header data"),
 
+	FAIL_IMAGE_UPLOAD(HttpStatus.SERVICE_UNAVAILABLE, "COMMON4005", "이미지 업로드 및 저장에 실패하였습니다."),
+
 	INTERNAL_SERVER_ERROR(HttpStatus.BAD_REQUEST, "COMMON5001", "내부 서버 오류"),
 	;
 
