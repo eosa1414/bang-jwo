@@ -19,11 +19,11 @@ const Header = ({ title }: HeaderProps) => {
     setIsLoggedIn(false);
   };
 
-  // 모바일 가로일 때 메뉴 동작
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+  // 모바일 가로일 때 메뉴 동작 - 차후 추가
+  // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // const toggleMobileMenu = () => {
+  //   setIsMobileMenuOpen(!isMobileMenuOpen);
+  // };
 
   return (
     <header className="flex w-full h-[55px] p-[12px_14px] justify-center items-center gap-[16px] border-b-1 border-neutral-light100">

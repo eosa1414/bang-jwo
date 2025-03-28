@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getRooms } from "../../services/roomService";
+// import { useQuery } from "@tanstack/react-query";
+// import { getRooms } from "../../services/roomService";
 import {
-  RoomQueryParams,
+  // RoomQueryParams,
   RoomResponse,
-  defaultParams,
+  // defaultParams,
   Room,
 } from "../../types/roomTypes";
 import SideBar from "./SideBar";
@@ -16,7 +16,7 @@ import FilterPannel from "../../components/FilterPannel";
 import RoomDetail from "./RoomDetail";
 
 const RoomFind = () => {
-  const [params, setParams] = useState<RoomQueryParams>(defaultParams);
+  // const [params, setParams] = useState<RoomQueryParams>(defaultParams);
   const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
 
   // 더미 데이터

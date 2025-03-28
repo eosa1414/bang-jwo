@@ -7,7 +7,7 @@ const FilterBar = ({ selectedFilters, onClick }: FilterBarProps) => {
   return (
     <div className="flex w-full text-sm cursor-pointer" onClick={onClick}>
       <div className="flex items-center flex-grow border-l-1 border-t-1 border-b-1 border-neutral-light100 rounded-l-full p-[0.3125rem_0.625rem] text-neutral-dark200">
-        {selectedFilters?.length > 0
+        {selectedFilters && selectedFilters?.length > 0
           ? selectedFilters?.join(", ")
           : "원하는 방의 조건을 선택해보세요"}
       </div>
