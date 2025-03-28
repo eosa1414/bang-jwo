@@ -6,6 +6,8 @@ import LayoutMain from "./layouts/LayoutMain";
 import Home from "./pages/home/Home";
 import TestPage from "./pages/TestPage";
 import RoomFind from "./pages/room-find/RoomFind";
+import TestButtonPage from "./pages/TestButtonPage";
+import SellerContract from "./features/contract/components/SellerContract";
 
 function App() {
   return (
@@ -39,7 +41,9 @@ function App() {
           path="/mypage"
           element={<LayoutMain>마이페이지 화면</LayoutMain>}
         />
-        <Route path='/test' element={<TestPage />} />
+        <Route path="/test" element={<TestPage />} />
+        <Route path="/test/button" element={<TestButtonPage />} />
+        <Route path="/seller-contract" element={<SellerContract />} />
       </Routes>
     </BrowserRouter>
   );
