@@ -9,6 +9,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Service;
 
@@ -64,5 +65,16 @@ public class RSAService {
 		PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decodedKey);
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		return keyFactory.generatePrivate(spec);
+	}
+
+	public String encryptAesKey(SecretKey aesKey) {
+		String aesKeyString = Base64.getEncoder().encodeToString(aesKey.getEncoded());
+		return encrypt(aesKeyString);
+	}
+
+	public SecretKey decryptAesKey(String encryptedAesKey) {
+		String decryptedAesKey = decrypt(encryptedAesKey);
+		byte[] decryptedAesKeyBytes = Base64.getDecoder().decode(decryptedAesKey);
+		return new javax.crypto.spec.SecretKeySpec(decryptedAesKeyBytes, "AES");
 	}
 }
