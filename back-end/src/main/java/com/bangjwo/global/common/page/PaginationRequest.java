@@ -12,4 +12,10 @@ public class PaginationRequest {
 
 		return PageRequest.of(currentPage - 1, pageSize);
 	}
+
+	public static Pageable toPageable(Integer page) {
+		int currentPage = (page == null || page < 1) ? 1 : page;
+		
+		return PageRequest.of(currentPage - 1, DEFAULT_SIZE);
+	}
 }

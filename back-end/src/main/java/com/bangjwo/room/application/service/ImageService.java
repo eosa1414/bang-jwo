@@ -101,7 +101,7 @@ public class ImageService {
 	}
 
 	@Transactional(readOnly = true)
-	public Image findMainImageByRoom(Room room) {
-		return imageRepository.findFirstByRoomOrderByRoomDesc(room);
+	public List<Image> getMainImages(List<Long> roomIds) {
+		return imageRepository.findMainImagesByRoomIds(roomIds);
 	}
 }
