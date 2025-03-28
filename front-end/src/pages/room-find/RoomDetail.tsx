@@ -15,6 +15,8 @@ interface RoomDetailProps {
 
 const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   const [isHeaderColorChange, setIsHeaderColorChange] = useState(false);
+  const [isTitleScrolled, setIsTitleScrolled] = useState(false);
+
   const scrollRef = useRef<HTMLDivElement | null[]>([]);
   const boxRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
@@ -37,6 +39,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
     const boxElement = boxRef.current;
     const headerElement = headerRef.current;
     const textStartElement = textStartRef.current;
+    const titleElement = titleRef.current;
 
     const handleScroll = () => {
       if (headerElement && textStartElement) {
@@ -48,6 +51,18 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
           setIsHeaderColorChange(true);
         } else {
           setIsHeaderColorChange(false);
+        }
+      }
+
+      if (headerElement && titleElement) {
+        const headerRect = headerElement.getBoundingClientRect();
+        const titleRect = titleElement.getBoundingClientRect();
+
+        //title이 scroll로 가려지면 header에 title 등장
+        if (titleRect.top <= headerRect.bottom) {
+          setIsTitleScrolled(true);
+        } else {
+          setIsTitleScrolled(false);
         }
       }
     };
@@ -82,13 +97,16 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
               {/* box header */}
               <div
                 ref={headerRef}
-                className={`absolute z-1 w-full flex justify-between p-[12px_14px] h-[48px] transition-colors duration-300 ${
+                className={`absolute z-1 w-full flex justify-between items-center p-[12px_14px] h-[48px] transition-colors duration-300 ${
                   isHeaderColorChange
                     ? "bg-real-white text-neutral-black"
                     : "text-neutral-white"
                 }`}
               >
                 <i className="material-symbols-rounded">arrow_back_ios</i>
+                {isTitleScrolled && (
+                  <span className="font-bold">월세 500/40</span>
+                )}
                 <i
                   className="material-symbols-rounded cursor-pointer"
                   onClick={onClose}
@@ -156,7 +174,10 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                     </div>
                   </Accordion>
 
-                  <div className="flex flex-wrap gap-2 items-center">
+                  <div
+                    ref={titleRef}
+                    className="flex flex-wrap gap-2 items-center"
+                  >
                     <span className="font-semibold text-xl">월세 500/40</span>
                     <span className="font-light text-neutral-dark100">
                       아파트
