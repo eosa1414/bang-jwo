@@ -13,9 +13,11 @@ import KakaoMap from "../../components/KakaoMap";
 import SearchBar from "../../components/SearchBar";
 import InfoText from "../../components/InfoText";
 import FilterPannel from "../../components/FilterPannel";
+import RoomDetail from "./RoomDetail";
 
 const RoomFind = () => {
   const [params, setParams] = useState<RoomQueryParams>(defaultParams);
+  const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
 
   // 더미 데이터
   const dummyRooms: Room[] = [
@@ -130,7 +132,7 @@ const RoomFind = () => {
       <SideBar />
 
       {/* pannel */}
-      <div className="flex flex-col items-center bg-real-white relative w-[340px] border-r-1 border-neutral-light100">
+      <div className="flex flex-col items-center bg-real-white relative w-[340px] border-r-1 border-neutral-light100 z-2">
         <div className="flex flex-col w-full h-full overflow-hidden">
           <FilterPannel
             childrenTop={<SearchBar />}
@@ -140,13 +142,15 @@ const RoomFind = () => {
           <ListRoom
             listClassName="flex-1 overflow-y-auto"
             rooms={data?.data || []}
+            onSelectRoom={(roomId) => setSelectedRoomId(roomId)}
           />
         </div>
 
         {/* modal */}
-        <div className="absolute z-2 w-[320px] h-full left-[340px] top-0 bottom-0 p-[10px]">
-          <div className="bg-real-white w-full h-full rounded-xl shadow-custom"></div>
-        </div>
+        <RoomDetail
+          selectedRoomId={selectedRoomId}
+          onClose={() => setSelectedRoomId(null)}
+        />
       </div>
 
       {/* map */}

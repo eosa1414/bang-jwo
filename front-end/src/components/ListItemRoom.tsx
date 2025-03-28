@@ -2,13 +2,21 @@ import { Room, defaultRoom } from "../types/roomTypes";
 
 interface ListItemRoomProps {
   room: Room;
+  onSelectRoom: (roomId: number) => void;
 }
 
-const ListItemRoom = ({ room }: ListItemRoomProps) => {
+const ListItemRoom = ({ room, onSelectRoom }: ListItemRoomProps) => {
   const roomData = room || defaultRoom;
 
+  const handleClick = () => {
+    onSelectRoom(roomData.roomId);
+  };
+
   return (
-    <div className="flex p-[12px] gap-[12px] border-b-1 border-neutral-light100">
+    <div
+      className="flex p-[12px] gap-[12px] border-b-1 border-neutral-light100 cursor-pointer bg-real-white"
+      onClick={handleClick}
+    >
       {/* left side */}
       <div className="bg-neutral-light100 w-[8.2rem] h-[8.8rem] rounded-md overflow-hidden relative">
         {/* 이미지가 있다면 <img> 노출 */}
