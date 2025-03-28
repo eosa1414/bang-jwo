@@ -17,7 +17,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   const [isHeaderColorChange, setIsHeaderColorChange] = useState(false);
   const [isTitleScrolled, setIsTitleScrolled] = useState(false);
 
-  const scrollRef = useRef<HTMLDivElement | null[]>([]);
+  // const scrollRef = useRef<HTMLDivElement | null[]>([]);
   const boxRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
@@ -233,7 +233,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
               {/* Detail */}
               <TabMenu
-                scrollRef={scrollRef}
+                // scrollRef={scrollRef}
                 AddClassName="sticky top-[48px] p-[0.875rem_1rem]"
               />
 
