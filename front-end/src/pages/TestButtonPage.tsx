@@ -8,19 +8,17 @@ function TestButtonPage() {
     setClicked((prev) => !prev);
   };
 
-  const buttonVariants = [
-    "default",
-    "dark",
-    "warning",
-    "neutral",
-    "point",
-    "gold",
-    "opaque",
-  ];
+  const buttonVariants: Array<
+    "default" | "dark" | "warning" | "neutral" | "point" | "gold" | "opaque"
+  > = ["default", "dark", "warning", "neutral", "point", "gold", "opaque"];
 
-  const buttonSizes = ["small", "basic", "medium"];
+  const buttonSizes = ["small", "basic", "medium"] as const;
 
-  const renderButtons = (size, isAngular = false, isLine = false) => {
+  const renderButtons = (
+    size: "small" | "basic" | "medium",
+    isAngular = false,
+    isLine = false
+  ) => {
     return buttonVariants.map((variant) => (
       <Button
         key={`${size}-${variant}`}
@@ -78,21 +76,11 @@ function TestButtonPage() {
           </>
         ))}
 
-        <Button
-          size="basic"
-          bgColor="neutral-dark200"
-          textColor="neutral-white"
-          disabled
-        >
+        <Button size="basic" variant="dark" disabled>
           비활성화
         </Button>
 
-        <Button
-          onClick={handleClick}
-          size="medium"
-          bgColor="gold-light"
-          textColor="neutral-black"
-        >
+        <Button onClick={handleClick} size="medium" variant="point">
           확인
         </Button>
 

@@ -89,11 +89,6 @@ const FilterPannel = ({ childrenTop, childrenBottom }: FilterPannelProps) => {
                       ? "selected"
                       : "default"
                   }
-                  isSelected={
-                    filter === "전체"
-                      ? isAllSelected
-                      : selectedFilters.includes(filter)
-                  }
                   onClick={() => handleSelectedFilters(filter)}
                 />
               ))}

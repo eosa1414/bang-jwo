@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 const SearchBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -7,7 +7,7 @@ const SearchBar = () => {
     console.log("검색창 입력 내용:", searchQuery); //임시 console, 차후 기능 구현
   };
 
-  const onChange = (e) => {
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
@@ -26,7 +26,7 @@ const SearchBar = () => {
         className="flex rounded-full justify-center items-center text-neutral-black bg-transparent cursor-pointer"
         onClick={search}
       >
-        <i class="material-symbols-rounded">search</i>
+        <i className="material-symbols-rounded">search</i>
       </div>
     </div>
   );
