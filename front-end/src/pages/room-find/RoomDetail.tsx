@@ -325,7 +325,15 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                 </TabContent>
               </div>
               {/* box footer */}
-              <div className="w-full h-[48px] bg-gold bottom-[0px] absolute"></div>
+              <div className="flex w-full h-[48px] bg-gold-light justify-around items-center bottom-[0px] absolute py-[0.875rem] text-base font-semibold">
+                <div className="flex-grow text-center">
+                  <p className="cursor-pointer">전화</p>
+                </div>
+                <span className="separator"></span>
+                <div className="flex-grow text-center">
+                  <p className="cursor-pointer">문의하기</p>
+                </div>
+              </div>
             </div>
           </div>
         </motion.div>
