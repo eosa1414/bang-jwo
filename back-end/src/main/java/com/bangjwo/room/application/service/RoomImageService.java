@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class RoomImageService {
+	private final static String IMAGE_PATH = "rooms/";
+
 	private final FileUploaderPort fileUploader;
 	private final RoomImageRepository imageRepository;
 	private final RoomRepository roomRepository;
@@ -33,7 +35,7 @@ public class RoomImageService {
 	public void uploadAndSaveImage(Room room, MultipartFile file) {
 		String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
-		String imageUrl = fileUploader.upload(file, fileName);
+		String imageUrl = fileUploader.upload(file, IMAGE_PATH, fileName);
 
 		Room managedRoom = roomRepository.getReferenceById(room.getRoomId());
 
