@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import com.bangjwo.chat.application.dto.ChatMessageDto;
 import com.bangjwo.chat.domain.entity.ChatMessage;
 
-public interface ChatMessageMongoRepository extends MongoRepository<ChatMessage, String> {
+public interface ChatMongoRepository extends MongoRepository<ChatMessage, String> {
 
 	List<ChatMessageDto> findByChatRoomIdOrderBySendAtAsc(Long chatRoomId);
 }
