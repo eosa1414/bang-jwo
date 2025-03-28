@@ -17,12 +17,20 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   const [isHeaderColorChange, setIsHeaderColorChange] = useState(false);
   const [isTitleScrolled, setIsTitleScrolled] = useState(false);
 
-  // const scrollRef = useRef<HTMLDivElement | null[]>([]);
+  const scrollRef = useRef<HTMLDivElement | null[]>([]);
   const boxRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
   const textStartRef = useRef<HTMLDivElement | null>(null);
 
+  const tabList = [
+    "기본 정보",
+    "관리비",
+    "집 소개",
+    "집 정보",
+    "위치",
+    "등기부등본 · 위험도",
+  ];
   const roomOptions = ["보안/안전", "엘리베이터", "냉장고", "세탁기"];
   const maintenanceOptions = [
     "전기세",
@@ -233,8 +241,9 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
               {/* Detail */}
               <TabMenu
-                // scrollRef={scrollRef}
-                AddClassName="sticky top-[48px] p-[0.875rem_1rem]"
+                tabList={tabList}
+                ref={scrollRef}
+                addClassName="sticky top-[48px] p-[0.875rem_1rem]"
               />
 
               <div className="flex flex-col gap-4 bg-real-white p-[0.875rem_1rem_calc(0.875rem+48px)_1rem]">
