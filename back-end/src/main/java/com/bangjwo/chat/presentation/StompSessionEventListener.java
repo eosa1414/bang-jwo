@@ -25,7 +25,7 @@ public class StompSessionEventListener {
 		String roomId = accessor.getFirstNativeHeader("roomId");
 
 		if (userId != null && roomId != null) {
-			tracker.connect(Long.valueOf(roomId), Long.valueOf(userId));
+			tracker.roomConnect(Long.valueOf(roomId), Long.valueOf(userId));
 			log.info("✅ 연결됨: {} in {}", userId, roomId);
 		}
 	}
@@ -37,7 +37,7 @@ public class StompSessionEventListener {
 		String roomId = accessor.getFirstNativeHeader("roomId");
 
 		if (userId != null && roomId != null) {
-			tracker.disconnect(Long.valueOf(roomId), Long.valueOf(userId));
+			tracker.roomDisconnect(Long.valueOf(roomId), Long.valueOf(userId));
 			log.info("❌ 연결 해제: {} from {}", userId, roomId);
 		}
 	}
