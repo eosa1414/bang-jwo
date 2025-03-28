@@ -107,6 +107,8 @@ services:
       AWS_SECRET_KEY: "${AWS_SECRET_KEY}"
       AWS_REGION: "${AWS_REGION}"
       KAKAO_REST_API_KEY: "${KAKAO_REST_API_KEY}"
+      PINATA_API_KEY: "${PINATA_API_KEY}"
+      PINATA_SECRET_KEY: "${PINATA_SECRET_KEY}"
     networks:
       - bangjwo-network
 
