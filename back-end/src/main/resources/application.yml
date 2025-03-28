@@ -37,13 +37,13 @@ spring:
     mongodb:
       uri: mongodb://${MONGO_INITDB_ROOT_USERNAME:bangjwo}:${MONGO_INITDB_ROOT_PASSWORD:1234}@localhost:27017/admin
 
-  kakao:
-    rest:
-      api:
-        key: ${KAKAO_REST_API_KEY}
-
   main:
     allow-bean-definition-overriding: true
+
+kakao:
+  rest:
+    api:
+      key: ${KAKAO_REST_API_KEY}
 
 aws:
   access:

@@ -2,8 +2,6 @@ package com.bangjwo.room.domain.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.bangjwo.global.common.entity.BaseEntity;
 import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
@@ -11,7 +9,6 @@ import com.bangjwo.room.domain.vo.RoomBuildingType;
 import com.bangjwo.room.domain.vo.RoomDirection;
 import com.bangjwo.room.domain.vo.RoomStatus;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,7 +16,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,9 +29,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@Table(name = "ROOM")
+@Table(name = "ROOM", indexes = {
+	@Index(name = "idx_member_id", columnList = "memberId"),
+	@Index(name = "idx_status", columnList = "status")
+})
 public class Room extends BaseEntity {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long roomId;
@@ -119,34 +118,8 @@ public class Room extends BaseEntity {
 
 	@Column(nullable = false)
 	private Boolean isPhonePublic;
-
-	// 해당 자식 테이블에 대해 일단 이후에 성능 측정 후 변경 결정 예정
-	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-	@Builder.Default
-	private List<MaintenanceInclude> maintenanceIncludes = new ArrayList<>();
-
-	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-	@Builder.Default
-	private List<Options> roomOptions = new ArrayList<>();
-
-	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-	@Builder.Default
-	private List<Image> images = new ArrayList<>();
-
-	public void addMaintenanceInclude(MaintenanceInclude include) {
-		this.maintenanceIncludes.add(include);
-		include.setRoom(this);
-	}
-
-	public void addRoomOption(Options option) {
-		this.roomOptions.add(option);
-		option.setRoom(this);
-	}
-
-	public void addRoomImage(Image image) {
-		this.images.add(image);
-		image.setRoom(this);
-	}
+	
+	// 양방향에 대해서는 일단 이후에 성능 측정 후 수정 여부 결정 예정
 
 	/**
 	 * PATCH 형태 업데이트 전용 메서드

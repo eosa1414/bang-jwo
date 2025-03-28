@@ -106,6 +106,7 @@ services:
       AWS_ACCESS_KEY: "${AWS_ACCESS_KEY}"
       AWS_SECRET_KEY: "${AWS_SECRET_KEY}"
       AWS_REGION: "${AWS_REGION}"
+      KAKAO_REST_API_KEY: "${KAKAO_REST_API_KEY}"
     networks:
       - bangjwo-network
 
