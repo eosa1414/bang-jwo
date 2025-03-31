@@ -59,50 +59,35 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
     const tabMenuElement = document.querySelector(".sticky") as HTMLElement;
     if (tabMenuElement) {
       setTabMenuHeight(tabMenuElement.offsetHeight);
-      console.log("높이" + tabMenuHeight);
     }
   });
 
   useEffect(() => {
     const boxElement = boxRef.current;
-    const headerElement = headerRef.current;
+    const headerRect = headerRef.current?.getBoundingClientRect();
     const textStartElement = textStartRef.current;
     const titleElement = titleRef.current;
 
     const handleScroll = () => {
-      if (headerElement && textStartElement) {
-        const headerRect = headerElement.getBoundingClientRect();
+      if (headerRect && textStartElement) {
         const textStartRect = textStartElement.getBoundingClientRect();
 
         //헤더 색상 변경
-        if (textStartRect.top <= headerRect.bottom) {
-          setIsHeaderColorChange(true);
-        } else {
-          setIsHeaderColorChange(false);
-        }
+        setIsHeaderColorChange(textStartRect.top <= headerRect.bottom);
       }
 
-      if (headerElement && titleElement) {
-        const headerRect = headerElement.getBoundingClientRect();
+      if (headerRect && titleElement) {
         const titleRect = titleElement.getBoundingClientRect();
 
         //title이 scroll로 가려지면 header에 title 등장
-        if (titleRect.top <= headerRect.bottom) {
-          setIsTitleScrolled(true);
-        } else {
-          setIsTitleScrolled(false);
-        }
+        setIsTitleScrolled(titleRect.top <= headerRect.bottom);
       }
     };
 
-    if (boxElement) {
-      boxElement.addEventListener("scroll", handleScroll);
-    }
+    boxElement?.addEventListener("scroll", handleScroll);
 
     return () => {
-      if (boxElement) {
-        boxElement.removeEventListener("scroll", handleScroll);
-      }
+      boxElement?.removeEventListener("scroll", handleScroll);
     };
   });
 
