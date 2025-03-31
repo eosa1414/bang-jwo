@@ -22,6 +22,7 @@ public class ChatAlert {
 
 	private Long chatRoomId;
 
+	@Indexed
 	private Long receiverId;
 
 	private Long senderId;
