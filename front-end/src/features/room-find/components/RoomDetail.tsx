@@ -7,6 +7,7 @@ import InfoText from "../../../components/InfoText";
 import TabContent from "./TabContent";
 import Button from "../../../components/buttons/Button";
 import RoomOptions from "./RoomOptions";
+import BoxHeader from "./BoxHeader";
 
 interface RoomDetailProps {
   selectedRoomId: number | null;
@@ -122,25 +123,12 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
               className="w-full h-full overflow-y-auto scroll-custom"
             >
               {/* box header */}
-              <div
+              <BoxHeader
                 ref={headerRef}
-                className={`absolute z-1 w-full flex justify-between items-center p-[12px_14px] h-[48px] transition-colors duration-300 ${
-                  isHeaderColorChange
-                    ? "bg-real-white text-neutral-black"
-                    : "text-neutral-white"
-                }`}
-              >
-                <i className="material-symbols-rounded">arrow_back_ios</i>
-                {isTitleScrolled && (
-                  <span className="font-bold">월세 500/40</span>
-                )}
-                <i
-                  className="material-symbols-rounded cursor-pointer"
-                  onClick={onClose}
-                >
-                  close
-                </i>
-              </div>
+                isHeaderColorChange={isHeaderColorChange}
+                isTitleScrolled={isTitleScrolled}
+                onClose={onClose}
+              />
 
               {/* Image */}
               <div className="bg-neutral-light100 w-full h-[13rem] overflow-hidden relative">
