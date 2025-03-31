@@ -10,22 +10,21 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import com.bangjwo.chat.application.dto.ChatAlertDto;
 import com.bangjwo.chat.application.dto.ChatMessageDto;
 import com.bangjwo.chat.application.dto.ChatRoomDto;
+import com.bangjwo.chat.application.dto.ChatRoomSummary;
 import com.bangjwo.chat.application.service.ChatAlertService;
 import com.bangjwo.chat.application.service.ChatMessageService;
 import com.bangjwo.chat.application.service.ChatRoomService;
 import com.bangjwo.chat.application.service.RedisChatRoomService;
 import com.bangjwo.chat.domain.entity.ChatAlert;
-import com.bangjwo.chat.infrastructure.ChatRoomMemoryStore;
 import com.bangjwo.chat.infrastructure.WebSocketSessionTracker;
 
 import lombok.RequiredArgsConstructor;
@@ -44,7 +43,6 @@ public class ChatRoomController {
 	private final SimpMessagingTemplate messagingTemplate;
 	private final WebSocketSessionTracker webSocketSessionTracker;
 	private final RedisTemplate<String, String> redisTemplate;
-	private final ChatRoomMemoryStore chatRoomMemoryStore;
 
 
 	/*
@@ -58,7 +56,7 @@ public class ChatRoomController {
 		/*
 		* 채팅방이 생성되면 Redis에 새로 채팅방 추가.
 		* */
-		redisChatRoomService.createChatRoom(requestDto);
+		redisChatRoomService.createChatRoom(response);
 		/*
 		* 채팅방 생성되면 프론트는 해당 엔드포인트 구독
 		* */
@@ -75,12 +73,8 @@ public class ChatRoomController {
 		@PathVariable("userId") Long userId,
 		@PathVariable("chatRoomId") Long chatRoomId) {
 
-		// 이 로직확인
-		// webSocketSessionTracker.roomConnect(chatRoomId, userId);
-		// log.info("유저({})가 채팅방({})에 입장했습니다.", userId, chatRoomId);
-
-		// 인메모리에 채팅방 정보 저장
-		// chatRoomService.enterRoom(chatRoomId, userId);
+		webSocketSessionTracker.roomConnect(chatRoomId, userId);
+		log.info("유저({})가 채팅방({})에 입장했습니다.", userId, chatRoomId);
 
 		// 몽고 DB에 해당 채팅방 채팅 읽음 처리
 		chatMessageService.markMessagesAsRead(chatRoomId, userId);
@@ -101,9 +95,6 @@ public class ChatRoomController {
 	 * MongoDB에 채팅 내역 저장
 	 * 상대방이 web-socket에 접속해 있다면 그냥 보내기
 	 * web-socket에 접속해 있지 않다면, 알림
-	 *
-	 * roomId, receiverId, senderNickname은 redis에서 꺼내서 사용하게 끔 변경
-	 * ChatMessageDto 수정해야함
 	 * */
 	@MessageMapping("/message")
 	public void sendMessage(ChatMessageDto dto) {
@@ -113,10 +104,11 @@ public class ChatRoomController {
 		Long senderId = dto.senderId();
 
 		// redis에서 꺼내 쓰도록 변경//////////
-		Long roomId = dto.roomId();
-		Long receiverId = chatroomService.getOtherId(chatRoomId, senderId);
-		String senderNickname = dto.senderNickname();
-		/// ///////////////////////////////
+		ChatRoomSummary chatRoom = redisChatRoomService.getChatRoomInfo(senderId, chatRoomId);
+
+		Long receiverId = chatRoom.getOtherId();
+		String senderImage = chatRoom.getProfileImage();
+		log.info("보낸사람: {} , 받는사람: {}", senderId, receiverId);
 
 		// 채팅 상대가 접속중인지 확인
 		boolean isReceiverOnline = webSocketSessionTracker
@@ -124,24 +116,11 @@ public class ChatRoomController {
 
 		log.info(String.valueOf(isReceiverOnline));
 
-		// Todo:
-		// 나중에 redis 꺼내온 데이터로 재작성
-		// reids에서 꺼내는 작업은 서비스에서 진행
-		ChatMessageDto chatdto = ChatMessageDto.builder()
-			.chatRoomId(dto.chatRoomId())
-			.roomId(roomId)
-			.receiverId(receiverId)
-			.senderId(dto.senderId())
-			.senderNickname(senderNickname)
-			.message(dto.message())
-			.sendAt(dto.sendAt())
-			.read(isReceiverOnline).build();
-
 		// Redis에 채팅방 정보 업데이트
-		redisChatRoomService.updateLastMessage(chatdto);
+		redisChatRoomService.updateLastMessages(dto, isReceiverOnline);
 
 		// 몽고 DB 채팅 저장
-		chatMessageService.saveChatMessage(chatdto);
+		chatMessageService.saveChatMessage(dto, isReceiverOnline);
 
 		// 채팅 전송
 		messagingTemplate.convertAndSend(
@@ -153,10 +132,6 @@ public class ChatRoomController {
 		* "/sub/alert/" + userId
 		* */
 		if(!isReceiverOnline) {
-			/// 레디스에서 꺼내쓸 예정///
-			String senderImage = "senderImage";
-			/// ////////////////////
-
 			ChatAlert alert = ChatAlert.builder()
 				.chatRoomId(dto.chatRoomId())
 				.receiverId(dto.receiverId())
@@ -195,7 +170,6 @@ public class ChatRoomController {
 
 	/*
 	* 채팅방 나가기(web-socket 구독 해제)
-	* 둘다 웹소켓 구독을 끊으면 인메모리 데이터(방정보) 삭제
 	* */
 	@PostMapping("/{userId}/leave/{chatRoomId}")
 	public ResponseEntity<String> leaveChatRoom(
@@ -205,23 +179,22 @@ public class ChatRoomController {
 		webSocketSessionTracker.roomDisconnect(chatRoomId, userId);
 		log.info("유저({})가 채팅방({})에서 나갔습니다.", userId, chatRoomId);
 
-		// 아무도 없으면 캐시에서 채팅방 제거
-		// if (!webSocketSessionTracker.isAnyUserOnlineInRoom(roomId)) {
-		// 	chatRoomMemoryStore.evict(roomId);
-		// 	log.info("채팅방({})에 아무도 없어 인메모리에서 제거됨", roomId);
-		// }
-
 		return ResponseEntity.ok("채팅방에서 나갔습니다.");
 	}
 
-	@GetMapping("/{userId}/alert/{chatRoomId}")
+	/*
+	* 알림 가져오기
+	* */
+	@GetMapping("/alert/{userId}")
 	public ResponseEntity<List<ChatAlert>> getAlerts(
-		@PathVariable("userId") Long userId,
-		@PathVariable("chatRoomId") Long chatRoomId
+		@PathVariable("userId") Long userId
 	) {
-		return ResponseEntity.ok().body(chatAlertService.getAlerts(chatRoomId, userId));
+		return ResponseEntity.ok().body(chatAlertService.getAlerts(userId));
 	}
 
+	/*
+	* 알림 읽음 처리
+	* */
 	@PutMapping("/{userId}/alert/{chatRoomId}")
 	public ResponseEntity<String> readAlert(
 		@PathVariable("userId") Long userId,
@@ -230,4 +203,7 @@ public class ChatRoomController {
 		chatAlertService.markAlertAsRead(chatRoomId, userId);
 		return ResponseEntity.ok().body("읽음 처리");
 	}
+
+
+
 }
