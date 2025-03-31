@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.bangjwo.register.application.dto.RegistryHyphenDto;
-import com.bangjwo.register.application.dto.response.RegistryResponseDto;
 import com.bangjwo.register.application.dto.response.RegistrySummaryDto;
 import com.bangjwo.register.domain.entity.RegistryDocument;
 
@@ -162,15 +161,6 @@ public class RegistryConverter {
 				.ownerAndDetails(o.getOwnerAndDetails())
 				.build()
 		).collect(Collectors.toList());
-	}
-
-	/**
-	 * RegistryDocument 엔티티를 RegistryResponseDto로 변환합니다.
-	 */
-	public static RegistryResponseDto convert(RegistryDocument document) {
-		return RegistryResponseDto.builder()
-			.registryDocument(document)
-			.build();
 	}
 
 	/**

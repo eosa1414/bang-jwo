@@ -12,7 +12,6 @@ import com.bangjwo.global.common.page.PaginationRequest;
 import com.bangjwo.register.application.convert.RegistryConverter;
 import com.bangjwo.register.application.dto.RegistryHyphenDto;
 import com.bangjwo.register.application.dto.request.RegistryRequestDto;
-import com.bangjwo.register.application.dto.response.RegistryResponseDto;
 import com.bangjwo.register.application.dto.response.RegistrySummaryDto;
 import com.bangjwo.register.domain.entity.RegistryDocument;
 import com.bangjwo.register.domain.repository.RegistryDocumentRepository;
@@ -37,7 +36,7 @@ public class RegistryService {
 	 * @param request 등기부 등록 요청 DTO (결제ID, 회원ID, 매물ID, JSON URL, PDF URL 포함)
 	 * @return 변환된 RegistryResponseDto
 	 */
-	public RegistryResponseDto parseAndSave(RegistryRequestDto request) {
+	public void parseAndSave(RegistryRequestDto request) {
 		// S3 JSON URL을 올바른 키로 변환
 		String jsonKey = request.getJsonUrl();
 		if (!jsonKey.startsWith(JSON_FOLDER)) {
@@ -47,8 +46,7 @@ public class RegistryService {
 
 		// 변환 로직을 RegistryConverter로 위임
 		RegistryDocument doc = RegistryConverter.convertToEntity(dto, request);
-		RegistryDocument saved = registryRepo.save(doc);
-		return RegistryConverter.convert(saved);
+		registryRepo.save(doc);
 	}
 
 	/**
@@ -57,9 +55,8 @@ public class RegistryService {
 	 * @param id 등기부 문서 ID
 	 * @return RegistryResponseDto (문서가 없으면 null 반환)
 	 */
-	public RegistryResponseDto findById(String id) {
-		RegistryDocument registry = registryRepo.findById(id).orElse(null);
-		return RegistryConverter.convert(registry);
+	public RegistryDocument findById(String id) {
+		return registryRepo.findById(id).orElse(null);
 	}
 
 	/**
@@ -76,5 +73,14 @@ public class RegistryService {
 			.map(RegistryConverter::convertSummary)
 			.collect(Collectors.toList());
 		return new PageResponse<>((int)docs.getTotalElements(), docs.getNumber() + 1, docs.getSize(), dtos);
+	}
+
+	public RegistryDocument findByRoomId(Long roomId) {
+		RegistryDocument registry = registryRepo.findByServerDataRoomId(roomId);
+		if (registry == null) {
+			throw new RuntimeException("해당 매물에 대한 등기부 정보가 존재하지 않습니다. Room ID: " + roomId);
+		}
+
+		return registry;
 	}
 }

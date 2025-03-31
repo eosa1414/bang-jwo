@@ -8,5 +8,6 @@ import com.bangjwo.register.domain.entity.RegistryDocument;
 
 public interface RegistryDocumentRepository extends MongoRepository<RegistryDocument, String> {
 	Page<RegistryDocument> findByServerDataMemberId(Long memberId, Pageable pageable);
-	// 기본 CRUD
+
+	RegistryDocument findByServerDataRoomId(Long roomId);
 }

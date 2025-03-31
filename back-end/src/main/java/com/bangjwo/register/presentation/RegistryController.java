@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bangjwo.global.common.page.PageResponse;
 import com.bangjwo.register.application.dto.request.RegistryRequestDto;
-import com.bangjwo.register.application.dto.response.RegistryResponseDto;
 import com.bangjwo.register.application.dto.response.RegistrySummaryDto;
 import com.bangjwo.register.application.service.RegistryService;
+import com.bangjwo.register.domain.entity.RegistryDocument;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "Registry", description = "등기부 관련 API")
+@Tag(name = "registry", description = "등기부 관련 API")
 @RestController
 @RequestMapping("/api/v1/registry")
 @RequiredArgsConstructor
@@ -47,10 +47,10 @@ public class RegistryController {
 		description = "주어진 등기부 문서 ID로 MongoDB에서 등기부 문서를 조회합니다."
 	)
 	@GetMapping("/{id}")
-	public ResponseEntity<RegistryResponseDto> getRegistryDoc(
+	public ResponseEntity<RegistryDocument> getRegistryDoc(
 		@Parameter(description = "등기부 문서 ID", example = "67e6332b68f0cb1ff92bf31e", required = true)
 		@PathVariable String id) {
-		RegistryResponseDto doc = registryService.findById(id);
+		RegistryDocument doc = registryService.findById(id);
 		if (doc == null) {
 			return ResponseEntity.notFound().build();
 		}
