@@ -80,6 +80,7 @@ CREATE TABLE IF NOT EXISTS `CONTRACT` (
     `tenant_info_id`				BIGINT		    NOT NULL,
     `landload_info_id`				BIGINT		    NOT NULL,
     `ipfs_key`						VARCHAR(255)    NOT NULL,
+    `aes_key`                       TEXT            NOT NULL,
     `status`						ENUM('DONE', 'UNDONE')		NOT NULL,
     `landlord_auth`					BOOLEAN		    NOT NULL	DEFAULT FALSE,
     `tenant_auth`					BOOLEAN		    NOT NULL	DEFAULT FALSE
