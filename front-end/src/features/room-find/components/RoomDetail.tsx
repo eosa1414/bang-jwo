@@ -249,12 +249,12 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
               {/* Detail */}
               <TabMenu
                 tabTitles={tabTitles}
-                addClassName="sticky top-[48px] p-[0.875rem_1rem]"
+                addClassName="sticky top-[48px]"
                 onTabClick={handleTabClick}
                 activeTab={activeTab}
               />
               {/* Tab Contents */}
-              <div className="flex flex-col gap-4 bg-real-white p-[0.875rem_1rem_calc(0.875rem+248px)_1rem]">
+              <div className="flex flex-col gap-4 bg-real-white p-[0.875rem_1rem_calc(0.875rem+208px)_1rem]">
                 <TabContent
                   title="기본 정보"
                   ref={(el) => {
