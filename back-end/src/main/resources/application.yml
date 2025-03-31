@@ -2,7 +2,6 @@ spring:
   web:
     mvc:
       servlet:
-        path: /api/v1
 
   config:
     import: optional:file:.env[.properties]
@@ -16,6 +15,8 @@ spring:
     password: 1234
     hikari:
       maximum-pool-size: 10
+      connection-timeout: 30000
+      initialization-fail-timeout: -1
 
   sql:
     init:
