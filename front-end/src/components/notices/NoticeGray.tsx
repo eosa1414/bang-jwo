@@ -1,4 +1,4 @@
-const ContractNotice = () => {
+const NoticeGray = () => {
   return (
     <div className="flex items-center gap-2 px-4 py-3 bg-neutral-dark200 text-white rounded-xl text-sm shadow-lg w-fit">
       <i className="material-symbols-rounded text-white text-base">info</i>
@@ -9,4 +9,4 @@ const ContractNotice = () => {
   );
 };
 
-export default ContractNotice;
+export default NoticeGray;

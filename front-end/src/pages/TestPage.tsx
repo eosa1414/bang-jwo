@@ -1,9 +1,9 @@
-import ContractNotice from "../components/notices/ContractNotice";
+import NoticeGray from "../components/notices/NoticeGray";
 
 const TestPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-light300">
-      <ContractNotice />
+      <NoticeGray />
     </div>
   );
 };
