@@ -1,4 +1,3 @@
-import React from "react";
 import HeaderContract from "../../../components/headers/HeaderContract";
 import NoticeDefault from "../../../components/notices/NoticeDefault";
 import SellerContract from "../components/SellerContract";

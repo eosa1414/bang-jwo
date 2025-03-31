@@ -1,4 +1,3 @@
-import React from "react";
 import NoticeDefault from "../../../components/notices/NoticeDefault";
 
 const SellerContract = () => {
