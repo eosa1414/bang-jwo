@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import TabMenu from "./TabMenu";
-import Accordion from "../../components/Accordion";
-import ListItemLine from "../../components/ListItemLine";
-import InfoText from "../../components/InfoText";
+import Accordion from "../../../components/Accordion";
+import ListItemLine from "../../../components/ListItemLine";
+import InfoText from "../../../components/InfoText";
 import TabContent from "./TabContent";
-import Button from "../../components/buttons/Button";
+import Button from "../../../components/buttons/Button";
 import RoomOptions from "./RoomOptions";
 
 interface RoomDetailProps {

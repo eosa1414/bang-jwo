@@ -1,7 +1,7 @@
-import OneTwoRoomIcon from "../../assets/icons/one-two-room.svg?react";
-import ApartIcon from "../../assets/icons/apart.svg?react";
-import VillaHouseIcon from "../../assets/icons/villa-house.svg?react";
-import OfficetelIcon from "../../assets/icons/officetel.svg?react";
+import OneTwoRoomIcon from "../../../assets/icons/one-two-room.svg?react";
+import ApartIcon from "../../../assets/icons/apart.svg?react";
+import VillaHouseIcon from "../../../assets/icons/villa-house.svg?react";
+import OfficetelIcon from "../../../assets/icons/officetel.svg?react";
 
 const menuDatas = [
   {

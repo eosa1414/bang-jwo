@@ -6,16 +6,16 @@ import {
   RoomResponse,
   // defaultParams,
   Room,
-} from "../../types/roomTypes";
-import SideBar from "./SideBar";
-import ListRoom from "../../components/ListRoom";
-import KakaoMap from "../../components/KakaoMap";
-import SearchBar from "../../components/SearchBar";
-import InfoText from "../../components/InfoText";
-import FilterPannel from "../../components/FilterPannel";
-import RoomDetail from "./RoomDetail";
+} from "../../../types/roomTypes";
+import SideBar from "../components/SideBar";
+import ListRoom from "../../../components/ListRoom";
+import KakaoMap from "../../../components/KakaoMap";
+import SearchBar from "../../../components/SearchBar";
+import InfoText from "../../../components/InfoText";
+import FilterPannel from "../../../components/FilterPannel";
+import RoomDetail from "../components/RoomDetail";
 
-const RoomFind = () => {
+const PageRoomFind = () => {
   // const [params, setParams] = useState<RoomQueryParams>(defaultParams);
   const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
 
@@ -159,4 +159,4 @@ const RoomFind = () => {
   );
 };
 
-export default RoomFind;
+export default PageRoomFind;

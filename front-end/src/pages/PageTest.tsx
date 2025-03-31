@@ -1,6 +1,6 @@
 import ContractNotice from "../components/notices/ContractNotice";
 
-const TestPage = () => {
+const PageTest = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-light300">
       <ContractNotice />
@@ -8,4 +8,4 @@ const TestPage = () => {
   );
 };
 
-export default TestPage;
+export default PageTest;
