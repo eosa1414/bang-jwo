@@ -1,5 +1,7 @@
 package com.bangjwo.contract.presentation;
 
+import java.math.BigInteger;
+
 import javax.crypto.SecretKey;
 
 import org.springframework.http.ContentDisposition;
@@ -8,31 +10,35 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bangjwo.blockchain.application.service.BlockchainService;
 import com.bangjwo.common.crypto.AESService;
 import com.bangjwo.common.crypto.RSAService;
+import com.bangjwo.contract.application.dto.request.CompleteDto;
 import com.bangjwo.contract.application.service.PinataStorageService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/contracts")
+@RequestMapping("/api/v1/contract")
 @RequiredArgsConstructor
-public class ContractController {
+public class ContractController2 {
 
 	private final RSAService rsaService;
 	private final AESService aesService;
 	private final PinataStorageService pinataStorageService;
+	private final BlockchainService blockchainService;
 
 	String encryptedAesKey;    // 임시용 추후 계약 구현시 DB저장
 
-	@PostMapping("/encrypt-upload")
-	public ResponseEntity<?> encryptAndUploadContract(@RequestParam("file") MultipartFile file, long id) {
+	@PostMapping("/complete")
+	public ResponseEntity<?> encryptAndUploadContract(@ModelAttribute CompleteDto completeDto) {
 		try {
 			// 1. AES 키 생성
 			SecretKey aesKey = aesService.generateAESKey();
@@ -41,12 +47,18 @@ public class ContractController {
 			encryptedAesKey = rsaService.encryptAesKey(aesKey);    // DB에 저장 구현
 
 			// 3. PDF 파일을 AES로 암호화
+
+			MultipartFile file = completeDto.getFile();
 			byte[] pdfBytes = file.getBytes();
 			byte[] encryptedPdf = aesService.encrypt(aesKey, pdfBytes);
-			String cid = pinataStorageService.uploadEncryptedPdf(encryptedPdf, id);    // DB에 저장 구현
+			String cid = pinataStorageService.uploadEncryptedPdf(encryptedPdf,
+				completeDto.getContractId());    // DB에 저장 구현
 
 			// 블록체인에 CID 저장 구현
 			// 4. 블록체인에 CID 저장 구현
+			blockchainService.registerContract(BigInteger.valueOf(completeDto.getContractId()), cid,
+				BigInteger.valueOf(completeDto.getLandlord()),
+				BigInteger.valueOf(completeDto.getTenant()));
 
 			return ResponseEntity.ok(cid);
 		} catch (Exception e) {
@@ -66,8 +78,8 @@ public class ContractController {
 			headers.setContentType(MediaType.APPLICATION_PDF);
 			// 다운로드 형식으로 응답 (파일 이름은 필요에 따라 설정)
 			// 필요하면 응답 형식 변경
-			headers.setContentDisposition(ContentDisposition.builder("attachment")
-				.filename("downloaded_encrypted_contract.pdf")
+			headers.setContentDisposition(ContentDisposition.builder("inline")
+				.filename("contract.pdf")
 				.build());
 			return new ResponseEntity<>(fileData, headers, HttpStatus.OK);
 		} catch (Exception e) {
