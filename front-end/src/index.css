@@ -21,6 +21,7 @@
   --color-pistachio: #84b067;
 }
 
+/*custom class*/
 .shadow-custom {
   @apply shadow-[0_0_12px_0_rgba(0,0,0,0.25)];
 }
@@ -45,9 +46,16 @@
   height: 10px;
 }
 
+.divider {
+  border-top: 1px solid var(--color-neutral-light100);
+}
+
 /*구글 머티리얼 아이콘 사이즈 커스텀*/
 .material-symbols-rounded.text-base {
   @apply text-base;
+}
+.material-symbols-rounded.text-lg {
+  @apply text-lg;
 }
 .material-symbols-rounded.font-bold {
   @apply font-bold;

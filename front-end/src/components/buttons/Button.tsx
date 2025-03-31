@@ -1,7 +1,7 @@
 import classNames from "classnames";
-import { ButtonHTMLAttributes, ReactNode } from "react";
+import { ButtonHTMLAttributes, ElementType, ReactNode } from "react";
 
-type ButtonSize = "basic" | "small" | "medium";
+type ButtonSize = "basic" | "small" | "medium" | "large";
 type Variant =
   | "default"
   | "dark"
@@ -10,6 +10,7 @@ type Variant =
   | "point"
   | "gold"
   | "opaque";
+type AsType = "button" | "div";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
@@ -17,6 +18,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   isAngular?: boolean;
   isLine?: boolean;
+  as?: AsType;
 }
 
 const baseClasses =
@@ -25,6 +27,7 @@ const sizeClasses = {
   basic: `${baseClasses} h-9 min-w-[64px] px-3 text-base`,
   small: `${baseClasses} h-7 min-w-[48px] px-2 text-sm`,
   medium: `${baseClasses} h-12 min-w-[160px] px-4 text-lg`,
+  large: `${baseClasses} min-w-[210px] max-w-full p-[0.625rem_0.75rem] text-base`,
 };
 
 const variantClasses = {
@@ -66,15 +69,21 @@ const Button = ({
   isLine = false,
   className,
   disabled,
+  as = "button",
   ...props
 }: ButtonProps) => {
+  const Component = (as || "button") as ElementType;
   const { defaultstyle, linestyle } = variantClasses[variant];
 
   return (
-    <button
+    <Component
       className={classNames(
         "font-semibold inline-flex items-center justify-center whitespace-nowrap",
-        disabled ? "cursor-not-allowed" : "cursor-pointer",
+        disabled
+          ? "cursor-not-allowed"
+          : as === "div"
+          ? "cursor-default"
+          : "cursor-pointer",
         sizeClasses[size],
         !isAngular &&
           (size === "basic"
@@ -83,15 +92,17 @@ const Button = ({
             ? "rounded-lg"
             : size === "medium"
             ? "rounded-2xl"
+            : size === "large"
+            ? "rounded-full"
             : "rounded-lg"),
         isLine ? `border-1 ${linestyle}` : defaultstyle,
         className
       )}
-      disabled={disabled}
+      {...(as === "button" ? { disabled } : {})} // button일 때만 disabled 적용
       {...props}
     >
       {children}
-    </button>
+    </Component>
   );
 };
 

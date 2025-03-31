@@ -5,7 +5,7 @@ interface TabMenuProps {
 const TabMenu = ({ AddClassName }: TabMenuProps) => {
   return (
     <div
-      className={`w-full flex overflow-x-auto bg-real-white ${AddClassName}`}
+      className={`w-full flex overflow-x-auto bg-real-white border-b-1 border-neutral-light100 ${AddClassName}`}
     >
       <div>기본 정보</div>
       <div>관리비</div>
