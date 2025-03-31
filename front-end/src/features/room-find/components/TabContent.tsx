@@ -10,7 +10,7 @@ const TabContent = forwardRef<HTMLDivElement, TabContentProps>((props, ref) => {
   const { title = "", scrollMarginTop = 0, children } = props;
 
   return (
-    <div
+    <section
       ref={ref}
       className="flex flex-col gap-3"
       style={{
@@ -19,7 +19,7 @@ const TabContent = forwardRef<HTMLDivElement, TabContentProps>((props, ref) => {
     >
       {title && <div className="font-bold text-base">{title}</div>}
       {children}
-    </div>
+    </section>
   );
 });
 

@@ -18,6 +18,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   const [isHeaderColorChange, setIsHeaderColorChange] = useState(false);
   const [isTitleScrolled, setIsTitleScrolled] = useState(false);
   const [tabMenuHeight, setTabMenuHeight] = useState(0);
+  const [activeTab, setActiveTab] = useState<number>(0);
 
   const boxRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
@@ -50,7 +51,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   const handleTabClick = (idx: number) => {
     tabContentsRef.current[idx]?.scrollIntoView({
       behavior: "smooth",
-      block: "start",
+      block: "center",
     });
   };
 
@@ -69,21 +70,35 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
     const titleElement = titleRef.current;
 
     const handleScroll = () => {
+      //헤더 색상 변경
       if (headerRect && textStartElement) {
         const textStartRect = textStartElement.getBoundingClientRect();
-
-        //헤더 색상 변경
         setIsHeaderColorChange(textStartRect.top <= headerRect.bottom);
       }
 
+      //title이 scroll로 가려지면 header에 title 등장
       if (headerRect && titleElement) {
         const titleRect = titleElement.getBoundingClientRect();
-
-        //title이 scroll로 가려지면 header에 title 등장
         setIsTitleScrolled(titleRect.top <= headerRect.bottom);
       }
-    };
 
+      tabContentsRef.current.forEach(
+        (ref: HTMLDivElement | null, idx: number) => {
+          if (ref && boxRef.current) {
+            const { top, bottom } = ref.getBoundingClientRect();
+
+            const boxTop = boxRef.current.getBoundingClientRect().top;
+            const boxHeight = boxRef.current.getBoundingClientRect().height;
+            if (
+              top <= boxTop + boxHeight / 2 &&
+              bottom >= boxTop + boxHeight / 2
+            ) {
+              setActiveTab(idx);
+            }
+          }
+        }
+      );
+    };
     boxElement?.addEventListener("scroll", handleScroll);
 
     return () => {
@@ -236,9 +251,10 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                 tabTitles={tabTitles}
                 addClassName="sticky top-[48px] p-[0.875rem_1rem]"
                 onTabClick={handleTabClick}
+                activeTab={activeTab}
               />
               {/* Tab Contents */}
-              <div className="flex flex-col gap-4 bg-real-white p-[0.875rem_1rem_calc(0.875rem+48px)_1rem]">
+              <div className="flex flex-col gap-4 bg-real-white p-[0.875rem_1rem_calc(0.875rem+248px)_1rem]">
                 <TabContent
                   title="기본 정보"
                   ref={(el) => {
