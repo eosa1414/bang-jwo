@@ -16,6 +16,7 @@ interface RoomDetailProps {
 const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   const [isHeaderColorChange, setIsHeaderColorChange] = useState(false);
   const [isTitleScrolled, setIsTitleScrolled] = useState(false);
+  const [tabMenuHeight, setTabMenuHeight] = useState(0);
 
   const boxRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
@@ -51,6 +52,15 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
       block: "start",
     });
   };
+
+  // TabMenu 높이 가져오기
+  useEffect(() => {
+    const tabMenuElement = document.querySelector(".sticky") as HTMLElement;
+    if (tabMenuElement) {
+      setTabMenuHeight(tabMenuElement.offsetHeight);
+      console.log("높이" + tabMenuHeight);
+    }
+  });
 
   useEffect(() => {
     const boxElement = boxRef.current;
@@ -261,6 +271,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   ref={(el) => {
                     if (el) tabContentsRef.current[0] = el;
                   }}
+                  scrollMarginTop={48 + tabMenuHeight}
                 >
                   <div>깔끔하고 전망 좋은 12층 집입니다.</div>
                   <RoomOptions roomOptions={roomOptions} />
@@ -273,6 +284,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   ref={(el) => {
                     if (el) tabContentsRef.current[1] = el;
                   }}
+                  scrollMarginTop={48 + tabMenuHeight}
                 >
                   <p className="text-xl font-bold">120,000원</p>
                   <RoomOptions
@@ -292,6 +304,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   ref={(el) => {
                     if (el) tabContentsRef.current[2] = el;
                   }}
+                  scrollMarginTop={48 + tabMenuHeight}
                 >
                   <div>
                     <p>
@@ -312,6 +325,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   ref={(el) => {
                     if (el) tabContentsRef.current[3] = el;
                   }}
+                  scrollMarginTop={48 + tabMenuHeight}
                 >
                   <ListItemLine title="입주 가능일" content="즉시입주가능" />
                   <div className="flex flex-1 items-center gap-1">
@@ -348,6 +362,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   ref={(el) => {
                     if (el) tabContentsRef.current[4] = el;
                   }}
+                  scrollMarginTop={48 + tabMenuHeight}
                 >
                   <div className="w-full h-[160px] bg-neutral-gray"></div>
                   <div className="font-medium">
@@ -362,6 +377,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   ref={(el) => {
                     if (el) tabContentsRef.current[5] = el;
                   }}
+                  scrollMarginTop={48 + tabMenuHeight}
                 >
                   <InfoText text="등기부등본을 확인하기 위해서는 700원의 수수료가 필요합니다." />
                   <Button size="large" variant="point" className="w-full">
