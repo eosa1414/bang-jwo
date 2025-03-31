@@ -17,13 +17,12 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   const [isHeaderColorChange, setIsHeaderColorChange] = useState(false);
   const [isTitleScrolled, setIsTitleScrolled] = useState(false);
 
-  const scrollRef = useRef<HTMLDivElement | null[]>([]);
   const boxRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
   const textStartRef = useRef<HTMLDivElement | null>(null);
 
-  const tabList = [
+  const tabTitles = [
     "기본 정보",
     "관리비",
     "집 소개",
@@ -42,6 +41,16 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
     "난방비",
   ];
   const notMaintenanceOptions = ["수도세"];
+
+  // tab scroll
+  const tabContentsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  const handleTabClick = (idx: number) => {
+    tabContentsRef.current[idx]?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
   useEffect(() => {
     const boxElement = boxRef.current;
@@ -241,20 +250,30 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
               {/* Detail */}
               <TabMenu
-                tabList={tabList}
-                ref={scrollRef}
+                tabTitles={tabTitles}
                 addClassName="sticky top-[48px] p-[0.875rem_1rem]"
+                onTabClick={handleTabClick}
               />
-
+              {/* Tab Contents */}
               <div className="flex flex-col gap-4 bg-real-white p-[0.875rem_1rem_calc(0.875rem+48px)_1rem]">
-                <TabContent title="기본 정보">
+                <TabContent
+                  title="기본 정보"
+                  ref={(el) => {
+                    if (el) tabContentsRef.current[0] = el;
+                  }}
+                >
                   <div>깔끔하고 전망 좋은 12층 집입니다.</div>
                   <RoomOptions roomOptions={roomOptions} />
                 </TabContent>
 
                 <div className="divider" />
 
-                <TabContent title="관리비">
+                <TabContent
+                  title="관리비"
+                  ref={(el) => {
+                    if (el) tabContentsRef.current[1] = el;
+                  }}
+                >
                   <p className="text-xl font-bold">120,000원</p>
                   <RoomOptions
                     title="관리비 포함 항목"
@@ -268,7 +287,12 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
                 <div className="divider" />
 
-                <TabContent title="집 소개">
+                <TabContent
+                  title="집 소개"
+                  ref={(el) => {
+                    if (el) tabContentsRef.current[2] = el;
+                  }}
+                >
                   <div>
                     <p>
                       12층이고 창문 앞으로 가로 막힌 게 없어서 전망이 좋습니다.
@@ -283,7 +307,12 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
                 <div className="divider" />
 
-                <TabContent title="집 정보">
+                <TabContent
+                  title="집 정보"
+                  ref={(el) => {
+                    if (el) tabContentsRef.current[3] = el;
+                  }}
+                >
                   <ListItemLine title="입주 가능일" content="즉시입주가능" />
                   <div className="flex flex-1 items-center gap-1">
                     <ListItemLine
@@ -314,7 +343,12 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
                 <div className="divider" />
 
-                <TabContent title="위치">
+                <TabContent
+                  title="위치"
+                  ref={(el) => {
+                    if (el) tabContentsRef.current[4] = el;
+                  }}
+                >
                   <div className="w-full h-[160px] bg-neutral-gray"></div>
                   <div className="font-medium">
                     서울특별시 강남구 테헤란로 212
@@ -323,7 +357,12 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
                 <div className="divider" />
 
-                <TabContent title="등기부등본 · 위험도">
+                <TabContent
+                  title="등기부등본 · 위험도"
+                  ref={(el) => {
+                    if (el) tabContentsRef.current[5] = el;
+                  }}
+                >
                   <InfoText text="등기부등본을 확인하기 위해서는 700원의 수수료가 필요합니다." />
                   <Button size="large" variant="point" className="w-full">
                     [유료] 등기부등본·위험도 확인하러 가기
