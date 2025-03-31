@@ -18,7 +18,7 @@
   --color-neutral-light300: #fcfcfe;
 
   --color-coral-red: #ff5e5e;
-  --color-green: #03C75A;
+  --color-green: #03c75a;
   --color-avocado: #568203;
   --color-pistachio: #84b067;
 }
@@ -92,7 +92,7 @@ body {
 }
 
 h1 {
-  font-size: 3.2em;
+  @apply text-3xl font-medium;
   line-height: 1.1;
 }
 
