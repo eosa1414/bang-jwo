@@ -1,13 +1,12 @@
 import Button from "../../../../components/buttons/Button";
 import LineBox from "../../../../components/LineBox";
 import { useAuth } from "../../../../contexts/AuthContext";
+import useModal from "../../../modal/hooks/useModal";
+import ModalDeleteAccountConfirm from "../../../modal/pages/ModalDeleteAccountConfirm";
 
 const PageAccount = () => {
   const { user, logout } = useAuth();
-
-  const deleteAccount = () => {
-    alert("구현 예정");
-  };
+  const { isOpen, openModal, closeModal } = useModal();
 
   return (
     <div className="flex flex-col justify-center max-w-lg mx-auto gap-2.5">
@@ -26,12 +25,10 @@ const PageAccount = () => {
         </button>
       </LineBox>
       <div className="text-right p-[0.375rem_1.5rem] text-sm text-neutral-gray">
-        <button
-          onClick={deleteAccount}
-          className="w-fit underline cursor-pointer"
-        >
+        <button onClick={openModal} className="w-fit underline cursor-pointer">
           탈퇴하기
         </button>
+        <ModalDeleteAccountConfirm isOpen={isOpen} closeModal={closeModal} />
       </div>
     </div>
   );
