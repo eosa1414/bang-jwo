@@ -20,7 +20,7 @@ import lombok.Setter;
 @Schema(description = "매물 정보 수정 요청 DTO")
 public class UpdateRoomRequestDto {
 
-	@Schema(description = "회원 ID (이후 토큰 처리로 대체 예정)", example = "1001")
+	@Schema(description = "회원 ID (이후 토큰 처리로 대체 예정)", example = "1")
 	private Long memberId;
 
 	@Schema(description = "보증금", example = "10000000", minimum = "0")

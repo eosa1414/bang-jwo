@@ -16,10 +16,10 @@ import lombok.Getter;
 @Schema(description = "리스트 조회 시 간단한 매물(Room) 정보를 담는 DTO")
 public class RoomSummaryResponse {
 
-	@Schema(description = "매물(Room) ID", example = "101")
+	@Schema(description = "매물(Room) ID", example = "1")
 	private Long roomId;
 
-	@Schema(description = "매물 등록자(회원) ID", example = "100")
+	@Schema(description = "매물 등록자(회원) ID", example = "1")
 	private Long memberId;
 
 	@Schema(description = "좋아요 여부", example = "true")

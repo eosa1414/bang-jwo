@@ -19,6 +19,7 @@ import com.bangjwo.room.application.convert.RoomConverter;
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
+import com.bangjwo.room.application.dto.request.UpdateRoomStatusDto;
 import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
 import com.bangjwo.room.application.dto.response.RoomSummaryResponse;
@@ -40,7 +41,7 @@ public class RoomService {
 	private final AddressService addressService;
 	private final OptionService optionService;
 	private final MaintenanceIncludeService maintenanceIncludeService;
-	private final ImageService imageService;
+	private final RoomImageService imageService;
 	private final LikeService likeService;
 	private final MemoService memoService;
 
@@ -204,7 +205,7 @@ public class RoomService {
 			.map(room -> {
 				boolean liked = likeMap.getOrDefault(room.getRoomId(), false);
 				String imageUrl = imageMap.getOrDefault(room.getRoomId(), null);
-				
+
 				return RoomConverter.convertToRoomSummary(room, liked, imageUrl);
 			})
 			.toList();
@@ -254,5 +255,11 @@ public class RoomService {
 			case 14 -> BigDecimal.valueOf(5.03561);
 			default -> BigDecimal.valueOf(0.00245);
 		};
+	}
+
+	@Transactional
+	public void updateRoomStatus(UpdateRoomStatusDto dto) {
+		var room = findRoom(dto.getRoomId());
+		room.updateStatus(dto.getStatus());
 	}
 }

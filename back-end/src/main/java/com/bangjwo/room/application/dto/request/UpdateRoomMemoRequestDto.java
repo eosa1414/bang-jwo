@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Schema(description = "매물 메모 업데이트 요청 DTO, 메모 생성/수정 모두 담당 ( 기존 메모가 없다면 생성 )")
 public class UpdateRoomMemoRequestDto {
-	@Schema(description = "회원 ID (이후 토큰 처리로 대체 예정)", example = "100")
+	@Schema(description = "회원 ID (이후 토큰 처리로 대체 예정)", example = "1")
 	@Min(1)
 	private Long memberId;
 
