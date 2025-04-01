@@ -18,11 +18,12 @@ CREATE TABLE IF NOT EXISTS `MEMO` (
 
 CREATE TABLE IF NOT EXISTS `PAYMENT` (
     `payment_id`					BIGINT		    NOT NULL	AUTO_INCREMENT PRIMARY KEY,
+    `imp_uid`                       VARCHAR(255)    NOT NULL,
     `member_id`						BIGINT		    NOT NULL,
-    `amount`						BIGINT		    NOT NULL,
-    `payment_no`                    VARCHAR(50)     NOT NULL,
-    `appr_no`                       VARCHAR(50)     NOT NULL,
-    `created_at`				    TIMESTAMP	    NOT NULL DEFAULT CURRENT_TIMESTAMP
+    `room_id`						BIGINT		    NOT NULL,
+    `status`                        ENUM('READY', 'PAID', 'FAILED') NOT NULL DEFAULT 'READY',
+    `created_at`				    TIMESTAMP	    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`                    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `LANDLORD_INFO` (
@@ -92,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `TENANT_INFO` (
     `address`						TEXT			NOT NULL,
     `resident_registration_number`	CHAR(14)    	NOT NULL,
     `move_in_date`					DATE		    NOT NULL,
-`tenant_signature_url`			VARCHAR(255)	NULL
+    `tenant_signature_url`			VARCHAR(255)	NULL
 );
 
 CREATE TABLE IF NOT EXISTS `MEMBER` (
