@@ -42,7 +42,8 @@ public class ContractService {
 	private final ContractImageService contractImageService;
 	private final ContractRepository contractRepository;
 
-	private Contract validateLandlordDraftContract(Long contractId, Long landlordId) {
+	@Transactional
+	public Contract validateLandlordDraftContract(Long contractId, Long landlordId) {
 		Contract contract = findContract(contractId);
 		Optional.of(contract.getLandlordId())
 			.filter(id -> id.equals(landlordId))
@@ -53,7 +54,8 @@ public class ContractService {
 		return contract;
 	}
 
-	private Contract validateLandlordFinalContract(Long contractId, Long landlordId) {
+	@Transactional
+	public Contract validateLandlordFinalContract(Long contractId, Long landlordId) {
 		Contract contract = findContract(contractId);
 		Optional.of(contract.getLandlordId())
 			.filter(id -> id.equals(landlordId))
@@ -64,7 +66,8 @@ public class ContractService {
 		return contract;
 	}
 
-	private Contract validateTenantDraftContract(Long contractId, Long tenantId) {
+	@Transactional
+	public Contract validateTenantDraftContract(Long contractId, Long tenantId) {
 		Contract contract = findContract(contractId);
 		Optional.of(contract.getTenantId())
 			.filter(id -> id.equals(tenantId))
@@ -75,7 +78,8 @@ public class ContractService {
 		return contract;
 	}
 
-	private Contract validateTenantFinalContract(Long contractId, Long tenantId) {
+	@Transactional
+	public Contract validateTenantFinalContract(Long contractId, Long tenantId) {
 		Contract contract = findContract(contractId);
 		Optional.of(contract.getTenantId())
 			.filter(id -> id.equals(tenantId))

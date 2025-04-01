@@ -1,23 +1,9 @@
 package com.bangjwo.contract.application.convert;
 
-import com.bangjwo.contract.application.dto.request.SpecialClauseDto;
 import com.bangjwo.contract.application.dto.request.UpdateLandlordInfoDto;
 import com.bangjwo.contract.domain.entity.SpecialClause;
 
 public class SpecialClauseConverter {
-
-	public static SpecialClause fromDto(SpecialClauseDto dto) {
-		return SpecialClause.builder()
-			.moveInRegistrationDate(dto.getMoveInRegistrationDate())
-			.unpaidAmount(dto.getUnpaidAmount())
-			.disputeResolution(dto.getDisputeResolution())
-			.isHousingReconstructionPlanned(dto.getIsHousingReconstructionPlanned())
-			.constructionPeriod(dto.getConstructionPeriod())
-			.estimatedConstructionDuration(dto.getEstimatedConstructionDuration())
-			.isDetailedAddressConsentGiven(dto.getIsDetailedAddressConsentGiven())
-			.etc(dto.getEtc())
-			.build();
-	}
 
 	public static void updateDraft(SpecialClause specialClause, UpdateLandlordInfoDto dto) {
 		if (dto.getMoveInRegistrationDate() != null)

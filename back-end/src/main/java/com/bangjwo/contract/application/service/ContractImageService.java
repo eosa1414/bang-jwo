@@ -8,8 +8,6 @@ import com.bangjwo.contract.application.dto.request.LandlordSignatureUpdateReque
 import com.bangjwo.contract.application.dto.request.TenantSignatureUpdateRequestDto;
 import com.bangjwo.contract.domain.entity.LandlordInfo;
 import com.bangjwo.contract.domain.entity.TenantInfo;
-import com.bangjwo.contract.domain.repository.LandlordInfoRepository;
-import com.bangjwo.contract.domain.repository.TenantInfoRepository;
 import com.bangjwo.global.common.image.FileUploaderPort;
 
 import lombok.RequiredArgsConstructor;
@@ -19,14 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class ContractImageService {
-
-	// S3에 저장할 서명 이미지 폴더 경로
 	private static final String LANDLORD_SIGNATURE_PATH = "landlord-signatures/";
 	private static final String TENANT_SIGNATURE_PATH = "tenant-signatures/";
 
 	private final FileUploaderPort fileUploader;
-	private final LandlordInfoRepository landlordInfoRepository;
-	private final TenantInfoRepository tenantInfoRepository;
 
 	private String generateFileName(MultipartFile file) {
 		return System.currentTimeMillis() + "_" + file.getOriginalFilename();
@@ -37,7 +31,6 @@ public class ContractImageService {
 	 *
 	 * @param dto 요청 DTO
 	 * @param landlordInfo 이미 검증된 임대인 엔티티
-	 * @return 업데이트된 임대인 서명 응답 DTO
 	 */
 	@Transactional
 	public void updateLandlordSignatures(LandlordInfo landlordInfo,
@@ -72,7 +65,6 @@ public class ContractImageService {
 	 *
 	 * @param dto 요청 DTO
 	 * @param tenantInfo 이미 검증된 임차인 엔티티
-	 * @return 업데이트된 임차인 서명 응답 DTO
 	 */
 	@Transactional
 	public void updateTenantSignature(TenantInfo tenantInfo,
