@@ -19,6 +19,7 @@ import com.bangjwo.room.application.convert.RoomConverter;
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
+import com.bangjwo.room.application.dto.request.UpdateRoomStatusDto;
 import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
 import com.bangjwo.room.application.dto.response.RoomSummaryResponse;
@@ -254,5 +255,11 @@ public class RoomService {
 			case 14 -> BigDecimal.valueOf(5.03561);
 			default -> BigDecimal.valueOf(0.00245);
 		};
+	}
+
+	@Transactional
+	public void updateRoomStatus(UpdateRoomStatusDto dto) {
+		var room = findRoom(dto.getRoomId());
+		room.updateStatus(dto.getStatus());
 	}
 }
