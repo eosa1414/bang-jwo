@@ -12,5 +12,5 @@ public interface ChatAlertService {
 
 	void markAlertAsRead(Long chatRoomId, Long userId);
 
-	List<ChatAlert> getAlerts(Long chatRoomId, Long userId);
+	List<ChatAlert> getAlerts(Long userId);
 }

@@ -9,12 +9,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Table(name = "REVIEW")
 public class Review extends BaseEntity {
 
@@ -39,5 +43,9 @@ public class Review extends BaseEntity {
 
 	@Column
 	private String content;
+
+	public void updateContent(String content) {
+		this.content = content;
+	}
 }
 

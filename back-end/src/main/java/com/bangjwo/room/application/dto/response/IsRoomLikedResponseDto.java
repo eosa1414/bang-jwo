@@ -10,7 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Schema(description = "매물 찜목록 여부 응답 DTO")
 public class IsRoomLikedResponseDto {
-	@Schema(description = "매물(Room) ID", example = "100")
+	@Schema(description = "매물(Room) ID", example = "1")
 	private Long roomId;
 
 	@Schema(description = "찜 상태 여부", example = "true")

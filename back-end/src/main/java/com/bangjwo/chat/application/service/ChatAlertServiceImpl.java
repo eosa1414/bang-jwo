@@ -46,7 +46,8 @@ public class ChatAlertServiceImpl implements ChatAlertService {
 	}
 
 	@Override
-	public List<ChatAlert> getAlerts(Long chatRoomId, Long userId) {
-		return alertMongoRepository.findByChatRoomIdAndReceiverIdAndReadFalseOrderBySendAtAsc(chatRoomId, userId);
+	public List<ChatAlert> getAlerts(Long userId) {
+		return alertMongoRepository.findByReceiverIdAndReadFalseOrderBySendAtDesc(userId);
+
 	}
 }

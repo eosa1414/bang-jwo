@@ -1,81 +1,229 @@
 package com.bangjwo.contract.presentation;
 
-import javax.crypto.SecretKey;
-
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.bangjwo.common.crypto.AESService;
-import com.bangjwo.common.crypto.RSAService;
-import com.bangjwo.contract.application.service.PinataStorageService;
+import com.bangjwo.contract.application.dto.request.CreateContractRequestDto;
+import com.bangjwo.contract.application.dto.request.LandlordSignatureUpdateRequestDto;
+import com.bangjwo.contract.application.dto.request.TenantSignatureUpdateRequestDto;
+import com.bangjwo.contract.application.dto.request.UpdateLandlordInfoDto;
+import com.bangjwo.contract.application.dto.request.UpdateTenantInfoDto;
+import com.bangjwo.contract.application.dto.response.ContractDetailResponseDto;
+import com.bangjwo.contract.application.dto.response.ContractStatusResponseDto;
+import com.bangjwo.contract.application.dto.response.LandlordInfoResponseDto;
+import com.bangjwo.contract.application.dto.response.TenantInfoResponseDto;
+import com.bangjwo.contract.application.dto.validation.FinalSave;
+import com.bangjwo.contract.application.dto.validation.TempSave;
+import com.bangjwo.contract.application.service.ContractService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
-@RequestMapping("/contracts")
+@RequestMapping("/api/v1/contract")
+@Tag(name = "Contract", description = "계약서 관련 API")
 @RequiredArgsConstructor
 public class ContractController {
+	private final ContractService contractService;
 
-	private final RSAService rsaService;
-	private final AESService aesService;
-	private final PinataStorageService pinataStorageService;
-
-	String encryptedAesKey;    // 임시용 추후 계약 구현시 DB저장
-
-	@PostMapping("/encrypt-upload")
-	public ResponseEntity<?> encryptAndUploadContract(@RequestParam("file") MultipartFile file, long id) {
-		try {
-			// 1. AES 키 생성
-			SecretKey aesKey = aesService.generateAESKey();
-
-			// 2. AES 키를 RSA로 암호화
-			encryptedAesKey = rsaService.encryptAesKey(aesKey);    // DB에 저장 구현
-
-			// 3. PDF 파일을 AES로 암호화
-			byte[] pdfBytes = file.getBytes();
-			byte[] encryptedPdf = aesService.encrypt(aesKey, pdfBytes);
-			String cid = pinataStorageService.uploadEncryptedPdf(encryptedPdf, id);    // DB에 저장 구현
-
-			// 블록체인에 CID 저장 구현
-			// 4. 블록체인에 CID 저장 구현
-
-			return ResponseEntity.ok(cid);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body("업로드 실패: " + e.getMessage());
+	@Operation(
+		summary = "계약서 생성",
+		description = "방 ID를 기반으로 새로운 계약서를 생성합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "계약 생성 성공",
+				content = @Content(schema = @Schema(implementation = Long.class))),
+			@ApiResponse(responseCode = "400", description = "요청 데이터 오류", content = @Content),
+			@ApiResponse(responseCode = "404", description = "해당 방을 찾을 수 없음", content = @Content)
 		}
+	)
+	@PostMapping
+	public ResponseEntity<Long> createContract(@RequestBody CreateContractRequestDto requestDto) {
+		Long contractId = contractService.createContract(requestDto);
+
+		return ResponseEntity.ok(contractId);
 	}
 
-	@GetMapping("/decrypt-download")
-	public ResponseEntity<?> decryptAndDownloadContract(@RequestParam("cid") String cid) {
-		try {
-			byte[] encryptedFileData = pinataStorageService.getFileFromIpfs(cid);
-			SecretKey aesKey = rsaService.decryptAesKey(encryptedAesKey);    // db에서 가져와야 함
-			byte[] fileData = aesService.decrypt(aesKey, encryptedFileData);
-			HttpHeaders headers = new HttpHeaders();
-			// 파일 형식 PDF
-			headers.setContentType(MediaType.APPLICATION_PDF);
-			// 다운로드 형식으로 응답 (파일 이름은 필요에 따라 설정)
-			// 필요하면 응답 형식 변경
-			headers.setContentDisposition(ContentDisposition.builder("attachment")
-				.filename("downloaded_encrypted_contract.pdf")
-				.build());
-			return new ResponseEntity<>(fileData, headers, HttpStatus.OK);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body("IPFS에서 파일 불러오기 실패: " + e.getMessage());
+	@Operation(
+		summary = "임대인 계약 정보 임시 저장",
+		description = "입력된 정보만 계약서에 임시로 저장합니다. (모든 필드가 필수는 아님)",
+		responses = {
+			@ApiResponse(responseCode = "204", description = "임시 저장 성공"),
+			@ApiResponse(responseCode = "400", description = "요청 데이터 오류", content = @Content),
+			@ApiResponse(responseCode = "403", description = "임대인 접근 권한 없음", content = @Content),
+			@ApiResponse(responseCode = "404", description = "계약서 또는 임대인 정보 없음", content = @Content)
 		}
+	)
+	@PatchMapping("/landlord")
+	public ResponseEntity<Void> draftLandlordInfo(
+		@Validated(TempSave.class) @RequestBody UpdateLandlordInfoDto requestDto) {
+		contractService.draftLandlordInfo(requestDto);
+
+		return ResponseEntity.noContent().build();
 	}
 
-	// 블록체인과 CID 비교 구현
+	@Operation(
+		summary = "임대인 계약 정보 최종 저장",
+		description = "모든 필수 정보를 포함하여 계약서에 임대인 정보를 최종 저장합니다.",
+		responses = {
+			@ApiResponse(responseCode = "204", description = "최종 저장 성공"),
+			@ApiResponse(responseCode = "400", description = "검증 실패 또는 데이터 누락", content = @Content),
+			@ApiResponse(responseCode = "403", description = "임대인 접근 권한 없음", content = @Content),
+			@ApiResponse(responseCode = "404", description = "계약서 또는 임대인 정보 없음", content = @Content)
+		}
+	)
+	@PatchMapping("/landlord/final")
+	public ResponseEntity<Void> finalLandlordInfo(
+		@Validated(FinalSave.class) @RequestBody UpdateLandlordInfoDto requestDto) {
+
+		contractService.finalLandlordInfo(requestDto);
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@Operation(
+		summary = "임차인 계약 정보 임시 저장",
+		description = "입력된 정보만 계약서에 임시 저장합니다.",
+		responses = {
+			@ApiResponse(responseCode = "204", description = "임시 저장 성공"),
+			@ApiResponse(responseCode = "403", description = "임차인 접근 권한 없음", content = @Content),
+			@ApiResponse(responseCode = "404", description = "계약서 또는 임차인 정보 없음", content = @Content)
+		}
+	)
+	@PatchMapping("/tenant")
+	public ResponseEntity<Void> draftTenantInfo(
+		@Validated(TempSave.class) @RequestBody UpdateTenantInfoDto requestDto) {
+		contractService.draftTenantInfo(requestDto);
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@Operation(
+		summary = "임차인 계약 정보 최종 저장",
+		description = "필수 정보를 포함하여 계약서에 임차인 정보를 최종 저장합니다.",
+		responses = {
+			@ApiResponse(responseCode = "204", description = "최종 저장 성공"),
+			@ApiResponse(responseCode = "400", description = "검증 실패 또는 데이터 누락", content = @Content),
+			@ApiResponse(responseCode = "403", description = "임차인 접근 권한 없음", content = @Content),
+			@ApiResponse(responseCode = "404", description = "계약서 또는 임차인 정보 없음", content = @Content)
+		}
+	)
+	@PatchMapping("/tenant/final")
+	public ResponseEntity<Void> finalTenantInfo(
+		@Validated(FinalSave.class) @RequestBody UpdateTenantInfoDto requestDto) {
+		contractService.finalTenantInfo(requestDto);
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@Operation(
+		summary = "계약서의 임대인 정보 조회",
+		description = "계약 ID와 임대인 ID를 기반으로 해당 계약서에 저장된 임대인 정보를 조회합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "조회 성공",
+				content = @Content(schema = @Schema(implementation = LandlordInfoResponseDto.class))),
+			@ApiResponse(responseCode = "403", description = "임대인 접근 권한 없음", content = @Content),
+			@ApiResponse(responseCode = "404", description = "계약서 또는 임대인 정보 없음", content = @Content)
+		}
+	)
+	@GetMapping("/landlord")
+	public ResponseEntity<LandlordInfoResponseDto> getLandlordInfo(
+		@Parameter(description = "계약 ID", required = true) @RequestParam Long contractId,
+		@Parameter(description = "임대인 ID", required = true) @RequestParam Long landlordId) {
+		LandlordInfoResponseDto dto = contractService.getLandlordInfo(contractId, landlordId);
+
+		return ResponseEntity.ok(dto);
+	}
+
+	@Operation(
+		summary = "계약서의 임차인 정보 조회",
+		description = "계약 ID와 임차인 ID를 기반으로 해당 계약서에 저장된 임차인 정보를 조회합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "조회 성공",
+				content = @Content(schema = @Schema(implementation = TenantInfoResponseDto.class))),
+			@ApiResponse(responseCode = "403", description = "임차인 접근 권한 없음", content = @Content),
+			@ApiResponse(responseCode = "404", description = "계약서 또는 임차인 정보 없음", content = @Content)
+		}
+	)
+	@GetMapping("/tenant")
+	public ResponseEntity<TenantInfoResponseDto> getTenantInfo(
+		@Parameter(description = "계약 ID", required = true) @RequestParam Long contractId,
+		@Parameter(description = "임차인 ID", required = true) @RequestParam Long tenantId) {
+		TenantInfoResponseDto dto = contractService.getTenantInfo(contractId, tenantId);
+
+		return ResponseEntity.ok(dto);
+	}
+
+	@Operation(
+		summary = "계약서 상태 조회",
+		description = "계약 ID와 임대인 ID를 기반으로 계약 상태를 조회합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "조회 성공",
+				content = @Content(schema = @Schema(implementation = ContractStatusResponseDto.class))),
+			@ApiResponse(responseCode = "403", description = "임대인 접근 권한 없음", content = @Content),
+			@ApiResponse(responseCode = "404", description = "계약서 없음", content = @Content)
+		}
+	)
+	@GetMapping("/status")
+	public ResponseEntity<ContractStatusResponseDto> getContractStatus(
+		@Parameter(description = "계약 ID", required = true) @RequestParam Long contractId,
+		@Parameter(description = "유저 ID (임대인 or 임차인)", required = true) @RequestParam Long userId) {
+		ContractStatusResponseDto dto = contractService.getContractStatus(contractId, userId);
+
+		return ResponseEntity.ok(dto);
+	}
+
+	@Operation(
+		summary = "계약서 통합 정보 조회",
+		description = "계약 ID와 사용자 ID(임대인 또는 임차인)를 통해 통합된 계약 정보를 조회합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "조회 성공",
+				content = @Content(schema = @Schema(implementation = ContractDetailResponseDto.class))),
+			@ApiResponse(responseCode = "403", description = "해당 계약서 접근 권한 없음", content = @Content),
+			@ApiResponse(responseCode = "404", description = "계약서 없음", content = @Content)
+		}
+	)
+	@GetMapping("/detail")
+	public ResponseEntity<ContractDetailResponseDto> getContractDetail(
+		@Parameter(description = "계약 ID", required = true) @RequestParam Long contractId,
+		@Parameter(description = "유저 ID (임대인 or 임차인)", required = true) @RequestParam Long userId) {
+		ContractDetailResponseDto dto = contractService.getContractDetail(contractId, userId);
+
+		return ResponseEntity.ok(dto);
+	}
+
+	@PatchMapping(value = "/landlord/signatures", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@Operation(summary = "임대인 서명 이미지 등록")
+	public ResponseEntity<Void> uploadLandlordSignatures(
+		@Valid @ModelAttribute LandlordSignatureUpdateRequestDto requestDto) {
+		contractService.updateLandlordSignatures(requestDto);
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@PatchMapping(value = "/tenant/signature", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@Operation(summary = "임차인 서명 이미지 등록")
+	public ResponseEntity<Void> uploadTenantSignature(
+		@Valid @ModelAttribute TenantSignatureUpdateRequestDto requestDto) {
+		contractService.updateTenantSignature(requestDto);
+
+		return ResponseEntity.noContent().build();
+	}
 
 }
