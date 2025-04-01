@@ -53,7 +53,7 @@ public class RoomController {
 		@RequestParam BigDecimal lng,
 		@RequestParam(required = false) Integer zoom,
 		@RequestParam(required = false) Integer page,
-		@RequestParam Long memberId) {   // 이후 로그인 토큰의 memberId로 로직 확인하도록 변경 예정
+		@RequestParam(required = false) Long memberId) {   // 이후 로그인 토큰의 memberId로 로직 확인하도록 변경 예정
 		RoomListResponseDto response = roomService.searchRooms(price, areaTypes, lat, lng, zoom, page, memberId);
 
 		return ResponseEntity.ok(response);
@@ -81,7 +81,7 @@ public class RoomController {
 	@ApiResponse(responseCode = "200", description = "정상적으로 매물 상세 정보를 반환했습니다.")
 	@GetMapping("/{roomId}")
 	public ResponseEntity<SearchDetailRoomResponseDto> searchRoomDetail(@PathVariable Long roomId,
-		@RequestParam Long memberId) {   // 이후 로그인 토큰의 memberId로 로직 확인하도록 변경 예정
+		@RequestParam(required = false) Long memberId) {   // 이후 로그인 토큰의 memberId로 로직 확인하도록 변경 예정
 		var searchRoom = roomService.searchRoomDetail(roomId, memberId);
 
 		return ResponseEntity.ok(searchRoom);

@@ -1,5 +1,6 @@
 package com.bangjwo.room.application.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,10 @@ public class LikeService {
 
 	@Transactional(readOnly = true)
 	public List<Likes> getLikeRooms(List<Room> rooms, Long memberId) {
+		if (memberId == null) {
+			return Collections.emptyList();
+		}
+
 		return likeRepository.findByRoomInAndMemberId(rooms, memberId);
 	}
 
