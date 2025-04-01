@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
+import com.bangjwo.room.application.dto.request.UpdateRoomStatusDto;
 import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
 import com.bangjwo.room.application.dto.response.SearchDetailRoomResponseDto;
@@ -30,10 +31,12 @@ import com.bangjwo.room.domain.vo.RoomAreaType;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Tag(name = "Room", description = "매물 관련 API")
 @RestController
 @RequestMapping("/api/v1/room")
 @RequiredArgsConstructor
@@ -154,5 +157,14 @@ public class RoomController {
 		var result = roomService.getLikeRooms(memberId, page, size);
 
 		return ResponseEntity.ok(result);
+	}
+
+	@Operation(summary = "매물 임시 상태 변경", description = "개발 용도로 매물 상태를 임시 변경. 이후 삭제 예정.")
+	@ApiResponse(responseCode = "200", description = "정상적으로 매물 상태를 변경하였습니다.")
+	@PatchMapping("/status")
+	public ResponseEntity<Void> updateRoomStatus(@RequestBody UpdateRoomStatusDto requestDto) {
+		roomService.updateRoomStatus(requestDto);
+
+		return ResponseEntity.noContent().build();
 	}
 }

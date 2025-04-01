@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import com.bangjwo.room.domain.entity.Image;
 import com.bangjwo.room.domain.entity.Room;
 
-public interface ImageRepository extends JpaRepository<Image, Integer> {
+public interface RoomImageRepository extends JpaRepository<Image, Integer> {
 	Optional<Image> deleteByImageId(Long imageId);
 
 	List<Image> findAllByRoom(Room room);

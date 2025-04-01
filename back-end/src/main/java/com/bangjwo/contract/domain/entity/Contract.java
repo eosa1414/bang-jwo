@@ -1,45 +1,80 @@
 package com.bangjwo.contract.domain.entity;
 
-import jakarta.persistence.*;
+import com.bangjwo.contract.domain.vo.ContractStatus;
+import com.bangjwo.global.common.entity.BaseEntity;
+import com.bangjwo.room.domain.entity.Room;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "CONTRACT")
-public class Contract {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "CONTRACT", indexes = {
+	@Index(name = "idx_room_id", columnList = "room_id"),
+	@Index(name = "idx_landlord_id", columnList = "landlord_id"),
+	@Index(name = "idx_tenant_id", columnList = "tenant_id"),
+	@Index(name = "idx_special_clause_id", columnList = "special_clause_id")
+})
+public class Contract extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long contractId;
 
-	@Column(nullable = false)
+	@OneToOne
+	@JoinColumn(name = "room_id", unique = true)
+	private Room room;
+
+	@Column(name = "landlord_id", nullable = false)
 	private Long landlordId;
 
-	@Column(nullable = false)
+	@Column(name = "tenant_id", nullable = false)
 	private Long tenantId;
 
-	@Column(nullable = false)
-	private Long roomId;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "landlord_info_id", nullable = false)
+	private LandlordInfo landlordInfo;
 
-	@Column(nullable = false)
-	private Long tenantInfoId;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "tenant_info_id", nullable = false)
+	private TenantInfo tenantInfo;
 
-	@Column(nullable = false)
-	private Long landloadInfoId;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "special_clause_id", nullable = false)
+	private SpecialClause specialClause;
 
 	@Column(nullable = false)
 	private String ipfsKey; // 암호화
 
-	// ENUM('DONE','UNDONE') → String
 	@Column(nullable = false)
-	private String status;
+	@Enumerated(EnumType.STRING)
+	private ContractStatus contractStatus;
 
 	@Column(nullable = false)
 	private Boolean landlordAuth;
 
 	@Column(nullable = false)
 	private Boolean tenantAuth;
+
+	public void updateContractStatus(ContractStatus status) {
+		this.contractStatus = status;
+	}
 }

@@ -1,6 +1,12 @@
 package com.bangjwo.global.common.exception.handler;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -31,6 +37,24 @@ public class GlobalExceptionHandler {
 		);
 
 		return ErrorResponseDto.of(GlobalErrorCodes.INVALID_INPUT_VALUE);
+	}
+
+	@ExceptionHandler(TypeMismatchException.class)
+	protected ResponseEntity<ErrorResponseDto> handleTypeMismatchException(TypeMismatchException ex) {
+		log.warn("TypeMismatchException ; {} : {}", ex.getPropertyName(), ex.getMessage());
+
+		return ErrorResponseDto.of(GlobalErrorCodes.INVALID_INPUT_TYPE);
+	}
+
+	@ExceptionHandler(BindException.class)
+	protected ResponseEntity<ErrorResponseDto> handleBindException(BindException ex) {
+		List<String> errors = ex.getFieldErrors().stream()
+			.map((FieldError error) -> error.getField() + ": " + error.getDefaultMessage())
+			.collect(Collectors.toList());
+		String errorMsg = String.join("; ", errors);
+		log.warn("BindException: {}", errorMsg);
+
+		return ErrorResponseDto.of(GlobalErrorCodes.BINDING_ERROR);
 	}
 
 	@ExceptionHandler(Exception.class)

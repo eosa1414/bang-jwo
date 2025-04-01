@@ -118,7 +118,7 @@ public class Room extends BaseEntity {
 
 	@Column(nullable = false)
 	private Boolean isPhonePublic;
-	
+
 	// 양방향에 대해서는 일단 이후에 성능 측정 후 수정 여부 결정 예정
 
 	/**
@@ -205,6 +205,10 @@ public class Room extends BaseEntity {
 		if (dto.getIsPhonePublic() != null) {
 			this.isPhonePublic = dto.getIsPhonePublic();
 		}
+	}
+
+	public void updateStatus(RoomStatus status) {
+		this.status = status;
 	}
 }
 

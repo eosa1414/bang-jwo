@@ -21,10 +21,10 @@ import lombok.Getter;
 @Schema(description = "매물 상세 조회 응답 DTO")
 public class SearchDetailRoomResponseDto {
 
-	@Schema(description = "매물(Room) ID", example = "101")
+	@Schema(description = "매물(Room) ID", example = "1")
 	private Long roomId;
 
-	@Schema(description = "매물 등록자(회원) ID", example = "1001")
+	@Schema(description = "매물 등록자(회원) ID", example = "1")
 	private Long memberId;
 
 	@Schema(description = "좋아요 여부", example = "false")
