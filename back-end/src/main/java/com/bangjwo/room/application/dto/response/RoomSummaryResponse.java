@@ -49,6 +49,9 @@ public class RoomSummaryResponse {
 	@Schema(description = "층수(문자열)", example = "3")
 	private String floor;
 
+	@Schema(description = "짧은 설명", example = "역에서 15분 걸리고, 근처에 편의점이 많습니다.")
+	private String simpleDescription;
+
 	@Schema(description = "대표 이미지 URL", example = "https://example.com/images/1.jpg")
 	private String imageUrl;
 }
