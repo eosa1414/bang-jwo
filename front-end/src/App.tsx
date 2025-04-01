@@ -3,10 +3,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 //layouts
 import LayoutMain from "./layouts/LayoutMain";
 //pages
-import Home from "./pages/home/Home";
-import TestPage from "./pages/TestPage";
-import RoomFind from "./pages/room-find/RoomFind";
-import TestButtonPage from "./pages/TestButtonPage";
+import PageHome from "./pages/PageHome";
+import PageTest from "./pages/PageTest";
+import PageRoomFind from "./features/room-find/pages/PageRoomFind";
+import PageTestButton from "./pages/PageTestButton";
 import SellerContract from "./features/contract/components/SellerContract";
 import SellerContractPage from "./features/contract/pages/SellerContractPage";
 
@@ -18,7 +18,7 @@ function App() {
           path="/"
           element={
             <LayoutMain>
-              <Home />
+              <PageHome />
             </LayoutMain>
           }
         />
@@ -30,7 +30,7 @@ function App() {
               mainClassName="flex flex-row overflow-hidden"
               hasFooter={false}
             >
-              <RoomFind />
+              <PageRoomFind />
             </LayoutMain>
           }
         />
@@ -42,8 +42,8 @@ function App() {
           path="/mypage"
           element={<LayoutMain>마이페이지 화면</LayoutMain>}
         />
-        <Route path="/test" element={<TestPage />} />
-        <Route path="/test/button" element={<TestButtonPage />} />
+        <Route path="/test" element={<PageTest />} />
+        <Route path="/test/button" element={<PageTestButton />} />
         <Route path="/seller-contract" element={<SellerContract />} />
         <Route path="/seller-contract-form" element={<SellerContractPage />} />
       </Routes>

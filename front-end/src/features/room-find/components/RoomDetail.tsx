@@ -1,12 +1,13 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import TabMenu from "./TabMenu";
-import Accordion from "../../components/Accordion";
-import ListItemLine from "../../components/ListItemLine";
-import InfoText from "../../components/InfoText";
+import Accordion from "../../../components/Accordion";
+import ListItemLine from "../../../components/ListItemLine";
+import InfoText from "../../../components/InfoText";
 import TabContent from "./TabContent";
-import Button from "../../components/buttons/Button";
+import Button from "../../../components/buttons/Button";
 import RoomOptions from "./RoomOptions";
+import BoxHeader from "./BoxHeader";
 
 interface RoomDetailProps {
   selectedRoomId: number | null;
@@ -16,13 +17,22 @@ interface RoomDetailProps {
 const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   const [isHeaderColorChange, setIsHeaderColorChange] = useState(false);
   const [isTitleScrolled, setIsTitleScrolled] = useState(false);
+  const [tabMenuHeight, setTabMenuHeight] = useState(0);
+  const [activeTab, setActiveTab] = useState<number>(0);
 
-  // const scrollRef = useRef<HTMLDivElement | null[]>([]);
   const boxRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
   const textStartRef = useRef<HTMLDivElement | null>(null);
 
+  const tabTitles = [
+    "기본 정보",
+    "관리비",
+    "집 소개",
+    "집 정보",
+    "위치",
+    "등기부등본 · 위험도",
+  ];
   const roomOptions = ["보안/안전", "엘리베이터", "냉장고", "세탁기"];
   const maintenanceOptions = [
     "전기세",
@@ -35,46 +45,64 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   ];
   const notMaintenanceOptions = ["수도세"];
 
+  // tab scroll
+  const tabContentsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  const handleTabClick = (idx: number) => {
+    tabContentsRef.current[idx]?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  };
+
+  // TabMenu 높이 가져오기
+  useEffect(() => {
+    const tabMenuElement = document.querySelector(".sticky") as HTMLElement;
+    if (tabMenuElement) {
+      setTabMenuHeight(tabMenuElement.offsetHeight);
+    }
+  });
+
   useEffect(() => {
     const boxElement = boxRef.current;
-    const headerElement = headerRef.current;
+    const headerRect = headerRef.current?.getBoundingClientRect();
     const textStartElement = textStartRef.current;
     const titleElement = titleRef.current;
 
     const handleScroll = () => {
-      if (headerElement && textStartElement) {
-        const headerRect = headerElement.getBoundingClientRect();
+      //헤더 색상 변경
+      if (headerRect && textStartElement) {
         const textStartRect = textStartElement.getBoundingClientRect();
-
-        //헤더 색상 변경
-        if (textStartRect.top <= headerRect.bottom) {
-          setIsHeaderColorChange(true);
-        } else {
-          setIsHeaderColorChange(false);
-        }
+        setIsHeaderColorChange(textStartRect.top <= headerRect.bottom);
       }
 
-      if (headerElement && titleElement) {
-        const headerRect = headerElement.getBoundingClientRect();
+      //title이 scroll로 가려지면 header에 title 등장
+      if (headerRect && titleElement) {
         const titleRect = titleElement.getBoundingClientRect();
-
-        //title이 scroll로 가려지면 header에 title 등장
-        if (titleRect.top <= headerRect.bottom) {
-          setIsTitleScrolled(true);
-        } else {
-          setIsTitleScrolled(false);
-        }
+        setIsTitleScrolled(titleRect.top <= headerRect.bottom);
       }
-    };
 
-    if (boxElement) {
-      boxElement.addEventListener("scroll", handleScroll);
-    }
+      tabContentsRef.current.forEach(
+        (ref: HTMLDivElement | null, idx: number) => {
+          if (ref && boxRef.current) {
+            const { top, bottom } = ref.getBoundingClientRect();
+
+            const boxTop = boxRef.current.getBoundingClientRect().top;
+            const boxHeight = boxRef.current.getBoundingClientRect().height;
+            if (
+              top <= boxTop + boxHeight / 2 &&
+              bottom >= boxTop + boxHeight / 2
+            ) {
+              setActiveTab(idx);
+            }
+          }
+        }
+      );
+    };
+    boxElement?.addEventListener("scroll", handleScroll);
 
     return () => {
-      if (boxElement) {
-        boxElement.removeEventListener("scroll", handleScroll);
-      }
+      boxElement?.removeEventListener("scroll", handleScroll);
     };
   });
 
@@ -95,25 +123,12 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
               className="w-full h-full overflow-y-auto scroll-custom"
             >
               {/* box header */}
-              <div
+              <BoxHeader
                 ref={headerRef}
-                className={`absolute z-1 w-full flex justify-between items-center p-[12px_14px] h-[48px] transition-colors duration-300 ${
-                  isHeaderColorChange
-                    ? "bg-real-white text-neutral-black"
-                    : "text-neutral-white"
-                }`}
-              >
-                <i className="material-symbols-rounded">arrow_back_ios</i>
-                {isTitleScrolled && (
-                  <span className="font-bold">월세 500/40</span>
-                )}
-                <i
-                  className="material-symbols-rounded cursor-pointer"
-                  onClick={onClose}
-                >
-                  close
-                </i>
-              </div>
+                isHeaderColorChange={isHeaderColorChange}
+                isTitleScrolled={isTitleScrolled}
+                onClose={onClose}
+              />
 
               {/* Image */}
               <div className="bg-neutral-light100 w-full h-[13rem] overflow-hidden relative">
@@ -233,19 +248,33 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
               {/* Detail */}
               <TabMenu
-                // scrollRef={scrollRef}
-                AddClassName="sticky top-[48px] p-[0.875rem_1rem]"
+                tabTitles={tabTitles}
+                addClassName="sticky top-[48px]"
+                onTabClick={handleTabClick}
+                activeTab={activeTab}
               />
-
-              <div className="flex flex-col gap-4 bg-real-white p-[0.875rem_1rem_calc(0.875rem+48px)_1rem]">
-                <TabContent title="기본 정보">
+              {/* Tab Contents */}
+              <div className="flex flex-col gap-4 bg-real-white p-[0.875rem_1rem_calc(0.875rem+208px)_1rem]">
+                <TabContent
+                  title="기본 정보"
+                  ref={(el) => {
+                    if (el) tabContentsRef.current[0] = el;
+                  }}
+                  scrollMarginTop={48 + tabMenuHeight}
+                >
                   <div>깔끔하고 전망 좋은 12층 집입니다.</div>
                   <RoomOptions roomOptions={roomOptions} />
                 </TabContent>
 
                 <div className="divider" />
 
-                <TabContent title="관리비">
+                <TabContent
+                  title="관리비"
+                  ref={(el) => {
+                    if (el) tabContentsRef.current[1] = el;
+                  }}
+                  scrollMarginTop={48 + tabMenuHeight}
+                >
                   <p className="text-xl font-bold">120,000원</p>
                   <RoomOptions
                     title="관리비 포함 항목"
@@ -259,7 +288,13 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
                 <div className="divider" />
 
-                <TabContent title="집 소개">
+                <TabContent
+                  title="집 소개"
+                  ref={(el) => {
+                    if (el) tabContentsRef.current[2] = el;
+                  }}
+                  scrollMarginTop={48 + tabMenuHeight}
+                >
                   <div>
                     <p>
                       12층이고 창문 앞으로 가로 막힌 게 없어서 전망이 좋습니다.
@@ -274,7 +309,13 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
                 <div className="divider" />
 
-                <TabContent title="집 정보">
+                <TabContent
+                  title="집 정보"
+                  ref={(el) => {
+                    if (el) tabContentsRef.current[3] = el;
+                  }}
+                  scrollMarginTop={48 + tabMenuHeight}
+                >
                   <ListItemLine title="입주 가능일" content="즉시입주가능" />
                   <div className="flex flex-1 items-center gap-1">
                     <ListItemLine
@@ -305,7 +346,13 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
                 <div className="divider" />
 
-                <TabContent title="위치">
+                <TabContent
+                  title="위치"
+                  ref={(el) => {
+                    if (el) tabContentsRef.current[4] = el;
+                  }}
+                  scrollMarginTop={48 + tabMenuHeight}
+                >
                   <div className="w-full h-[160px] bg-neutral-gray"></div>
                   <div className="font-medium">
                     서울특별시 강남구 테헤란로 212
@@ -314,7 +361,13 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
                 <div className="divider" />
 
-                <TabContent title="등기부등본 · 위험도">
+                <TabContent
+                  title="등기부등본 · 위험도"
+                  ref={(el) => {
+                    if (el) tabContentsRef.current[5] = el;
+                  }}
+                  scrollMarginTop={48 + tabMenuHeight}
+                >
                   <InfoText text="등기부등본을 확인하기 위해서는 700원의 수수료가 필요합니다." />
                   <Button size="large" variant="point" className="w-full">
                     [유료] 등기부등본·위험도 확인하러 가기
@@ -325,7 +378,15 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                 </TabContent>
               </div>
               {/* box footer */}
-              <div className="w-full h-[48px] bg-gold bottom-[0px] absolute"></div>
+              <div className="flex w-full h-[48px] bg-gold-light justify-around items-center bottom-[0px] absolute py-[0.875rem] text-base font-semibold">
+                <div className="flex-grow text-center">
+                  <p className="cursor-pointer">전화</p>
+                </div>
+                <span className="separator"></span>
+                <div className="flex-grow text-center">
+                  <p className="cursor-pointer">문의하기</p>
+                </div>
+              </div>
             </div>
           </div>
         </motion.div>
