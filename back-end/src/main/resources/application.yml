@@ -1,4 +1,8 @@
 spring:
+  web:
+    mvc:
+      servlet:
+
   config:
     import: optional:file:.env[.properties]
 
@@ -11,6 +15,8 @@ spring:
     password: 1234
     hikari:
       maximum-pool-size: 10
+      connection-timeout: 30000
+      initialization-fail-timeout: -1
 
   sql:
     init:
@@ -35,7 +41,7 @@ spring:
       port: ${SPRING_DATA_REDIS_PORT}
 
     mongodb:
-      uri: mongodb://${MONGO_INITDB_ROOT_USERNAME:bangjwo}:${MONGO_INITDB_ROOT_PASSWORD:1234}@localhost:27017/admin
+      uri: mongodb://bangjwo:1234@mongo:27017/admin
 
   main:
     allow-bean-definition-overriding: true

@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Document(collection = "messages")
-public class ChatMessage {
+@Document(collection = "alert")
+public class ChatAlert {
 
 	@Id
 	private String id;
@@ -23,11 +23,11 @@ public class ChatMessage {
 	private Long chatRoomId;
 
 	@Indexed
-	private Long roomId; // 매물 아이디
-
 	private Long receiverId;
 
 	private Long senderId;
+
+	private String senderImage;
 
 	private String senderNickname;
 

@@ -10,13 +10,13 @@ import com.bangjwo.chat.application.dto.ChatRoomSummary;
 
 public interface RedisChatRoomService {
 
-	void createChatRoom(ChatRoomDto.RequestDto requestDto);
+	void createChatRoom(ChatRoomDto.ResponseDto dto);
 
 	void updateChatRoom(Long chatRoomId, Long userId);
 
-	void updateLastMessage(ChatMessageDto dto);
-
 	Set<ZSetOperations.TypedTuple<String>> getRoomList(Long userId);
 
-	void resetUnreadCount(Long userId, Long roomId);
+	ChatRoomSummary getChatRoomInfo(Long userId, Long chatRoomId);
+
+	void updateLastMessages(ChatMessageDto dto, boolean isReceiverOnline);
 }

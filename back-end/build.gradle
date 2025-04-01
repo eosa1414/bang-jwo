@@ -40,9 +40,8 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
 
     implementation 'org.springframework:spring-webflux'
-    implementation 'software.amazon.awssdk:s3:2.20.45'
-
-
+    implementation 'software.amazon.awssdk:s3:2.27.24'
+    implementation 'org.web3j:core:4.13.0'
 }
 
 tasks.named('test') {

@@ -16,6 +16,7 @@ public class ChatRoomSummary implements Serializable {
 	private Long chatRoomId;
 	private Long roomId;
 	private String lastMessage;
+	private Long otherId;
 	private String profileImage;
 	private String nickname;
 	private String sendAt; // ISO8601 문자열 (예: 2025-03-26T00:52:49.475Z)
