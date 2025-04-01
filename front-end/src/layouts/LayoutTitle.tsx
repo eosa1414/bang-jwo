@@ -1,0 +1,24 @@
+import { ReactNode } from "react";
+
+interface LayoutTitleProps {
+  title: string;
+  children: ReactNode;
+  wrapperClassName?: string;
+}
+
+const LayoutTitle = ({
+  title,
+  children,
+  wrapperClassName = "",
+}: LayoutTitleProps) => {
+  return (
+    <div
+      className={`w-full m-auto mx-auto max-w-4xl flex flex-col py-[1.125rem] items-center ${wrapperClassName}`}
+    >
+      <h1 className="py-[3.25rem]">{title}</h1>
+      {children}
+    </div>
+  );
+};
+
+export default LayoutTitle;

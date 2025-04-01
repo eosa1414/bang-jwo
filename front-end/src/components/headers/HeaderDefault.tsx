@@ -1,23 +1,13 @@
-// src/components/Header.tsx
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import Logo from "/logo.svg";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface HeaderProps {
   title?: string;
 }
 
 const Header = ({ title }: HeaderProps) => {
-  // 임시로 로그인 안 된 상태를 설정
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // 임시 로그인/로그아웃 함수 (차후 API 연결시 변동)
-  const handleLogin = () => {
-    setIsLoggedIn(true); //임시 로그인 처리
-  };
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
+  const { user, login, logout } = useAuth();
 
   // 모바일 가로일 때 메뉴 동작 - 차후 추가
   // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -50,7 +40,7 @@ const Header = ({ title }: HeaderProps) => {
                 <Link to="/room/sell">
                   <li className="text-neutral-black">집 내놓기</li>
                 </Link>
-                {isLoggedIn ? (
+                {user ? (
                   <Link to="/mypage">
                     <li className="text-neutral-black">마이페이지</li>
                   </Link>
@@ -58,14 +48,14 @@ const Header = ({ title }: HeaderProps) => {
               </ul>
             </nav>
             {/* 임시 로그인/로그아웃 버튼 */}
-            {isLoggedIn ? (
+            {user ? (
               <>
                 <i className="material-symbols-rounded">chat</i>
                 <i className="material-symbols-rounded">account_circle</i>
-                <button onClick={handleLogout}>임시 로그아웃</button>
+                <button onClick={logout}>임시 로그아웃</button>
               </>
             ) : (
-              <button onClick={handleLogin}>임시 로그인</button>
+              <button onClick={() => login("example")}>임시 로그인</button>
             )}
           </div>
         </>
