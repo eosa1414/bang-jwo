@@ -1,5 +1,6 @@
 package com.bangjwo.payment.application.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public class PaymentServiceImpl implements PaymentService {
 		Payments result = paymentRepository.findByImpUid(impUid)
 			.orElseThrow(() -> new IllegalArgumentException("해당 결제 내역이 존재하지 않습니다."));
 
-		result.changeStatus(status);
+		result.changeStatus(status, LocalDateTime.now());
 
 		return PaymentConverter.toDto(result);
 	}

@@ -47,8 +47,9 @@ public class Payments {
 	private LocalDateTime updatedAt;
 
 
-	public void changeStatus(Status newStatus) {
+	public void changeStatus(Status newStatus, LocalDateTime newUpdatedAt) {
 		this.status = newStatus;
+		this.updatedAt = newUpdatedAt;
 	}
 
 }
