@@ -1,16 +1,18 @@
 package com.bangjwo.payment.application.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.bangjwo.global.common.error.payment.PaymentErrorCode;
+import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.payment.application.convert.PaymentConverter;
 import com.bangjwo.payment.application.dto.PaymentDto;
 import com.bangjwo.payment.domain.entity.Payments;
 import com.bangjwo.payment.domain.entity.Status;
 import com.bangjwo.payment.domain.repository.PaymentRepository;
 import com.siot.IamportRestClient.IamportClient;
+import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 
@@ -27,51 +29,58 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	public PaymentDto.ResponseDto savePayment(PaymentDto.RequestDto dto) {
-
-		Payments result = PaymentConverter.toEntity(dto);
-
-		paymentRepository.save(result);
-
-		return PaymentConverter.toDto(result);
+		try {
+			Payments result = PaymentConverter.toEntity(dto);
+			paymentRepository.save(result);
+			return PaymentConverter.toDto(result);
+		} catch (Exception e) {
+			log.error("사전 결제 정보 저장 실패", e);
+			throw new BusinessException(PaymentErrorCode.PREPAYMENT_SAVE_FAILED);
+		}
 	}
 
 	@Override
 	public IamportResponse<Payment> validateIamport(String impUid) {
 		try {
 			IamportResponse<Payment> payment = iamportClient.paymentByImpUid(impUid);
-			log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}", payment.getResponse());
+			if (payment == null || payment.getResponse() == null) {
+				throw new BusinessException(PaymentErrorCode.IMP_UID_NOT_FOUND);
+			}
+			log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}", payment.getResponse().getMerchantUid());
 			return payment;
+		} catch (IamportResponseException e) {
+			log.error("Iamport 응답 예외", e);
+			throw new BusinessException(PaymentErrorCode.IMP_PAYMENT_VERIFICATION_FAILED);
 		} catch (Exception e) {
-			log.info(e.getMessage());
-			return null;
+			log.error("결제 검증 중 예외", e);
+			throw new BusinessException(PaymentErrorCode.PAYMENT_INTERNAL_ERROR);
 		}
 	}
 
 	@Override
 	public PaymentDto.ResponseDto completePayment(String impUid, Status status) {
-
 		Payments result = paymentRepository.findByImpUid(impUid)
-			.orElseThrow(() -> new IllegalArgumentException("해당 결제 내역이 존재하지 않습니다."));
+			.orElseThrow(() -> new BusinessException(PaymentErrorCode.PAYMENT_NOT_FOUND));
 
-		result.changeStatus(status, LocalDateTime.now());
+		// 이미 결제 완료된 건 처리 방지
+		if (result.getStatus() == Status.PAID) {
+			throw new BusinessException(PaymentErrorCode.PAYMENT_ALREADY_COMPLETED);
+		}
 
+		result.changeStatus(status);
 		return PaymentConverter.toDto(result);
 	}
 
 	@Override
 	public PaymentDto.ResponseDto getPaymentResult(Long paymentId) {
-
 		Payments payment = paymentRepository.findById(paymentId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 결제 내역이 존재하지 않습니다."));
-
+			.orElseThrow(() -> new BusinessException(PaymentErrorCode.PAYMENT_NOT_FOUND));
 		return PaymentConverter.toDto(payment);
 	}
 
 	@Override
 	public List<PaymentDto.ResponseDto> getPaymentResults(Long userId) {
-
 		List<Payments> list = paymentRepository.findAllByMemberIdOrderByUpdatedAtAsc(userId);
-
 		return list.stream().map(PaymentConverter::toDto).toList();
 	}
 }

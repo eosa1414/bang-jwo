@@ -1,10 +1,8 @@
 package com.bangjwo.payment.domain.entity;
 
-import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.bangjwo.global.common.entity.BaseEntity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -20,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "PAYMENT")
-public class Payments {
+public class Payments extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,18 +36,9 @@ public class Payments {
 	@Column(name = "status", nullable = false)
 	private Status status = Status.READY;
 
-	@CreatedDate
-	@Column(name = "created_at", updatable = false, nullable = false)
-	private LocalDateTime createdAt;
 
-	@LastModifiedDate
-	@Column(name = "updated_at", nullable = false)
-	private LocalDateTime updatedAt;
-
-
-	public void changeStatus(Status newStatus, LocalDateTime newUpdatedAt) {
+	public void changeStatus(Status newStatus) {
 		this.status = newStatus;
-		this.updatedAt = newUpdatedAt;
 	}
 
 }

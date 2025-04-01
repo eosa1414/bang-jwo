@@ -66,7 +66,7 @@ public class PaymentController {
 		description = "포트원에 결제 내역을 검증을 요청합니다.",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "결제 검증 성공"),
-			@ApiResponse(responseCode = "404", description = "해당 결제 내역 없음", content = @Content),
+			@ApiResponse(responseCode = "400", description = "해당 결제 내역 없음", content = @Content),
 			@ApiResponse(responseCode = "500", description = "포트원 응답 오류", content = @Content)
 		}
 	)
