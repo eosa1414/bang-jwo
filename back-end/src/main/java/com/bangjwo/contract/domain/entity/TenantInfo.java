@@ -15,9 +15,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -28,22 +30,19 @@ public class TenantInfo extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long tenantInfoId;
 
-	@Column(nullable = false)
-	private Long tenantId;
-
-	@Column(length = 20, nullable = false)
+	@Column(length = 20)
 	private String name;
 
-	@Column(length = 20, nullable = false)
+	@Column(length = 20)
 	private String phone;
 
-	@Column(columnDefinition = "TEXT", nullable = false)
+	@Column(columnDefinition = "TEXT")
 	private String address;
 
-	@Column(nullable = false)
+	@Column
 	private String residentRegistrationNumber; // 암호화
 
-	@Column(nullable = false)
+	@Column
 	private LocalDate moveInDate;
 
 	@Column

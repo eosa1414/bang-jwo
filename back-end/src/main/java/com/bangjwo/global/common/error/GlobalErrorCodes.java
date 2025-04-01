@@ -18,6 +18,10 @@ public enum GlobalErrorCodes implements ErrorCode {
 
 	FAIL_IMAGE_UPLOAD(HttpStatus.SERVICE_UNAVAILABLE, "COMMON4005", "이미지 업로드 및 저장에 실패하였습니다."),
 
+	INVALID_INPUT_TYPE(HttpStatus.BAD_REQUEST, "COMMON4006", "잘못된 파일 형식입니다"),
+
+	BINDING_ERROR(HttpStatus.BAD_REQUEST, "COMMON4007", "필드 값이 유효하지 않습니다."),
+
 	INTERNAL_SERVER_ERROR(HttpStatus.BAD_REQUEST, "COMMON5001", "내부 서버 오류"),
 	;
 

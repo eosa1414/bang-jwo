@@ -1,10 +1,8 @@
 package com.bangjwo.contract.domain.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.bangjwo.contract.domain.vo.ContractStatus;
 import com.bangjwo.global.common.entity.BaseEntity;
+import com.bangjwo.room.domain.entity.Room;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -14,8 +12,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -29,15 +27,27 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "CONTRACT")
+@Table(name = "CONTRACT", indexes = {
+	@Index(name = "idx_room_id", columnList = "room_id"),
+	@Index(name = "idx_landlord_id", columnList = "landlord_id"),
+	@Index(name = "idx_tenant_id", columnList = "tenant_id"),
+	@Index(name = "idx_special_clause_id", columnList = "special_clause_id")
+})
 public class Contract extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long contractId;
 
-	@Column(nullable = false, unique = true)
-	private Long roomId;
+	@OneToOne
+	@JoinColumn(name = "room_id", unique = true)
+	private Room room;
+
+	@Column(name = "landlord_id", nullable = false)
+	private Long landlordId;
+
+	@Column(name = "tenant_id", nullable = false)
+	private Long tenantId;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "landlord_info_id", nullable = false)
@@ -47,14 +57,13 @@ public class Contract extends BaseEntity {
 	@JoinColumn(name = "tenant_info_id", nullable = false)
 	private TenantInfo tenantInfo;
 
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "contract_id")
-	private List<SpecialClause> specialClauses = new ArrayList<>();
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "special_clause_id", nullable = false)
+	private SpecialClause specialClause;
 
 	@Column(nullable = false)
-	private String ipfsKey; // 암호화 -> 이게 뭐고 ㅋㅋ
+	private String ipfsKey; // 암호화
 
-	// ENUM('DONE','UNDONE') → String
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private ContractStatus contractStatus;
@@ -65,18 +74,7 @@ public class Contract extends BaseEntity {
 	@Column(nullable = false)
 	private Boolean tenantAuth;
 
-	public Contract(Long roomId, LandlordInfo landlordInfo, TenantInfo tenantInfo, String ipfsKey) {
-		this.roomId = roomId;
-		this.landlordInfo = landlordInfo;
-		this.tenantInfo = tenantInfo;
-		this.ipfsKey = ipfsKey;    // 해당 부분 서버에서 생성해야되면 수정
-		this.contractStatus = ContractStatus.BEFORE_WRITE;
-		this.landlordAuth = false;
-		this.tenantAuth = false;
-	}
-
-	// 특약 조건 여러개가 들어갈 수 있으므로 메서드 따로 구현
-	public void addSpecialClause(SpecialClause clause) {
-		this.specialClauses.add(clause);
+	public void updateContractStatus(ContractStatus status) {
+		this.contractStatus = status;
 	}
 }

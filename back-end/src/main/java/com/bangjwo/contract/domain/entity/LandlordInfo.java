@@ -4,9 +4,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.bangjwo.global.common.entity.BaseEntity;
+import com.bangjwo.room.domain.vo.ContractType;
+import com.bangjwo.room.domain.vo.LeaseType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,9 +20,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -29,9 +35,6 @@ public class LandlordInfo extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long landlordInfoId;
 
-	@Column(nullable = false)
-	private Long landlordId;
-
 	@Column(length = 20)
 	private String name;
 
@@ -41,7 +44,7 @@ public class LandlordInfo extends BaseEntity {
 	@Column(columnDefinition = "TEXT")
 	private String address;
 
-	@Column(nullable = false)
+	@Column
 	private String residentRegistrationNumber; // 암호화
 
 	@Column(columnDefinition = "TEXT")
@@ -83,13 +86,13 @@ public class LandlordInfo extends BaseEntity {
 
 	private BigDecimal rentalPartArea;
 
-	// ENUM('신규 계약','합의에 의한 재계약','갱신계약') → String
-	@Column
-	private String contractType;
+	@Column(length = 20)
+	@Enumerated(EnumType.STRING)
+	private ContractType contractType;
 
-	// ENUM('보증금 있는 월세','월세') → String
-	@Column
-	private String leaseType;
+	@Column(length = 10)
+	@Enumerated(EnumType.STRING)
+	private LeaseType leaseType;
 
 	@Column
 	private Long depositAmount;
@@ -149,5 +152,6 @@ public class LandlordInfo extends BaseEntity {
 
 	@Column
 	private String landlordSignatureUrl4;
+
 }
 
