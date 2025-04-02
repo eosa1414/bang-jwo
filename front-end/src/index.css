@@ -9,7 +9,7 @@
   --color-neutral-white: #fefdfc;
 
   --color-black: #000000;
-  --color-neutral-black: #0b0b0c;
+  --color-neutral-black: #252734;
   --color-neutral-dark200: #535257;
   --color-neutral-dark100: #6c6c6d;
   --color-neutral-gray: #b4b3ba;
@@ -58,6 +58,12 @@
 
 .divider {
   border-top: 1px solid var(--color-neutral-light100);
+}
+.divider.black {
+  border-color: var(--color-neutral-black);
+}
+.divider.w2 {
+  border-top-width: 2px;
 }
 
 .separator {
@@ -126,7 +132,7 @@ h1 {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
+    color: var(--color-neutral-black);
     background-color: #ffffff;
   }
   a:hover {
