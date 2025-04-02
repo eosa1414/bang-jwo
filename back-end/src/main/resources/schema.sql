@@ -79,27 +79,6 @@ CREATE TABLE IF NOT EXISTS `landlord_info` (
 );
 
 
-CREATE TABLE IF NOT EXISTS `contract` (
-    `contract_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `room_id` BIGINT UNIQUE,
-    `landlord_id` BIGINT NOT NULL,
-    `tenant_id` BIGINT NOT NULL,
-    `landlord_info_id` BIGINT NOT NULL,
-    `tenant_info_id` BIGINT NOT NULL,
-    `special_clause_id` BIGINT NOT NULL,
-    `ipfs_key` VARCHAR(255) NOT NULL,
-    `contract_status` ENUM('BEFORE_WRITE', 'LANDLORD_COMPLETED', 'TENANT_COMPLETED', 'TENANT_SIGNED', 'COMPLETED') NOT NULL,
-    `landlord_auth` BOOLEAN NOT NULL,
-    `tenant_auth` BOOLEAN NOT NULL,
-    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `deleted_at` TIMESTAMP NULL,
-    INDEX `idx_room_id` (`room_id`),
-    INDEX `idx_landlord_id` (`landlord_id`),
-    INDEX `idx_tenant_id` (`tenant_id`),
-    INDEX `idx_special_clause_id` (`special_clause_id`)
-);
-
 CREATE TABLE IF NOT EXISTS `tenant_info` (
     `tenant_info_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(20),
@@ -145,6 +124,28 @@ CREATE TABLE IF NOT EXISTS `special_clause` (
 CREATE TABLE IF NOT EXISTS `special_clause_etc` (
     `special_clause_id` BIGINT NOT NULL,
     `etc_value` TEXT
+);
+
+CREATE TABLE IF NOT EXISTS `contract` (
+    `contract_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `room_id` BIGINT UNIQUE,
+    `landlord_id` BIGINT NOT NULL,
+    `tenant_id` BIGINT NOT NULL,
+    `landlord_info_id` BIGINT NOT NULL UNIQUE,
+    `tenant_info_id` BIGINT NOT NULL UNIQUE,
+    `special_clause_id` BIGINT NOT NULL UNIQUE,
+    `ipfs_key` VARCHAR(255) NOT NULL,
+    `aes_key` VARCHAR(255) NOT NULL,
+    `contract_status` ENUM('BEFORE_WRITE', 'LANDLORD_COMPLETED', 'TENANT_COMPLETED', 'TENANT_SIGNED', 'COMPLETED') NOT NULL,
+    `landlord_auth` BOOLEAN NOT NULL,
+    `tenant_auth` BOOLEAN NOT NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` TIMESTAMP NULL,
+    INDEX `idx_room_id` (`room_id`),
+    INDEX `idx_landlord_id` (`landlord_id`),
+    INDEX `idx_tenant_id` (`tenant_id`),
+    INDEX `idx_special_clause_id` (`special_clause_id`)
 );
 
 CREATE TABLE IF NOT EXISTS `options` (

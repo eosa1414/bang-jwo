@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "contract")
+@Table
 public class Payments extends BaseEntity {
 
 	@Id
@@ -33,7 +33,7 @@ public class Payments extends BaseEntity {
 	@Column(name = "imp_uid", nullable = false)
 	private String impUid;
 
-	@Column(name = "member_id",  nullable = false)
+	@Column(name = "member_id", nullable = false)
 	private Long memberId;
 
 	@Column(name = "room_id", nullable = false)
@@ -41,7 +41,6 @@ public class Payments extends BaseEntity {
 
 	@Column(name = "payment_status", nullable = false)
 	private PaymentStatus status = PaymentStatus.READY;
-
 
 	public void changeStatus(PaymentStatus newStatus) {
 		this.status = newStatus;
