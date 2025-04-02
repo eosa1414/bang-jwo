@@ -30,7 +30,7 @@ public class Member extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long memberId;
 
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private Long kakaoId;
 
 	@Column(length = 20)
