@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `payment` (
     `imp_uid`                       VARCHAR(255)    NOT NULL,
     `member_id`						BIGINT		    NOT NULL,
     `room_id`						BIGINT		    NOT NULL,
-    `status`                        ENUM('READY', 'PAID', 'FAILED') NOT NULL DEFAULT 'READY',
+    `payment_status`                ENUM('READY', 'PAID', 'FAILED') NOT NULL DEFAULT 'READY',
     `created_at`				    TIMESTAMP	    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`                    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

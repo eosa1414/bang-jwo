@@ -1,4 +1,4 @@
-package com.bangjwo.payment.presentation;
+package com.bangjwo.portone.presentation;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bangjwo.payment.application.dto.PaymentDto;
-import com.bangjwo.payment.application.service.PaymentService;
-import com.bangjwo.payment.domain.entity.Status;
+import com.bangjwo.portone.application.dto.PaymentDto;
+import com.bangjwo.portone.application.service.PaymentService;
+import com.bangjwo.portone.domain.entity.PaymentStatus;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
@@ -96,7 +96,7 @@ public class PaymentController {
 	@PutMapping("/result/{impUid}/{status}")
 	public ResponseEntity<PaymentDto.ResponseDto> savePayment(
 		@PathVariable String impUid,
-		@PathVariable Status status) {
+		@PathVariable PaymentStatus status) {
 
 		return ResponseEntity.ok().body(paymentService.completePayment(impUid, status));
 	}
