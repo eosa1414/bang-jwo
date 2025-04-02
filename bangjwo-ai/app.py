@@ -186,7 +186,7 @@ else:
     print("초기 iframe의 src를 찾지 못했습니다.")
     stored_final_url = None
 
-app = FastAPI()
+app = FastAPI(root_path="/ai")
 
 class Question(BaseModel):
     question: str
