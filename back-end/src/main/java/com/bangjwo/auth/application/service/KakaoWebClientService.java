@@ -62,6 +62,7 @@ public class KakaoWebClientService {
 
 			return (String)tokenMap.get("access_token");
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new BusinessException(AuthErrorCode.KAKAO_TOKEN_REQUEST_FAILED);
 		}
 	}
