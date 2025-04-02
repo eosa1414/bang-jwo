@@ -39,15 +39,29 @@ spring:
 
     mongodb:
       uri: mongodb://bangjwo:1234@mongo:27017/admin      #docker용
-#      uri: mongodb://bangjwo:1234@localhost:27017/admin #local용
+  #      uri: mongodb://bangjwo:1234@localhost:27017/admin #local용
 
   main:
     allow-bean-definition-overriding: true
 
-kakao:
-  rest:
-    api:
-      key: ${KAKAO_REST_API_KEY}
+registration:
+  kakao:
+    client-id: ${KAKAO_REST_API_KEY}
+    redirect-uri: ${KAKAO_REDIRECT_URI}
+    authorization-grant-type: authorization_code
+    scope: profile_nickname, profile_image, account_email
+    client-name: kakao
+provider:
+  kakao:
+    authorization-uri: https://kauth.kakao.com/oauth/authorize
+    token-uri: https://kauth.kakao.com/oauth/token
+    user-info-uri: https://kapi.kakao.com/v2/user/me
+    user-name-attribute: id
+
+token:
+  access_expiration_time: 3600000
+  refresh_expiration_time: 2592000000
+  secret: ${JWT_SECRET_KEY}
 
 aws:
   access:
