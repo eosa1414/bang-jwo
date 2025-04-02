@@ -11,6 +11,7 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -64,7 +65,13 @@ public class SpecialClause extends BaseEntity {
 	private Boolean isDetailedAddressConsentGiven;
 
 	@ElementCollection
-	@CollectionTable(name = "special_clause_etc", joinColumns = @JoinColumn(name = "special_clause_id"))
+	@CollectionTable(
+		name = "special_clause_etc",
+		joinColumns = @JoinColumn(
+			name = "special_clause_id",
+			foreignKey = @ForeignKey(value = jakarta.persistence.ConstraintMode.NO_CONSTRAINT)
+		)
+	)
 	@Column(name = "etc_value", columnDefinition = "TEXT")
 	@Schema(description = "기타 특약사항 리스트", example = "[\"현 상태 유지 조건\", \"애완동물 금지\"]")
 	private List<String> etc = new ArrayList<>();
