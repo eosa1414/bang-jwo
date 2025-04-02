@@ -10,13 +10,12 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.bangjwo.chat.application.convert.AlertConverter;
 import com.bangjwo.chat.application.dto.ChatMessageDto;
 import com.bangjwo.chat.application.dto.ChatRoomDto;
 import com.bangjwo.chat.application.dto.ChatRoomSummary;
@@ -27,11 +26,15 @@ import com.bangjwo.chat.application.service.RedisChatRoomService;
 import com.bangjwo.chat.domain.entity.ChatAlert;
 import com.bangjwo.chat.infrastructure.WebSocketSessionTracker;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Tag(name = "Chat", description = "채팅 관련 API")
 @Controller()
-@RequestMapping("/chat")
+@RequestMapping("/api/v1/chat")
 @Slf4j
 @RequiredArgsConstructor
 public class ChatRoomController {
@@ -44,22 +47,28 @@ public class ChatRoomController {
 	private final WebSocketSessionTracker webSocketSessionTracker;
 	private final RedisTemplate<String, String> redisTemplate;
 
-
 	/*
 	* 채팅방 생성
 	* 세입자만 채팅방을 생성할 수 있음
 	* */
+	@Operation(
+		summary = "채팅방 생성",
+		description = "세입자가 새로운 채팅방을 생성합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "채팅방 생성 성공"),
+			@ApiResponse(responseCode = "400", description = "요청 데이터 오류")
+		}
+	)
 	@PostMapping("/new-chat")
-	public ResponseEntity<ChatRoomDto.ResponseDto> createChatRoom(@RequestBody ChatRoomDto.RequestDto requestDto) {
+	public ResponseEntity<ChatRoomDto.ResponseDto> createChatRoom(
+		@RequestBody ChatRoomDto.RequestDto requestDto) {
 
 		ChatRoomDto.ResponseDto response = chatroomService.requestClass(requestDto);
-		/*
-		* 채팅방이 생성되면 Redis에 새로 채팅방 추가.
-		* */
+
+		// 채팅방이 생성되면 Redis에 새로 채팅방 추가.
 		redisChatRoomService.createChatRoom(response);
-		/*
-		* 채팅방 생성되면 프론트는 해당 엔드포인트 구독
-		* */
+
+		// 채팅방 생성되면 프론트는 해당 엔드포인트 구독
 		return ResponseEntity.ok().body(response);
 	}
 
@@ -68,6 +77,14 @@ public class ChatRoomController {
 	 * MongoDB에 있는 채팅 중 read false 를 true 로 변경
 	 * Redis에 있는 해당 채팅방 정보 업데이트 : 안읽은 메세지 0으로 업데이트
 	 * */
+	@Operation(
+		summary = "채팅방 입장",
+		description = "채팅방에 입장하며, 채팅 내역과 알림의 읽음 상태를 업데이트합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "채팅 내역 조회 및 읽음 처리 성공"),
+			@ApiResponse(responseCode = "400", description = "요청 데이터 오류")
+		}
+	)
 	@GetMapping("/{userId}/enter/{chatRoomId}")
 	public ResponseEntity<List<ChatMessageDto>> getChatMessages(
 		@PathVariable("userId") Long userId,
@@ -96,6 +113,14 @@ public class ChatRoomController {
 	 * 상대방이 web-socket에 접속해 있다면 그냥 보내기
 	 * web-socket에 접속해 있지 않다면, 알림
 	 * */
+	@Operation(
+		summary = "채팅 메시지 전송",
+		description = "실시간 채팅 메시지를 전송하며, Redis 및 MongoDB에 채팅 내역과 상태를 업데이트합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "채팅 메시지 전송 성공"),
+			@ApiResponse(responseCode = "400", description = "요청 데이터 오류")
+		}
+	)
 	@MessageMapping("/message")
 	public void sendMessage(ChatMessageDto dto) {
 		log.info("메시지 수신: {}", dto);
@@ -103,18 +128,14 @@ public class ChatRoomController {
 		Long chatRoomId = dto.chatRoomId();
 		Long senderId = dto.senderId();
 
-		// redis에서 꺼내 쓰도록 변경//////////
 		ChatRoomSummary chatRoom = redisChatRoomService.getChatRoomInfo(senderId, chatRoomId);
 
 		Long receiverId = chatRoom.getOtherId();
 		String senderImage = chatRoom.getProfileImage();
-		log.info("보낸사람: {} , 받는사람: {}", senderId, receiverId);
 
-		// 채팅 상대가 접속중인지 확인
+		// 상대방 접속여부 확인
 		boolean isReceiverOnline = webSocketSessionTracker
 			.isUserOnlineInRoom(chatRoomId, receiverId);
-
-		log.info(String.valueOf(isReceiverOnline));
 
 		// Redis에 채팅방 정보 업데이트
 		redisChatRoomService.updateLastMessages(dto, isReceiverOnline);
@@ -132,14 +153,7 @@ public class ChatRoomController {
 		* "/sub/alert/" + userId
 		* */
 		if(!isReceiverOnline) {
-			ChatAlert alert = ChatAlert.builder()
-				.chatRoomId(dto.chatRoomId())
-				.receiverId(dto.receiverId())
-				.senderId(dto.senderId())
-				.senderImage(senderImage)
-				.senderNickname(dto.senderNickname())
-				.message(dto.message())
-				.sendAt(dto.sendAt()).build();
+			ChatAlert alert = AlertConverter.createAlert(dto, receiverId, senderImage);
 
 			boolean isReceiverLogin = webSocketSessionTracker.isUserOnlineInAlert(chatRoomId, receiverId);
 			if(isReceiverLogin) {
@@ -161,49 +175,39 @@ public class ChatRoomController {
 	* JSON 값을 파싱하여 사용
 	* user값 토큰에서 꺼내는걸로 변경
 	* */
+	@Operation(
+		summary = "채팅방 목록 조회",
+		description = "Redis에 저장된 채팅방 목록을 조회합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "채팅방 목록 조회 성공"),
+			@ApiResponse(responseCode = "400", description = "요청 데이터 오류")
+		}
+	)
 	@GetMapping("/{userId}/chat-list")
 	public ResponseEntity<Set<ZSetOperations.TypedTuple<String>>> getChatRooms(
-		@PathVariable("userId") Long userId
-	) {
+		@PathVariable("userId") Long userId) {
+
 		return ResponseEntity.ok(redisChatRoomService.getRoomList(userId));
 	}
 
 	/*
 	* 채팅방 나가기(web-socket 구독 해제)
 	* */
+	@Operation(
+		summary = "채팅방 나가기",
+		description = "채팅방에서 나가며 웹소켓 구독을 해제합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "채팅방 나가기 성공"),
+			@ApiResponse(responseCode = "400", description = "요청 데이터 오류")
+		}
+	)
 	@PostMapping("/{userId}/leave/{chatRoomId}")
 	public ResponseEntity<String> leaveChatRoom(
 		@PathVariable("userId") Long userId,
-		@PathVariable("chatRoomId") Long chatRoomId
-	) {
+		@PathVariable("chatRoomId") Long chatRoomId) {
 		webSocketSessionTracker.roomDisconnect(chatRoomId, userId);
 		log.info("유저({})가 채팅방({})에서 나갔습니다.", userId, chatRoomId);
 
 		return ResponseEntity.ok("채팅방에서 나갔습니다.");
 	}
-
-	/*
-	* 알림 가져오기
-	* */
-	@GetMapping("/alert/{userId}")
-	public ResponseEntity<List<ChatAlert>> getAlerts(
-		@PathVariable("userId") Long userId
-	) {
-		return ResponseEntity.ok().body(chatAlertService.getAlerts(userId));
-	}
-
-	/*
-	* 알림 읽음 처리
-	* */
-	@PutMapping("/{userId}/alert/{chatRoomId}")
-	public ResponseEntity<String> readAlert(
-		@PathVariable("userId") Long userId,
-		@PathVariable("chatRoomId") Long chatRoomId
-	){
-		chatAlertService.markAlertAsRead(chatRoomId, userId);
-		return ResponseEntity.ok().body("읽음 처리");
-	}
-
-
-
 }

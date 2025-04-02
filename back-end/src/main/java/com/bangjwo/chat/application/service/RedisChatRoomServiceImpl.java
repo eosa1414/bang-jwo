@@ -8,9 +8,12 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bangjwo.chat.application.convert.ChatCoverter;
 import com.bangjwo.chat.application.dto.ChatMessageDto;
 import com.bangjwo.chat.application.dto.ChatRoomDto;
 import com.bangjwo.chat.application.dto.ChatRoomSummary;
+import com.bangjwo.global.common.error.chat.ChatErrorCode;
+import com.bangjwo.global.common.exception.BusinessException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,9 +38,6 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 	@Override
 	@Transactional
 	public void createChatRoom(ChatRoomDto.ResponseDto dto) {
-
-		log.info(" createChatRoom 호출됨");
-
 		Long senderId = dto.tenantId(); // 세입자
 		Long receiverId = dto.landlordId(); // 집주인
 		Long roomId = dto.roomId(); // 매물
@@ -56,35 +56,16 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 		String sendAt = Instant.now().toString();
 		/// ////////////////////////////////
 
-		ChatRoomSummary senderSummary = ChatRoomSummary.builder()
-			.chatRoomId(chatRoomId)
-			.roomId(roomId)
-			.lastMessage(message)
-			.otherId(receiverId)
-			.profileImage(receiverImage)
-			.nickname(receiverNickname)
-			.sendAt(sendAt)
-			.unreadCount(0)
-			.build();
+		ChatRoomSummary senderSummary = ChatCoverter.createSenderSummary(
+			chatRoomId, roomId, message, receiverId, receiverImage, receiverNickname, sendAt);
 
-		ChatRoomSummary receiverSummary = ChatRoomSummary.builder()
-			.chatRoomId(chatRoomId)
-			.roomId(roomId)
-			.lastMessage(message)
-			.otherId(senderId)
-			.profileImage(senderImage)
-			.nickname(senderNickname)
-			.sendAt(sendAt)
-			.unreadCount(1)
-			.build();
+		ChatRoomSummary receiverSummary = ChatCoverter.createReceiverSummary(
+			chatRoomId, roomId, message, senderId, senderImage, senderNickname, sendAt);
 
 		try {
 			String senderJson = objectMapper.writeValueAsString(senderSummary);
 			double senderScore = Instant.parse(sendAt).toEpochMilli();
 			redisTemplate.opsForZSet().add(senderKey, senderJson, senderScore); // 새로 추가
-
-			log.info(senderJson);
-			log.info(String.valueOf(senderScore));
 
 			String receiverJson = objectMapper.writeValueAsString(receiverSummary);
 			double receiverScore = Instant.parse(sendAt).toEpochMilli();
@@ -92,6 +73,7 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 
 		} catch (JsonProcessingException e) {
 			log.error("Redis 직렬화 실패", e);
+			throw new BusinessException(ChatErrorCode.CHAT_REDIS_SERIALIZATION_FAILED);
 		}
 	}
 
@@ -102,21 +84,11 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 
 		// 만약 생성된 채팅방 정보가 없다면 예외 처리 (또는 로깅 후 리턴)
 		if (mySummary == null) {
-			log.info("유저아이디 (userId: {})", userId);
 			log.error("채팅방 생성 데이터가 존재하지 않습니다. (chatRoomId: {})", chatRoomId);
-			return;
+			throw new BusinessException(ChatErrorCode.CHAT_ROOM_NOT_FOUND);
 		}
 
-		ChatRoomSummary myChatRoomUpdated = ChatRoomSummary.builder()
-			.chatRoomId(chatRoomId)
-			.roomId(mySummary.getRoomId())
-			.lastMessage(mySummary.getLastMessage())
-			.otherId(mySummary.getOtherId())
-			.profileImage(mySummary.getProfileImage())
-			.nickname(mySummary.getNickname())
-			.sendAt(mySummary.getSendAt())
-			.unreadCount(0)
-			.build();
+		ChatRoomSummary myChatRoomUpdated = ChatCoverter.updateAsRead(mySummary);
 
 		try {
 			String myChatRoomJson = objectMapper.writeValueAsString(myChatRoomUpdated);
@@ -125,6 +97,7 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 			redisTemplate.opsForZSet().add(myKey, myChatRoomJson, myChatRoomScore); // 새로 추가
 		} catch (JsonProcessingException e) {
 			log.error("Redis 직렬화 실패", e);
+			throw new BusinessException(ChatErrorCode.CHAT_REDIS_SERIALIZATION_FAILED);
 		}
 	}
 
@@ -144,36 +117,15 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 		ChatRoomSummary senderExisting = getChatRoomSummary(senderKey, chatRoomId);
 		ChatRoomSummary receiverExisting = getChatRoomSummary(receiverKey, chatRoomId);
 
-
-		// 만약 생성된 채팅방 정보가 없다면 예외 처리 (또는 로깅 후 리턴)
 		if (senderExisting == null || receiverExisting == null) {
-			log.info(String.valueOf(senderExisting));
-			log.info(String.valueOf(receiverExisting));
 			log.error("채팅방 생성 데이터가 존재하지 않습니다. (chatRoomId: {})", chatRoomId);
-			return;
+			throw new BusinessException(ChatErrorCode.CHAT_ROOM_NOT_FOUND);
 		}
 
-		ChatRoomSummary senderUpdated = ChatRoomSummary.builder()
-			.chatRoomId(chatRoomId)
-			.roomId(senderExisting.getRoomId())
-			.lastMessage(message)
-			.otherId(senderExisting.getOtherId())
-			.profileImage(senderExisting.getProfileImage())
-			.nickname(senderExisting.getNickname())
-			.sendAt(sendAt)
-			.unreadCount(senderExisting.getUnreadCount())
-			.build();
-
-		ChatRoomSummary receiverUpdated = ChatRoomSummary.builder()
-			.chatRoomId(chatRoomId)
-			.roomId(receiverExisting.getRoomId())
-			.lastMessage(message)
-			.otherId(receiverExisting.getOtherId())
-			.profileImage(receiverExisting.getProfileImage())
-			.nickname(receiverExisting.getNickname())
-			.sendAt(sendAt)
-			.unreadCount(isReceiverOnline ? 0 : receiverExisting.getUnreadCount() + 1)
-			.build();
+		ChatRoomSummary senderUpdated = ChatCoverter.updateSenderSummary(
+			chatRoomId, senderExisting, message, sendAt);
+		ChatRoomSummary receiverUpdated = ChatCoverter.updateReceiverSummary(
+			chatRoomId, receiverExisting, message, sendAt, isReceiverOnline);
 
 		try {
 			String senderJson = objectMapper.writeValueAsString(senderUpdated);
@@ -188,6 +140,7 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 
 		} catch (JsonProcessingException e) {
 			log.error("Redis 직렬화 실패", e);
+			throw new BusinessException(ChatErrorCode.CHAT_REDIS_SERIALIZATION_FAILED);
 		}
 	}
 
@@ -197,7 +150,12 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 	@Override
 	public Set<ZSetOperations.TypedTuple<String>> getRoomList(Long userId) {
 		String key = getKey(userId);
-		return redisTemplate.opsForZSet().reverseRangeWithScores(key, 0, -1);
+		try {
+			return redisTemplate.opsForZSet().reverseRangeWithScores(key, 0, -1);
+		} catch (Exception e) {
+			log.error("Redis 작업 중 오류 발생", e);
+			throw new BusinessException(ChatErrorCode.CHAT_REDIS_OPERATION_FAILED);
+		}
 	}
 
 	/*
@@ -206,8 +164,11 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 	@Override
 	public ChatRoomSummary getChatRoomInfo(Long userId, Long chatRoomId) {
 		String key = getKey(userId);
-
-		return getChatRoomSummary(key, chatRoomId);
+		ChatRoomSummary summary = getChatRoomSummary(key, chatRoomId);
+		if (summary == null) {
+			throw new BusinessException(ChatErrorCode.CHAT_ROOM_NOT_FOUND);
+		}
+		return summary;
 	}
 
 	/**
@@ -216,7 +177,6 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 	private ChatRoomSummary getChatRoomSummary(String key, Long chatRoomId) {
 		Set<String> all = redisTemplate.opsForZSet().range(key, 0, -1);
 		if (all == null) return null;
-
 		for (String json : all) {
 			try {
 				ChatRoomSummary summary = objectMapper.readValue(json, ChatRoomSummary.class);
@@ -225,6 +185,7 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 				}
 			} catch (JsonProcessingException e) {
 				log.warn("Redis 역직렬화 실패", e);
+				throw new BusinessException(ChatErrorCode.CHAT_REDIS_SERIALIZATION_FAILED);
 			}
 		}
 		return null;
