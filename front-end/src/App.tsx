@@ -9,6 +9,7 @@ import RoomFind from "./pages/room-find/RoomFind";
 import TestButtonPage from "./pages/TestButtonPage";
 import SellerContract from "./features/contract/components/SellerContract";
 import SellerContractPage from "./features/contract/pages/SellerContractPage";
+import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
   return (

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import EditableInputBox from "./EditableInputBox";
 import NoticeGray from "../../../components/notices/NoticeGray";
+import DatePickerInput from "./DatePickerInput";
 
 interface ContractBodyProps {
   receiptSignature: string | null;
@@ -19,19 +20,29 @@ const ContractBody = ({
   const [completionOption, setCompletionOption] = useState<
     "balance-day" | "custom" | null
   >(null);
-  const [completionDate, setCompletionDate] = useState("");
-  const [completionEtc, setCompletionEtc] = useState("");
-
   const [unrepairedOption, setUnrepairedOption] = useState<
     "balance-day" | "custom" | null
   >(null);
-  const [unrepairedDate, setUnrepairedDate] = useState("");
-  const [unrepairedEtc, setUnrepairedEtc] = useState("");
   const [lessorDuty, setLessorDuty] = useState("");
   const [lesseeDuty, setLesseeDuty] = useState("");
 
   const [showLessorNotice, setShowLessorNotice] = useState(false);
   const [showLesseeNotice, setShowLesseeNotice] = useState(false);
+
+  const [middleDate, setMiddleDate] = useState<Date | null>(null); // 중도금
+  const [balanceDate, setBalanceDate] = useState<Date | null>(null); // 잔금
+  const [leaseStartDate, setLeaseStartDate] = useState<Date | null>(null); // 임대 시작일
+  const [leaseEndDate, setLeaseEndDate] = useState<Date | null>(null); // 임대 종료일
+
+  const [repairCompletionDate, setRepairCompletionDate] = useState<Date | null>(
+    null
+  ); // 수리 완료 날짜
+  const [repairCustomEtc, setRepairCustomEtc] = useState(""); // 수리 완료 기타 내용
+
+  const [unrepairedDeadline, setUnrepairedDeadline] = useState<Date | null>(
+    null
+  ); // 미수리한 경우 날짜
+  const [unrepairedCustomEtc, setUnrepairedCustomEtc] = useState(""); // 미수리 기타 내용
 
   return (
     <div className="mt-10">
@@ -79,6 +90,7 @@ const ContractBody = ({
           <span className="text-sm font-medium">(인)</span>
         </div>
 
+        {/* 중도금 */}
         <div className="flex items-center gap-2">
           <span className="w-24 text-base font-medium">중도금</span>
           <EditableInputBox
@@ -88,15 +100,14 @@ const ContractBody = ({
             customWidth="w-[160px]"
           />
           <span className="text-sm font-medium">원은</span>
-          <EditableInputBox
-            value=""
-            onChange={() => {}}
-            placeholder="날짜"
-            customWidth="w-[140px]"
+          <DatePickerInput
+            selectedDate={middleDate}
+            onChange={(date) => setMiddleDate(date)}
           />
           <span className="text-sm font-medium">에 지불하고</span>
         </div>
 
+        {/* 잔금 */}
         <div className="flex items-center gap-2">
           <span className="w-24 text-base font-medium">잔금</span>
           <EditableInputBox
@@ -106,11 +117,9 @@ const ContractBody = ({
             customWidth="w-[160px]"
           />
           <span className="text-sm font-medium">원은</span>
-          <EditableInputBox
-            value=""
-            onChange={() => {}}
-            placeholder="날짜"
-            customWidth="w-[140px]"
+          <DatePickerInput
+            selectedDate={balanceDate}
+            onChange={(date) => setBalanceDate(date)}
           />
           <span className="text-sm font-medium">에 지불한다</span>
         </div>
@@ -179,23 +188,24 @@ const ContractBody = ({
           <span className="font-normal">
             임대인은 임차주택을 임대차 목적대로 사용·수익할 수 있는 상태로
           </span>
-          <EditableInputBox
-            value=""
-            onChange={() => {}}
-            placeholder="날짜"
-            customWidth="w-[140px] border-2 border-green px-2 py-1 mx-2"
-          />
-          <span className="font-normal">
+          <span className="inline-block ml-2">
+            <DatePickerInput
+              selectedDate={leaseStartDate}
+              onChange={(date) => setLeaseStartDate(date)}
+            />
+          </span>
+          <span className="font-normal ml-2">
             까지 임차인에게 인도하고, 임대차기간은 인도일로부터
           </span>
-          <EditableInputBox
-            value=""
-            onChange={() => {}}
-            placeholder="날짜"
-            customWidth="w-[140px] border-2 border-green px-2 py-1 mx-2"
-          />
-          <span className="font-normal">까지로 한다.</span>
+          <span className="inline-block ml-2">
+            <DatePickerInput
+              selectedDate={leaseEndDate}
+              onChange={(date) => setLeaseEndDate(date)}
+            />
+          </span>
+          <span className="font-normal ml-2">까지로 한다.</span>
         </p>
+
         <p className="mt-4 text-base font-bold">
           제3조(입주 전 수리){" "}
           <span className="font-normal">
@@ -262,17 +272,16 @@ const ContractBody = ({
                 checked={completionOption === "balance-day"}
                 onChange={() => setCompletionOption("balance-day")}
                 className="w-[16px] h-[16px] appearance-none border-2 border-neutral-dark200 
-                   checked:bg-neutral-dark200 cursor-pointer"
+          checked:bg-neutral-dark200 cursor-pointer"
               />
               잔금지급 기일인
-              <EditableInputBox
-                value={completionDate}
-                onChange={setCompletionDate}
-                placeholder="날짜"
-                customWidth="w-[140px]"
+              <DatePickerInput
+                selectedDate={repairCompletionDate}
+                onChange={(date) => setRepairCompletionDate(date)}
               />
               까지
             </label>
+
             <label className="flex items-center gap-2 text-sm font-bold cursor-pointer">
               <input
                 type="radio"
@@ -281,12 +290,12 @@ const ContractBody = ({
                 checked={completionOption === "custom"}
                 onChange={() => setCompletionOption("custom")}
                 className="w-[16px] h-[16px] appearance-none border-2 border-neutral-dark200 
-                   checked:bg-neutral-dark200 cursor-pointer"
+          checked:bg-neutral-dark200 cursor-pointer"
               />
               기타 (
               <EditableInputBox
-                value={completionEtc}
-                onChange={setCompletionEtc}
+                value={repairCustomEtc}
+                onChange={(val) => setRepairCustomEtc(val)}
                 placeholder=""
                 customWidth="w-[280px]"
               />
@@ -313,17 +322,16 @@ const ContractBody = ({
                 checked={unrepairedOption === "balance-day"}
                 onChange={() => setUnrepairedOption("balance-day")}
                 className="w-[16px] h-[16px] appearance-none border-2 border-neutral-dark200 
-                   checked:bg-neutral-dark200 cursor-pointer"
+          checked:bg-neutral-dark200 cursor-pointer"
               />
               잔금지급 기일인
-              <EditableInputBox
-                value={unrepairedDate}
-                onChange={setUnrepairedDate}
-                placeholder="날짜"
-                customWidth="w-[140px]"
+              <DatePickerInput
+                selectedDate={unrepairedDeadline}
+                onChange={(date) => setUnrepairedDeadline(date)}
               />
               까지
             </label>
+
             <label className="flex items-center gap-2 text-sm font-bold cursor-pointer">
               <input
                 type="radio"
@@ -332,12 +340,12 @@ const ContractBody = ({
                 checked={unrepairedOption === "custom"}
                 onChange={() => setUnrepairedOption("custom")}
                 className="w-[16px] h-[16px] appearance-none border-2 border-neutral-dark200 
-                   checked:bg-neutral-dark200 cursor-pointer"
+          checked:bg-neutral-dark200 cursor-pointer"
               />
               기타 (
               <EditableInputBox
-                value={unrepairedEtc}
-                onChange={setUnrepairedEtc}
+                value={unrepairedCustomEtc}
+                onChange={(val) => setUnrepairedCustomEtc(val)}
                 placeholder=""
                 customWidth="w-[280px]"
               />
@@ -345,6 +353,7 @@ const ContractBody = ({
             </label>
           </div>
         </div>
+
         {/* 제4조(임차주택의 사용·관리·수선) */}
         <div className="mt-10">
           <p className="text-base font-bold">

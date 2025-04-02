@@ -5,6 +5,7 @@ import { useState } from "react";
 
 interface HouseInfoSectionProps {
   address: string;
+  detailAddress: string;
   landPurpose: string;
   landArea: string;
   buildingStructure: string;
@@ -25,8 +26,32 @@ interface HouseInfoSectionProps {
   openSignatureModal: (type: "unpaid" | "priority" | "receipt") => void;
 }
 
+declare global {
+  interface Window {
+    daum: {
+      Postcode: new (options: {
+        oncomplete: (data: DaumPostcodeData) => void;
+      }) => {
+        open(): void;
+      };
+    };
+  }
+}
+
+interface DaumPostcodeData {
+  roadAddress: string;
+  jibunAddress: string;
+  zonecode: string;
+  address: string;
+  addressType: "R" | "J";
+  buildingName: string;
+  apartment: "Y" | "N";
+  bname: string;
+}
+
 const HouseInfoSection = ({
   address,
+  detailAddress,
   landPurpose,
   landArea,
   buildingStructure,
@@ -45,18 +70,40 @@ const HouseInfoSection = ({
   const [showLandNotice, setShowLandNotice] = useState(false);
   const [showBuildingNotice, setShowBuildingNotice] = useState(false);
 
+  const openAddressSearch = () => {
+    new window.daum.Postcode({
+      oncomplete: function (data: DaumPostcodeData) {
+        const roadAddress = data.roadAddress;
+        onChange("address", roadAddress);
+      },
+    }).open();
+  };
+
   return (
     <div className="mt-10">
       <h3 className="text-lg font-extrabold">[임차주택의 표시]</h3>
+
+      {/* ✅ 소재지 입력창 */}
       <div className="mt-4 flex items-center gap-3">
         <span className="text-base font-medium whitespace-nowrap">소재지</span>
-        <EditableInputBox
-          value={address}
-          onChange={(val) => onChange("address", val)}
-          placeholder="도로명주소를 입력하세요"
-          maxLength={50}
-          customWidth="w-[500px]"
-        />
+        <div className="flex gap-2">
+          <div className="cursor-pointer" onClick={openAddressSearch}>
+            <EditableInputBox
+              value={address}
+              onChange={(val) => onChange("address", val)}
+              placeholder="도로명주소"
+              maxLength={50}
+              customWidth="w-[340px]"
+            />
+          </div>
+          <EditableInputBox
+            value={detailAddress}
+            onChange={(val) => onChange("detailAddress", val)}
+            placeholder="상세주소"
+            maxLength={50}
+            customWidth="w-[300px]"
+          />
+        </div>
       </div>
 
       <div className="mt-6 flex flex-col gap-3">

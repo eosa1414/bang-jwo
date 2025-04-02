@@ -31,6 +31,7 @@ const SellerContract = () => {
   const [receiptSignature, setReceiptSignature] = useState<string | null>(null);
 
   const [address, setAddress] = useState("");
+  const [detailAddress, setDetailAddress] = useState("");
   const [landPurpose, setLandPurpose] = useState("");
   const [landArea, setLandArea] = useState("");
   const [buildingStructure, setBuildingStructure] = useState("");
@@ -67,6 +68,7 @@ const SellerContract = () => {
         leaseDetail={leaseDetail}
         leaseArea={leaseArea}
         address={address}
+        detailAddress={detailAddress}
         landPurpose={landPurpose}
         landArea={landArea}
         buildingStructure={buildingStructure}
@@ -81,6 +83,7 @@ const SellerContract = () => {
             leaseDetail: setLeaseDetail,
             leaseArea: setLeaseArea,
             address: setAddress,
+            detailAddress: setDetailAddress,
             landPurpose: setLandPurpose,
             landArea: setLandArea,
             buildingStructure: setBuildingStructure,

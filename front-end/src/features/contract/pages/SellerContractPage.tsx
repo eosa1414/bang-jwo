@@ -34,7 +34,7 @@ const SellerContractPage = () => {
             임시저장
           </Button>
           <Button size="medium" variant="point">
-            등록 완료
+            등록완료
           </Button>
         </div>
       </main>
