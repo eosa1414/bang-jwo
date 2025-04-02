@@ -1,17 +1,22 @@
 package com.bangjwo.contract.presentation;
 
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bangjwo.contract.application.dto.request.CompleteDto;
 import com.bangjwo.contract.application.dto.request.CreateContractRequestDto;
 import com.bangjwo.contract.application.dto.request.LandlordSignatureUpdateRequestDto;
 import com.bangjwo.contract.application.dto.request.TenantSignatureUpdateRequestDto;
@@ -226,4 +231,25 @@ public class ContractController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@Operation(summary = "최종 계약")
+	@PatchMapping("/complete")
+	public ResponseEntity<Void> completeContract(@ModelAttribute CompleteDto completeDto) {
+		contractService.completeContract(completeDto);
+		return ResponseEntity.noContent().build();
+	}
+
+	@Operation(summary = "계약서 조회")
+	@GetMapping("/{contractId}")
+	public ResponseEntity<?> getTenantInfo(@PathVariable Long contractId) {
+		byte[] pdf = contractService.getPdf(contractId);
+		HttpHeaders headers = new HttpHeaders();
+		// 파일 형식 PDF
+		headers.setContentType(MediaType.APPLICATION_PDF);
+		// 다운로드 형식으로 응답 (파일 이름은 필요에 따라 설정)
+		// 필요하면 응답 형식 변경
+		headers.setContentDisposition(ContentDisposition.builder("inline")
+			.filename("contract.pdf")
+			.build());
+		return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
+	}
 }
