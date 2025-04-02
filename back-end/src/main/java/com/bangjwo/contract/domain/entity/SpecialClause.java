@@ -29,7 +29,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "SPECIAL_CLAUSE")
+@Table
 @Schema(description = "특약사항 엔티티")
 public class SpecialClause extends BaseEntity {
 

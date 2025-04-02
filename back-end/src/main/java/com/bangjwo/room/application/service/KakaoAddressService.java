@@ -3,12 +3,12 @@ package com.bangjwo.room.application.service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.bangjwo.global.common.error.room.RoomErrorCode;
 import com.bangjwo.global.common.exception.RoomException;
+import com.bangjwo.global.config.kakao.KakaoConfig;
 import com.bangjwo.room.domain.vo.KakaoAddressInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -17,11 +17,10 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class KakaoAddressService {
+	private final static String KAKAO_ADDRESS_URI = "dapi.kakao.com";
 
-	@Value("${kakao.rest.api.key}")
-	private String kakaoApiKey;
-
-	private final WebClient.Builder webClientBuilder;
+	private final WebClient webClient;
+	private final KakaoConfig kakaoConfig;
 
 	/**
 	 * 도로명 주소(roadAddress)를 이용해 카카오 API를 호출하고, 응답 데이터에서
@@ -31,12 +30,12 @@ public class KakaoAddressService {
 	 * @return KakaoAddressInfo (응답값이 없으면 예외 출력)
 	 */
 	public KakaoAddressInfo fetchAddressInfoByRoadName(String roadAddress) {
-		WebClient webClient = webClientBuilder.baseUrl("https://dapi.kakao.com").build();
-
-		String authorizationHeader = "KakaoAK " + kakaoApiKey;
+		String authorizationHeader = "KakaoAK " + kakaoConfig.getClientId();
 
 		KakaoAddressResponse response = webClient.get()
 			.uri(uriBuilder -> uriBuilder
+				.scheme("https")
+				.host(KAKAO_ADDRESS_URI)
 				.path("/v2/local/search/address.json")
 				.queryParam("query", roadAddress)
 				.build())

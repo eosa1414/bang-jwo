@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@Table(name = "MEMO", indexes = {
+@Table(indexes = {
 	@Index(name = "idx_room_member", columnList = "roomId, memberId")
 })
 public class Memo {

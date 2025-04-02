@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@Table(name = "REVIEW")
+@Table
 public class Review extends BaseEntity {
 
 	@Id
@@ -27,10 +27,10 @@ public class Review extends BaseEntity {
 	private Long reviewId;
 
 	@Column(nullable = false)
-	private Long lessorId;
+	private Long landlordId;
 
 	@Column(nullable = false)
-	private Long lesseeId;
+	private Long tenantId;
 
 	@Column(nullable = false)
 	private Long roomId;
