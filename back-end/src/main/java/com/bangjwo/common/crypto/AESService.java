@@ -3,8 +3,10 @@ package com.bangjwo.common.crypto;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -67,5 +69,22 @@ public class AESService {
 
 		baos.write(cipher.doFinal());
 		return baos.toByteArray();
+	}
+
+	/**
+	 * AES 암호화 - String ↔ Base64 String
+	 */
+	public String encryptToString(SecretKey aesKey, String plainText) throws Exception {
+		byte[] encrypted = encrypt(aesKey, plainText.getBytes(StandardCharsets.UTF_8));
+		return Base64.getEncoder().encodeToString(encrypted);
+	}
+
+	/**
+	 * AES 복호화 - Base64 String ↔ String
+	 */
+	public String decryptFromString(SecretKey aesKey, String base64EncryptedText) throws Exception {
+		byte[] encrypted = Base64.getDecoder().decode(base64EncryptedText);
+		byte[] decrypted = decrypt(aesKey, encrypted);
+		return new String(decrypted, StandardCharsets.UTF_8);
 	}
 }

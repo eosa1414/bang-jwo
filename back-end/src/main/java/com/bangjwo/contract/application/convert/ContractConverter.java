@@ -15,7 +15,7 @@ import com.bangjwo.room.domain.vo.RoomStatus;
 
 public class ContractConverter {
 
-	public static Contract convert(Room room, CreateContractRequestDto dto, String ipfsKey) {
+	public static Contract convert(Room room, CreateContractRequestDto dto) {
 		if (!room.getStatus().equals(RoomStatus.ON_SALE)) {
 			throw new BusinessException(ContractErrorCode.INVALID_ROOM_STATUS_FOR_CONTRACT);
 		}
@@ -23,6 +23,9 @@ public class ContractConverter {
 		if (!room.getMemberId().equals(dto.getLandlordId())) {
 			throw new BusinessException(ContractErrorCode.UNAUTHORIZED_LANDLORD_FOR_CONTRACT);
 		}
+
+		String ipfsKey = "SAMPLE_IPFS_KEY";
+		String aesKey = "SAMPLE_AES_KEY";
 
 		return Contract.builder()
 			.room(room)
@@ -32,6 +35,7 @@ public class ContractConverter {
 			.tenantInfo(createTenantInfo())
 			.specialClause(createSpecialClause())
 			.ipfsKey(ipfsKey)
+			.aesKey(aesKey)
 			.contractStatus(ContractStatus.BEFORE_WRITE)
 			.landlordAuth(false)
 			.tenantAuth(false)

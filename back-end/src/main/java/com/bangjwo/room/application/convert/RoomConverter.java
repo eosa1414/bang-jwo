@@ -164,6 +164,7 @@ public class RoomConverter {
 			.supplyArea(room.getSupplyArea())
 			.maintenanceCost(room.getMaintenanceCost())
 			.floor(room.getFloor())
+			.simpleDescription(room.getSimpleDescription())
 			.imageUrl(ImageUrl)
 			.build();
 	}
