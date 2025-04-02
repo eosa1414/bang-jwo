@@ -1,8 +1,8 @@
-package com.bangjwo.payment.application.dto;
+package com.bangjwo.portone.application.dto;
 
 import java.time.LocalDateTime;
 
-import com.bangjwo.payment.domain.entity.Status;
+import com.bangjwo.portone.domain.entity.PaymentStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -30,7 +30,7 @@ public record PaymentDto() {
 		Long roomId,
 
 		@Schema(description = "거래 상태", example = "READY")
-		Status status,
+		PaymentStatus status,
 
 		@Schema(description = "사전정보 입력 날짜", example = "2025-03-31T15:45:00")
 		LocalDateTime createdAt,

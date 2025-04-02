@@ -1,16 +1,17 @@
-package com.bangjwo.payment.application.service;
+package com.bangjwo.portone.application.service;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.bangjwo.global.common.error.payment.PaymentErrorCode;
+import com.bangjwo.global.common.error.portone.PaymentErrorCode;
 import com.bangjwo.global.common.exception.BusinessException;
-import com.bangjwo.payment.application.convert.PaymentConverter;
-import com.bangjwo.payment.application.dto.PaymentDto;
-import com.bangjwo.payment.domain.entity.Payments;
-import com.bangjwo.payment.domain.entity.Status;
-import com.bangjwo.payment.domain.repository.PaymentRepository;
+import com.bangjwo.portone.application.convert.PaymentConverter;
+import com.bangjwo.portone.application.dto.PaymentDto;
+import com.bangjwo.portone.domain.entity.Payments;
+import com.bangjwo.portone.domain.entity.PaymentStatus;
+import com.bangjwo.portone.domain.repository.PaymentRepository;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
@@ -28,6 +29,7 @@ public class PaymentServiceImpl implements PaymentService {
 	private final IamportClient iamportClient;
 
 	@Override
+	@Transactional
 	public PaymentDto.ResponseDto savePayment(PaymentDto.RequestDto dto) {
 		try {
 			Payments result = PaymentConverter.toEntity(dto);
@@ -58,12 +60,13 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
-	public PaymentDto.ResponseDto completePayment(String impUid, Status status) {
+	@Transactional
+	public PaymentDto.ResponseDto completePayment(String impUid, PaymentStatus status) {
 		Payments result = paymentRepository.findByImpUid(impUid)
 			.orElseThrow(() -> new BusinessException(PaymentErrorCode.PAYMENT_NOT_FOUND));
 
 		// 이미 결제 완료된 건 처리 방지
-		if (result.getStatus() == Status.PAID) {
+		if (result.getStatus() == PaymentStatus.PAID) {
 			throw new BusinessException(PaymentErrorCode.PAYMENT_ALREADY_COMPLETED);
 		}
 

@@ -1,4 +1,4 @@
-package com.bangjwo.global.common.error.payment;
+package com.bangjwo.global.common.error.portone;
 
 import org.springframework.http.HttpStatus;
 
@@ -23,6 +23,9 @@ public enum PaymentErrorCode implements ErrorCode {
 	// 결제 조회
 	PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "PAYMENT4006", "해당 결제 내역을 찾을 수 없습니다."),
 	UNAUTHORIZED_USER_ACCESS(HttpStatus.FORBIDDEN, "PAYMENT4007", "결제 내역에 접근할 수 있는 권한이 없습니다."),
+
+	// 본인인증
+	USER_INFO_MISMATCH(HttpStatus.BAD_REQUEST, "PAYMENT4009", "인증한 사용자 정보가 기존 정보와 일치하지 않습니다."),
 
 	// 기타
 	INVALID_PAYMENT_STATUS(HttpStatus.BAD_REQUEST, "PAYMENT4008", "잘못된 결제 상태 값입니다."),

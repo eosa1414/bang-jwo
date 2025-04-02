@@ -1,12 +1,12 @@
-package com.bangjwo.payment.application.convert;
+package com.bangjwo.portone.application.convert;
 
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import com.bangjwo.payment.application.dto.PaymentDto;
-import com.bangjwo.payment.domain.entity.Payments;
-import com.bangjwo.payment.domain.entity.Status;
+import com.bangjwo.portone.application.dto.PaymentDto;
+import com.bangjwo.portone.domain.entity.Payments;
+import com.bangjwo.portone.domain.entity.PaymentStatus;
 
 @Component
 public class PaymentConverter {
@@ -15,7 +15,7 @@ public class PaymentConverter {
 			.impUid(UUID.randomUUID().toString().substring(0, 10))
 			.memberId(dto.memberId())
 			.roomId(dto.roomId())
-			.status(Status.READY)
+			.status(PaymentStatus.READY)
 			.build();
 	}
 

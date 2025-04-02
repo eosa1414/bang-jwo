@@ -1,10 +1,16 @@
-package com.bangjwo.payment.domain.entity;
+package com.bangjwo.portone.domain.entity;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.bangjwo.global.common.entity.BaseEntity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "PAYMENT")
+@Table(name = "contract")
 public class Payments extends BaseEntity {
 
 	@Id
@@ -33,11 +39,11 @@ public class Payments extends BaseEntity {
 	@Column(name = "room_id", nullable = false)
 	private Long roomId;
 
-	@Column(name = "status", nullable = false)
-	private Status status = Status.READY;
+	@Column(name = "payment_status", nullable = false)
+	private PaymentStatus status = PaymentStatus.READY;
 
 
-	public void changeStatus(Status newStatus) {
+	public void changeStatus(PaymentStatus newStatus) {
 		this.status = newStatus;
 	}
 
