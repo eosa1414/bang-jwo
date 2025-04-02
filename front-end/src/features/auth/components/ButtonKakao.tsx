@@ -8,7 +8,7 @@ const Buttonkakao = ({ onClick }: ButtonkakaoProps) => {
   return (
     <button
       onClick={onClick}
-      className="flex items-center bg-kakao-container rounded-[0.25rem] cursor-pointer min-h-[45px] w-[300px] min-w-fit max-w-full px-[0.3752rem]"
+      className="flex items-center bg-kakao-yellow rounded-[0.25rem] cursor-pointer min-h-[45px] w-[300px] min-w-fit max-w-full px-[0.3752rem]"
     >
       <img
         src={KakaoSymbol}
