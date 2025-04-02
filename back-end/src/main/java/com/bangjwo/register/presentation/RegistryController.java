@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bangjwo.global.common.page.PageResponse;
+import com.bangjwo.register.application.dto.RegistryHyphenDto;
 import com.bangjwo.register.application.dto.request.RegistryRequestDto;
+import com.bangjwo.register.application.dto.response.AnalysisResultDto;
 import com.bangjwo.register.application.dto.response.RegistrySummaryDto;
 import com.bangjwo.register.application.service.RegistryService;
 import com.bangjwo.register.domain.entity.RegistryDocument;
@@ -56,6 +58,12 @@ public class RegistryController {
 		}
 
 		return ResponseEntity.ok(doc);
+	}
+
+	@Operation(summary = "등기부기준 위험도 분석")
+	@PostMapping("/risk")
+	public ResponseEntity<AnalysisResultDto> analyzeRisk(@RequestBody RegistryHyphenDto registryHyphenDto) {
+		return ResponseEntity.ok(registryService.analyze(registryHyphenDto));
 	}
 
 	@Operation(

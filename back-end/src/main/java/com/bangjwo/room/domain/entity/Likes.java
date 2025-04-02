@@ -21,11 +21,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@Table(name = "LIKES", indexes = {
+@Table(indexes = {
 	@Index(name = "idx_room_id", columnList = "room_id")
 })
 public class Likes {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long likeId;
