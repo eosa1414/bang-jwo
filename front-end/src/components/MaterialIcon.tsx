@@ -4,7 +4,7 @@ interface MaterialIconProps {
   size?: number;
 }
 
-const MaterialIcon = ({ icon, fill = true, size = 24 }: MaterialIconProps) => {
+const MaterialIcon = ({ icon, fill, size = 24 }: MaterialIconProps) => {
   return (
     <i
       className="material-symbols-rounded"
