@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@Table(name = "IMAGE", indexes = {
+@Table(indexes = {
 	@Index(name = "idx_room_id", columnList = "room_id")
 })
 public class Image extends BaseEntity {

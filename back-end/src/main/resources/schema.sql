@@ -6,14 +6,16 @@ CREATE TABLE IF NOT EXISTS `likes` (
    `like_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
    `room_id` BIGINT NOT NULL,
    `member_id` BIGINT NOT NULL,
-   `flag` BOOLEAN NOT NULL DEFAULT TRUE
+   `flag` BOOLEAN NOT NULL DEFAULT TRUE,
+   INDEX `idx_room_id` (`room_id`)
 );
 
 CREATE TABLE IF NOT EXISTS `memo` (
-  `memo_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `member_id` BIGINT NOT NULL,
-  `room_id` BIGINT NOT NULL,
-  `content` VARCHAR(255) NOT NULL
+   `memo_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+   `member_id` BIGINT NOT NULL,
+   `room_id` BIGINT NOT NULL,
+   `content` VARCHAR(255) NOT NULL,
+    INDEX `idx_room_member` (`room_id`, `member_id`)
 );
 
 CREATE TABLE IF NOT EXISTS `payment` (
@@ -28,121 +30,148 @@ CREATE TABLE IF NOT EXISTS `payment` (
 
 CREATE TABLE IF NOT EXISTS `landlord_info` (
     `landlord_info_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `name` VARCHAR(20) NOT NULL,
-    `phone_number` VARCHAR(20) NOT NULL,
-    `address` TEXT NOT NULL,
-    `resident_registration_number` CHAR(14) NOT NULL,
-    `rental_property_address` TEXT NOT NULL,
-    `property_structure` VARCHAR(255) NOT NULL,
-    `property_purpose` VARCHAR(255) NOT NULL,
-    `property_area` DECIMAL(10,2) NOT NULL,
-    `repair_responsibility` TEXT NULL,
-    `priority_confirmed_date_yn` BOOLEAN NOT NULL,
-    `tax_arrears` BOOLEAN NOT NULL,
-    `location_of_rental_housing` VARCHAR(100) NULL,
-    `rental_housing_land_type` VARCHAR(255) NULL,
-    `rental_housing_land_area` DECIMAL NULL,
-    `rental_housing_usage` VARCHAR(50) NULL,
-    `rental_housing_area` DECIMAL NULL,
-    `rental_part_address` VARCHAR(50) NULL,
-    `rental_part_area` DECIMAL NULL,
-    `contract_type` ENUM('NEW', 'AGREEMENT', 'RENEW') NOT NULL,
-    `lease_type` ENUM('DEPOSIT', 'NODEPOSIT') NOT NULL,
-    `deposit_amount` BIGINT NOT NULL,
-    `monthly_rent` BIGINT NOT NULL,
-    `lease_start_date` DATE NOT NULL,
-    `lease_end_date` DATE NOT NULL,
-    `contract_fee` INT NULL,
-    `middle_fee` INT NULL,
-    `down_payment_date` DATE NULL,
-    `interim_payment_date` DATE NULL,
-    `balance` INT NULL,
-    `balance_payment_date` DATE NULL,
-    `monthly_rent_payment_date` VARCHAR(2) NULL,
-    `fixed_management_fee` INT NOT NULL DEFAULT FALSE,
-    `unfixed_management_fee` VARCHAR(255) NULL,
-    `monthly_rent_account_bank` VARCHAR(20) NULL,
-    `monthly_rent_account_number` VARCHAR(20) NULL,
-    `facilities_repair_status` BOOLEAN NOT NULL DEFAULT FALSE,
-    `facilities_repair_content` VARCHAR(255) NULL,
-    `landlord_burden` VARCHAR(255) NULL,
-    `tenant_burden` VARCHAR(255) NULL,
-    `landlord_signature_url_1` VARCHAR(255) NULL,
-    `landlord_signature_url_2` VARCHAR(255) NULL,
-    `landlord_signature_url_3` VARCHAR(255) NULL,
-    `landlord_signature_url_4` VARCHAR(255) NULL
-);
-
-CREATE TABLE IF NOT EXISTS `contract` (
-    `contract_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `member_id` BIGINT NOT NULL,
-    `member_id2` BIGINT NOT NULL,
-    `room_id` BIGINT NOT NULL,
-    `tenant_info_id` BIGINT NOT NULL,
-    `landload_info_id` BIGINT NOT NULL,
-    `ipfs_key` VARCHAR(255) NOT NULL,
-    `aes_key` TEXT NOT NULL,
-    `status` ENUM('DONE', 'UNDONE') NOT NULL,
-    `landlord_auth` BOOLEAN NOT NULL DEFAULT FALSE,
-    `tenant_auth` BOOLEAN NOT NULL DEFAULT FALSE
-);
-
-CREATE TABLE IF NOT EXISTS `tenant_info` (
-    `tenant_info_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `name` VARCHAR(20) NOT NULL,
-    `phone` VARCHAR(20) NOT NULL,
-    `address` TEXT NOT NULL,
-    `resident_registration_number` CHAR(14) NOT NULL,
-    `move_in_date` DATE NOT NULL,
-    `tenant_signature_url` VARCHAR(255) NULL
-);
-
-CREATE TABLE IF NOT EXISTS `member` (
-    `member_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `kakao_id` BIGINT NOT NULL,
-    `name` VARCHAR(20) NOT NULL,
-    `birthday` VARCHAR(20) NULL,
-    `phone` VARCHAR(20) NOT NULL,
-    `profile_url` VARCHAR(255) NULL,
+    `name` VARCHAR(20),
+    `phone_number` VARCHAR(20),
+    `address` TEXT,
+    `resident_registration_number` VARCHAR(255),
+    `rental_property_address` TEXT,
+    `property_structure` VARCHAR(255),
+    `property_purpose` VARCHAR(255),
+    `property_area` DECIMAL(10,2),
+    `repair_responsibility` TEXT,
+    `priority_confirmed_date_yn` BOOLEAN,
+    `tax_arrears` BOOLEAN,
+    `location_of_rental_housing` VARCHAR(100),
+    `rental_housing_land_type` VARCHAR(255),
+    `rental_housing_land_area` DECIMAL(10,2),
+    `rental_housing_usage` VARCHAR(50),
+    `rental_housing_area` DECIMAL(10,2),
+    `rental_part_address` VARCHAR(50),
+    `rental_part_area` DECIMAL(10,2),
+    `contract_type` ENUM('NEW', 'RENEW_BY_AGREEMENT', 'EXTENSION'),
+    `lease_type` ENUM('MONTHLY_WITH_DEPOSIT', 'PURE_MONTHLY'),
+    `deposit_amount` BIGINT,
+    `monthly_rent` BIGINT,
+    `lease_start_date` DATE,
+    `lease_end_date` DATE,
+    `contract_fee` INT,
+    `middle_fee` INT,
+    `down_payment_date` DATE,
+    `interim_payment_date` DATE,
+    `balance` INT,
+    `balance_payment_date` DATE,
+    `monthly_rent_payment_date` VARCHAR(2),
+    `fixed_management_fee` INT,
+    `unfixed_management_fee` VARCHAR(255),
+    `monthly_rent_account_bank` VARCHAR(20),
+    `monthly_rent_account_number` VARCHAR(20),
+    `facilities_repair_status` BOOLEAN,
+    `facilities_repair_content` VARCHAR(255),
+    `landlord_burden` VARCHAR(255),
+    `tenant_burden` VARCHAR(255),
+    `landlord_signature_url_1` VARCHAR(255),
+    `landlord_signature_url_2` VARCHAR(255),
+    `landlord_signature_url_3` VARCHAR(255),
+    `landlord_signature_url_4` VARCHAR(255),
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `deleted_at` TIMESTAMP NULL
 );
 
+
+CREATE TABLE IF NOT EXISTS `contract` (
+    `contract_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `room_id` BIGINT UNIQUE,
+    `landlord_id` BIGINT NOT NULL,
+    `tenant_id` BIGINT NOT NULL,
+    `landlord_info_id` BIGINT NOT NULL,
+    `tenant_info_id` BIGINT NOT NULL,
+    `special_clause_id` BIGINT NOT NULL,
+    `ipfs_key` VARCHAR(255) NOT NULL,
+    `contract_status` ENUM('BEFORE_WRITE', 'LANDLORD_COMPLETED', 'TENANT_COMPLETED', 'TENANT_SIGNED', 'COMPLETED') NOT NULL,
+    `landlord_auth` BOOLEAN NOT NULL,
+    `tenant_auth` BOOLEAN NOT NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` TIMESTAMP NULL,
+    INDEX `idx_room_id` (`room_id`),
+    INDEX `idx_landlord_id` (`landlord_id`),
+    INDEX `idx_tenant_id` (`tenant_id`),
+    INDEX `idx_special_clause_id` (`special_clause_id`)
+);
+
+CREATE TABLE IF NOT EXISTS `tenant_info` (
+    `tenant_info_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(20),
+    `phone` VARCHAR(20),
+    `address` TEXT,
+    `resident_registration_number` VARCHAR(255),
+    `move_in_date` DATE,
+    `tenant_signature_url` VARCHAR(255),
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` TIMESTAMP NULL
+);
+
+CREATE TABLE IF NOT EXISTS `member` (
+    `member_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `kakao_id` BIGINT NOT NULL,
+    `name` VARCHAR(20),
+    `nickname` VARCHAR(10),
+    `birthday` VARCHAR(20),
+    `phone` VARCHAR(20),
+    `profile_url` VARCHAR(255),
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` TIMESTAMP NULL,
+    INDEX `idx_member_id` (`member_id`),
+    INDEX `idx_kakao_id` (`kakao_id`)
+);
+
 CREATE TABLE IF NOT EXISTS `special_clause` (
     `special_clause_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `landload_info_id` BIGINT NOT NULL,
-    `move_in_registration_date` DATE NOT NULL,
-    `unpaid_amount` INT NULL,
-    `dispute_resolution` BOOLEAN NOT NULL,
-    `is_housing_reconstruction_planned` BOOLEAN NOT NULL,
-    `construction_period` DATE NULL,
-    `estimated_construction_duration` INT NULL,
-    `is_detailed_address_consent_given` BOOLEAN NOT NULL,
-    `etc` VARCHAR(255) NULL
+    `move_in_registration_date` DATE,
+    `unpaid_amount` INT,
+    `dispute_resolution` BOOLEAN,
+    `is_housing_reconstruction_planned` BOOLEAN,
+    `construction_period` DATE,
+    `estimated_construction_duration` INT,
+    `is_detailed_address_consent_given` BOOLEAN,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` TIMESTAMP NULL
+);
+
+CREATE TABLE IF NOT EXISTS `special_clause_etc` (
+    `special_clause_id` BIGINT NOT NULL,
+    `etc_value` TEXT
 );
 
 CREATE TABLE IF NOT EXISTS `options` (
     `option_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `room_id` BIGINT NOT NULL,
-    `option_name` ENUM('ELEVATOR', 'ROOFTOP', 'AIR_CONDITIONER', 'WASHING_MACHINE', 'REFRIGERATOR', 'MICROWAVE', 'GAS_RANGE', 'INDUCTION', 'BED') NOT NULL
+    `option_name` ENUM('ELEVATOR', 'ROOFTOP', 'AIR_CONDITIONER', 'WASHING_MACHINE', 'REFRIGERATOR', 'MICROWAVE', 'GAS_RANGE', 'INDUCTION', 'BED') NOT NULL,
+    INDEX `idx_room_id` (`room_id`)
 );
 
 CREATE TABLE IF NOT EXISTS `image` (
     `image_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `room_id` BIGINT NOT NULL,
     `image_url` VARCHAR(255) NOT NULL,
-    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    `created_at` TIMESTAMP NOT NULL,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` TIMESTAMP NULL,
+    INDEX `idx_room_id` (`room_id`)
 );
 
 CREATE TABLE IF NOT EXISTS `review` (
     `review_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `lessor_id` BIGINT NOT NULL,
-    `lessee_id` BIGINT NOT NULL,
+    `landlord_id` BIGINT NOT NULL,
+    `tenant_id` BIGINT NOT NULL,
     `room_id` BIGINT NOT NULL,
     `real_estate_id` VARCHAR(255) NOT NULL,
     `address_detail` VARCHAR(255) NOT NULL,
-    `content` VARCHAR(255) NULL,
+    `content` VARCHAR(255),
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `deleted_at` TIMESTAMP NULL
@@ -150,49 +179,55 @@ CREATE TABLE IF NOT EXISTS `review` (
 
 CREATE TABLE IF NOT EXISTS `address` (
     `address_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `room_id` BIGINT NOT NULL,
-    `name` VARCHAR(255) NULL,
-    `address_detail` VARCHAR(255) NULL,
-    `postal_code` VARCHAR(10) NULL,
-    `lat` DECIMAL(9,6) NULL,
-    `lng` DECIMAL(9,6) NULL,
-    `province` VARCHAR(100) NULL,
-    `city` VARCHAR(100) NULL,
-    `district` VARCHAR(100) NULL
+    `room_id` BIGINT UNIQUE,
+    `name` VARCHAR(255),
+    `address_detail` VARCHAR(255),
+    `postal_code` VARCHAR(10),
+    `lat` DECIMAL(9,6),
+    `lng` DECIMAL(9,6),
+    `province` VARCHAR(100),
+    `city` VARCHAR(100),
+    `district` VARCHAR(100),
+    INDEX `idx_room_id` (`room_id`),
+    INDEX `idx_lat_lng` (`lat`, `lng`)
 );
+
 
 CREATE TABLE IF NOT EXISTS `room` (
     `room_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `member_id` BIGINT NOT NULL,
-    `building_type` ENUM('ONEROOM_TWOROOM', 'APARTMENT', 'VILLA_HOUSE', 'OFFICETEL') NULL,
+    `building_type` ENUM('ONEROOM_TWOROOM', 'APARTMENT', 'VILLA_HOUSE', 'OFFICETEL'),
     `status` ENUM('UNDER_VERIFICATION', 'ON_SALE', 'SOLD_OUT') NOT NULL,
     `real_estate_id` VARCHAR(20) NOT NULL,
     `deposit` INT NOT NULL,
     `monthly_rent` INT NOT NULL,
-    `exclusive_area` DECIMAL NULL,
-    `supply_area` DECIMAL NULL,
-    `total_units` INT NULL,
-    `floor` VARCHAR(10) NULL,
-    `max_floor` INT NULL,
+    `exclusive_area` DECIMAL(10,2),
+    `supply_area` DECIMAL(10,2),
+    `total_units` INT,
+    `floor` VARCHAR(10),
+    `max_floor` INT,
     `parking_spaces` INT NOT NULL,
     `available_from` DATE NOT NULL,
     `permission_date` DATE NOT NULL,
-    `simple_description` VARCHAR(255) NULL,
-    `description` TEXT NULL,
+    `simple_description` VARCHAR(255),
+    `description` TEXT,
     `maintenance_cost` INT NOT NULL,
-    `room_cnt` TINYINT NOT NULL,
-    `bathroom_cnt` TINYINT NOT NULL,
+    `room_cnt` INT NOT NULL,
+    `bathroom_cnt` INT NOT NULL,
     `direction` ENUM('EAST', 'WEST', 'SOUTH', 'NORTH', 'NORTHWEST', 'NORTHEAST', 'SOUTHWEST', 'SOUTHEAST') NOT NULL,
-    `verified` BOOLEAN NOT NULL DEFAULT FALSE,
-    `registry_paid` BOOLEAN NOT NULL DEFAULT FALSE,
-    `discussable` BOOLEAN NOT NULL DEFAULT FALSE,
-    `discuss_detail` VARCHAR(255) NULL,
-    `reviewable` BOOLEAN NOT NULL DEFAULT FALSE,
-    `is_phone_public` BOOLEAN NOT NULL DEFAULT FALSE,
+    `verified` BOOLEAN NOT NULL,
+    `registry_paid` BOOLEAN NOT NULL,
+    `discussable` BOOLEAN NOT NULL,
+    `discuss_detail` VARCHAR(255),
+    `reviewable` BOOLEAN NOT NULL,
+    `is_phone_public` BOOLEAN NOT NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `deleted_at` TIMESTAMP NULL
+    `deleted_at` TIMESTAMP NULL,
+    INDEX `idx_member_id` (`member_id`),
+    INDEX `idx_status` (`status`)
 );
+
 
 CREATE TABLE IF NOT EXISTS `real_estate_pdf` (
     `pdf_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -207,7 +242,9 @@ CREATE TABLE IF NOT EXISTS `real_estate_pdf` (
 CREATE TABLE IF NOT EXISTS `maintenance_include` (
     `maintenance_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `room_id` BIGINT NOT NULL,
-    `maintenance_include_name` ENUM('WATER','ELECTRICITY','INTERNET','GAS','CLEANING','CABLE_TV','PARKING','HEATING','ELEVATOR_MAINTENANCE') NOT NULL
+    `maintenance_include_name` ENUM(
+    'WATER', 'ELECTRICITY', 'INTERNET', 'GAS', 'CLEANING', 'CABLE_TV', 'PARKING', 'HEATING', 'ELEVATOR_MAINTENANCE') NOT NULL,
+    INDEX `idx_room_id` (`room_id`)
 );
 
 CREATE TABLE IF NOT EXISTS `chat_room` (
@@ -215,7 +252,7 @@ CREATE TABLE IF NOT EXISTS `chat_room` (
     `landlord_id` BIGINT NOT NULL,
     `tenant_id` BIGINT NOT NULL,
     `room_id` BIGINT NOT NULL,
-    `landload_unread_count` BIGINT NOT NULL DEFAULT 0,
-    `tenant_unread_count` BIGINT NOT NULL DEFAULT 0,
+    `landload_unread_count` BIGINT NOT NULL,
+    `tenant_unread_count` BIGINT NOT NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

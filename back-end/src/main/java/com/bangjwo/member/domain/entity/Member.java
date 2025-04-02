@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,7 +16,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "MEMBER")
+@Table(indexes = {
+	@Index(name = "idx_member_id", columnList = "memberId"),
+	@Index(name = "idx_kakao_id", columnList = "kakaoId")
+})
 public class Member extends BaseEntity {
 
 	@Id
@@ -27,6 +31,9 @@ public class Member extends BaseEntity {
 
 	@Column(length = 20, nullable = false)
 	private String name;
+
+	@Column(length = 10, nullable = false)
+	private String nickname;
 
 	@Column(length = 20)
 	private String birthday;

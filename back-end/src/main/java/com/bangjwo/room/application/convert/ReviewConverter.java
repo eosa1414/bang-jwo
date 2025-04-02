@@ -12,8 +12,8 @@ public class ReviewConverter {
 
 		return Review.builder()
 			.roomId(room.getRoomId())
-			.lessorId(room.getMemberId())
-			.lesseeId(room.getMemberId())
+			.landlordId(room.getMemberId())
+			.tenantId(room.getMemberId())
 			.realEstateId(room.getRealEstateId())
 			.addressDetail(address.getAddressDetail())
 			.content(content)
@@ -23,7 +23,7 @@ public class ReviewConverter {
 	public static ReviewDto convert(Review review) {
 		return ReviewDto.builder()
 			.reviewId(review.getReviewId())
-			.lesseeId(review.getLesseeId())
+			.landlordId(review.getLandlordId())
 			.roomId(review.getRoomId())
 			.content(review.getContent())
 			.createdAt(LocalDate.from(review.getCreatedAt()))

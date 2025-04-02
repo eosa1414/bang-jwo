@@ -23,7 +23,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "TENANT_INFO")
+@Table
 public class TenantInfo extends BaseEntity {
 
 	@Id
