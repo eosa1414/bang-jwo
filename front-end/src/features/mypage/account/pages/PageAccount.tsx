@@ -10,7 +10,7 @@ const PageAccount = () => {
 
   return (
     <div className="flex flex-col justify-center max-w-lg mx-auto gap-2.5">
-      <LineBox>
+      <LineBox addClassName="w-full">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3 flex-wrap flex-grow">
             <div className="rounded-full w-[48px] h-[48px] bg-neutral-light100" />
@@ -19,7 +19,7 @@ const PageAccount = () => {
           <Button size="small">프로필 수정</Button>
         </div>
       </LineBox>
-      <LineBox>
+      <LineBox addClassName="w-full">
         <button onClick={logout} className="cursor-pointer">
           로그아웃하기
         </button>
