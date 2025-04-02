@@ -64,6 +64,9 @@ public class Contract extends BaseEntity {
 	@Column(nullable = false)
 	private String ipfsKey; // 암호화
 
+	@Column(columnDefinition = "TEXT", nullable = false)
+	private String aesKey;
+
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private ContractStatus contractStatus;
@@ -76,5 +79,13 @@ public class Contract extends BaseEntity {
 
 	public void updateContractStatus(ContractStatus status) {
 		this.contractStatus = status;
+	}
+
+	public void updateIpfsKey(String ipfsKey) {
+		this.ipfsKey = ipfsKey;
+	}
+
+	public void updateAesKey(String aesKey) {
+		this.aesKey = aesKey;
 	}
 }

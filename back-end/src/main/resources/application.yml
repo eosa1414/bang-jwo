@@ -1,7 +1,4 @@
 spring:
-  web:
-    mvc:
-      servlet:
 
   config:
     import: optional:file:.env[.properties]
@@ -12,7 +9,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:13306/bangjwo?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
-    password: 1234
+    password: ${MYSQL_ROOT_PASSWORD}
     hikari:
       maximum-pool-size: 10
       connection-timeout: 30000
@@ -41,7 +38,8 @@ spring:
       port: ${SPRING_DATA_REDIS_PORT}
 
     mongodb:
-      uri: mongodb://bangjwo:1234@mongo:27017/admin
+      uri: mongodb://bangjwo:1234@mongo:27017/admin      #docker용
+#      uri: mongodb://bangjwo:1234@localhost:27017/admin #local용
 
   main:
     allow-bean-definition-overriding: true
@@ -59,5 +57,10 @@ aws:
   s3:
     bucket: "bangjwo-s3"
   region: "ap-northeast-2"
+
+imp:
+  code: ${PORTONE_CUSTOMER}
+  key: ${PORTONE_API_KEY}
+  secret: ${PORTONE_API_SECRET}
 
 
