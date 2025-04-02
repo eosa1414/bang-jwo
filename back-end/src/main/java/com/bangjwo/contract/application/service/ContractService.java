@@ -1,15 +1,23 @@
 package com.bangjwo.contract.application.service;
 
+import java.math.BigInteger;
 import java.util.Optional;
+
+import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.bangjwo.blockchain.application.service.BlockchainService;
+import com.bangjwo.common.crypto.AESService;
+import com.bangjwo.common.crypto.RSAService;
 import com.bangjwo.contract.application.convert.ContractConverter;
 import com.bangjwo.contract.application.convert.ContractDetailConverter;
 import com.bangjwo.contract.application.convert.LandlordInfoConverter;
 import com.bangjwo.contract.application.convert.SpecialClauseConverter;
 import com.bangjwo.contract.application.convert.TenantInfoConverter;
+import com.bangjwo.contract.application.dto.request.CompleteDto;
 import com.bangjwo.contract.application.dto.request.CreateContractRequestDto;
 import com.bangjwo.contract.application.dto.request.LandlordSignatureUpdateRequestDto;
 import com.bangjwo.contract.application.dto.request.TenantSignatureUpdateRequestDto;
@@ -41,6 +49,10 @@ public class ContractService {
 	private final RoomService roomService;
 	private final ContractImageService contractImageService;
 	private final ContractRepository contractRepository;
+	private final AESService aesService;
+	private final RSAService rsaService;
+	private final PinataStorageService pinataStorageService;
+	private final BlockchainService blockchainService;
 
 	@Transactional
 	public Contract validateLandlordDraftContract(Long contractId, Long landlordId) {
@@ -92,9 +104,7 @@ public class ContractService {
 
 	public Long createContract(CreateContractRequestDto requestDto) {
 		Room room = roomService.findRoom(requestDto.getRoomId());
-		// 예시 IPFS key 사용
-		String ipfsKey = "SAMPLE_IPFS_KEY";
-		Contract contract = ContractConverter.convert(room, requestDto, ipfsKey);
+		Contract contract = ContractConverter.convert(room, requestDto);
 		Contract saved = contractRepository.save(contract);
 		return saved.getContractId();
 	}
@@ -208,5 +218,52 @@ public class ContractService {
 	public Contract findContract(Long contractId) {
 		return contractRepository.findByContractId(contractId)
 			.orElseThrow(() -> new RoomException(ContractErrorCode.NOT_FOUND_CONTRACT));
+	}
+
+	@Transactional
+	public void completeContract(CompleteDto completeDto) {
+		try {
+			Contract contract = findContract(completeDto.getContractId());
+
+			// 1. AES 키 생성
+			SecretKey aesKey = aesService.generateAESKey();
+
+			// 2. AES 키를 RSA로 암호화
+			String encryptedAesKey = rsaService.encryptAesKey(aesKey);
+
+			// 3. PDF 파일을 AES로 암호화
+			MultipartFile file = completeDto.getFile();
+			byte[] pdfBytes = file.getBytes();
+			byte[] encryptedPdf = aesService.encrypt(aesKey, pdfBytes);
+			String ipfsKey = pinataStorageService.uploadEncryptedPdf(encryptedPdf,
+				completeDto.getContractId());
+			String encryptedIpfsKey = aesService.encryptToString(aesKey, ipfsKey);
+
+			// 4. 블록체인에 CID 저장 구현
+			blockchainService.registerContract(BigInteger.valueOf(completeDto.getContractId()), encryptedIpfsKey,
+				BigInteger.valueOf(completeDto.getLandlord()),
+				BigInteger.valueOf(completeDto.getTenant()));
+
+			// 5. DB 업데이트
+			contract.updateAesKey(encryptedAesKey);
+			contract.updateIpfsKey(encryptedIpfsKey);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public byte[] getPdf(long contractId) {
+		Contract contract = findContract(contractId);
+		// 계약 당사자들인지 확인 구현 필요
+		try {
+			SecretKey aesKey = rsaService.decryptAesKey(contract.getAesKey());
+			String ipfsKey = aesService.decryptFromString(aesKey, contract.getIpfsKey());
+			byte[] encryptedFileData = pinataStorageService.getFileFromIpfs(ipfsKey);
+			return aesService.decrypt(aesKey, encryptedFileData);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
 	}
 }
