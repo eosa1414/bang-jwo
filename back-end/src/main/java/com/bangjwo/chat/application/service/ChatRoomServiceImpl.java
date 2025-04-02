@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.bangjwo.chat.application.dto.ChatRoomDto;
 import com.bangjwo.chat.domain.entity.ChatRoom;
 import com.bangjwo.chat.domain.repository.ChatRoomRepository;
+import com.bangjwo.global.common.error.chat.ChatErrorCode;
+import com.bangjwo.global.common.exception.BusinessException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,23 +23,44 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
 	@Override
 	public ChatRoomDto.ResponseDto requestClass(ChatRoomDto.RequestDto requestDto) {
+		try {
+			ChatRoom chatRoom;
+			// 기존 채팅방 조회
+			Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findByRoomIdAndTenantId(
+				requestDto.roomId(), requestDto.tenantId());
 
-		ChatRoom chatRoom;
-		Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findByRoomIdAndTenantId(requestDto.roomId(), requestDto.tenantId());
+			// 존재하지 않으면 새로 생성
+			chatRoom = chatRoomOptional.orElseGet(() -> {
+				try {
+					return chatRoomRepository.saveAndFlush(ChatRoom.builder()
+						.landlordId(requestDto.landlordId())
+						.tenantId(requestDto.tenantId())
+						.roomId(requestDto.roomId())
+						.landloadUnreadCount(0L)
+						.tenantUnreadCount(0L)
+						.createdAt(LocalDateTime.now())
+						.build());
+				} catch (Exception e) {
+					log.error("채팅방 저장 실패", e);
+					throw new BusinessException(ChatErrorCode.CHAT_ROOM_SAVE_FAILED);
+				}
+			});
 
-		chatRoom = chatRoomOptional.orElseGet(() -> chatRoomRepository.saveAndFlush(ChatRoom.builder()
-			.landlordId(requestDto.landlordId())
-			.tenantId(requestDto.tenantId())
-			.roomId(requestDto.roomId())
-			.landloadUnreadCount(0L)
-			.tenantUnreadCount(0L)
-			.createdAt(LocalDateTime.now()).build()));
+			if (chatRoom == null) {
+				throw new BusinessException(ChatErrorCode.CHAT_ROOM_NOT_FOUND);
+			}
 
-		return ChatRoomDto.ResponseDto.builder()
-			.landlordId(chatRoom.getLandlordId())
-			.tenantId(chatRoom.getTenantId())
-			.roomId(chatRoom.getRoomId())
-			.chatRoomId(chatRoom.getId()).build();
+			return ChatRoomDto.ResponseDto.builder()
+				.landlordId(chatRoom.getLandlordId())
+				.tenantId(chatRoom.getTenantId())
+				.roomId(chatRoom.getRoomId())
+				.chatRoomId(chatRoom.getId())
+				.build();
+		} catch (BusinessException ce) {
+			throw ce;
+		} catch (Exception e) {
+			log.error("채팅방 요청 처리 중 오류 발생", e);
+			throw new BusinessException(ChatErrorCode.CHAT_ROOM_SAVE_FAILED);
+		}
 	}
-
 }
