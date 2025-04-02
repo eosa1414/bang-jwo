@@ -21,8 +21,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  #    networks:
-  #      - bangjwo-network
+    networks:
+      - bangjwo-network
 
   mongo-db:
     image: mongo:7.0
