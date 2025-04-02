@@ -8,7 +8,7 @@ interface LineBoxProps {
 const LineBox = ({ children, addClassName = "" }: LineBoxProps) => {
   return (
     <div
-      className={`p-[2.125rem_1.5rem] w-full border-1 border-neutral-light100 rounded-md ${addClassName}`}
+      className={`p-[2.125rem_1.5rem] border-1 border-neutral-light100 rounded-md ${addClassName}`}
     >
       {children}
     </div>

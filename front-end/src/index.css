@@ -22,6 +22,10 @@
   --color-green: #03c75a;
   --color-avocado: #568203;
   --color-pistachio: #84b067;
+
+  --color-kakao-yellow: #fee500;
+  --color-kakao-symbol: #000000;
+  --color-kakao-label: rgba(0, 0, 0, 0.85);
 }
 
 /*custom class*/

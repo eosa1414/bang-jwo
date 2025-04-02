@@ -5,7 +5,6 @@ import LayoutMain from "./layouts/LayoutMain";
 //pages
 import PageHome from "./pages/PageHome";
 import PageTest from "./pages/PageTest";
-import PageRoomFind from "./features/room-find/pages/PageRoomFind";
 import PageTestButton from "./pages/PageTestButton";
 import SellerContract from "./features/contract/components/SellerContract";
 import SellerContractPage from "./features/contract/pages/SellerContractPage";
@@ -15,6 +14,8 @@ import PageMy from "./features/mypage/pages/PageMy";
 import PageAccount from "./features/mypage/account/pages/PageAccount";
 import RedirectRoomFind from "./features/room-find/components/RedirectRoomFind";
 import PageNotFound from "./pages/PageNotFound";
+import PageLogin from "./features/auth/pages/PageLogin";
+import PageKakaoRedirect from "./features/auth/pages/PageKakaoRedirect";
 
 function App() {
   return (
@@ -45,6 +46,15 @@ function App() {
             path="/room/sell"
             element={<LayoutMain>집 내놓기 화면</LayoutMain>}
           />
+          <Route
+            path="/login"
+            element={
+              <LayoutMain>
+                <PageLogin />
+              </LayoutMain>
+            }
+          />
+          <Route path="/auth/kakao/callback" element={<PageKakaoRedirect />} />
           <Route
             path="/mypage"
             element={
