@@ -1,25 +1,130 @@
-import NoticeDefault from "../../../components/notices/NoticeDefault";
+import ContractBody from "./ContractBody";
+import ContractHeader from "./ContractHeader";
+import HouseInfoSection from "./HouseInfoSection";
+import LesseeInfoSection from "./LesseeInfoSection";
+import LessorInfoSection from "./LessorInfoSection";
+import SignatureModal from "./SignatureModal";
+import SpecialTerms from "./SpecialTerms";
+import { useState } from "react";
 
 const SellerContract = () => {
-  return (
-    // mx-auto 제거 + 내부 여백 유지
-    <section className="w-full max-w-[800px] pt-6 pb-4">
-      {/* 계약서 상단 공지 (좌측 정렬) */}
-      <NoticeDefault>
-        이 계약서는 법무부에서 제공하는 주택임대차표준계약서를 중개인 항목을
-        제외하여 재구성한 것입니다.
-        <br />
-        법의 보호를 받기 위해 계약서 하단의 중요확인사항을 꼭 확인하시기
-        바랍니다.
-      </NoticeDefault>
+  const [lessorName, setLessorName] = useState("");
+  const [lesseeName] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeSignatureType, setActiveSignatureType] = useState<
+    "unpaid" | "priority" | "receipt" | null
+  >(null);
+  const [leaseDetail, setLeaseDetail] = useState("");
+  const [leaseArea, setLeaseArea] = useState("");
 
-      {/* 계약서 본문 */}
-      <div className="mt-10">
-        <h2 className="text-2xl font-extrabold text-center">
-          주택임대차계약서
-        </h2>
-        {/* 계약서 본문 컴포넌트들 여기에 순차적으로 추가될 예정 */}
-      </div>
+  const [unpaidTaxOption, setUnpaidTaxOption] = useState<string | null>(null);
+  const [priorityDateOption, setPriorityDateOption] = useState<string | null>(
+    null
+  );
+
+  const [unpaidTaxSignature, setUnpaidTaxSignature] = useState<string | null>(
+    null
+  );
+  const [priorityDateSignature, setPriorityDateSignature] = useState<
+    string | null
+  >(null);
+  const [receiptSignature, setReceiptSignature] = useState<string | null>(null);
+
+  const [address, setAddress] = useState("");
+  const [landPurpose, setLandPurpose] = useState("");
+  const [landArea, setLandArea] = useState("");
+  const [buildingStructure, setBuildingStructure] = useState("");
+  const [buildingUsage, setBuildingUsage] = useState("");
+  const [buildingArea, setBuildingArea] = useState("");
+
+  const openSignatureModal = (type: "unpaid" | "priority" | "receipt") => {
+    setActiveSignatureType(type);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setActiveSignatureType(null);
+  };
+
+  const handleSaveSignature = (signatureData: string) => {
+    if (activeSignatureType === "unpaid") setUnpaidTaxSignature(signatureData);
+    if (activeSignatureType === "priority")
+      setPriorityDateSignature(signatureData);
+    if (activeSignatureType === "receipt") setReceiptSignature(signatureData);
+    closeModal();
+  };
+
+  return (
+    <section className="w-full max-w-[800px] pt-6 pb-4">
+      <ContractHeader
+        lessorName={lessorName}
+        lesseeName={lesseeName}
+        onLessorNameChange={setLessorName}
+      />
+
+      <HouseInfoSection
+        leaseDetail={leaseDetail}
+        leaseArea={leaseArea}
+        address={address}
+        landPurpose={landPurpose}
+        landArea={landArea}
+        buildingStructure={buildingStructure}
+        buildingUsage={buildingUsage}
+        buildingArea={buildingArea}
+        unpaidTaxOption={unpaidTaxOption}
+        priorityDateOption={priorityDateOption}
+        unpaidTaxSignature={unpaidTaxSignature}
+        priorityDateSignature={priorityDateSignature}
+        onChange={(field, value) => {
+          const fieldSetters = {
+            leaseDetail: setLeaseDetail,
+            leaseArea: setLeaseArea,
+            address: setAddress,
+            landPurpose: setLandPurpose,
+            landArea: setLandArea,
+            buildingStructure: setBuildingStructure,
+            buildingUsage: setBuildingUsage,
+            buildingArea: setBuildingArea,
+          };
+
+          const typedField = field as keyof typeof fieldSetters;
+          fieldSetters[typedField](value);
+        }}
+        onOptionChange={(field, value) => {
+          const optionSetters = {
+            unpaidTaxOption: setUnpaidTaxOption,
+            priorityDateOption: setPriorityDateOption,
+          };
+
+          const typedField = field as keyof typeof optionSetters;
+          optionSetters[typedField](value);
+        }}
+        openSignatureModal={openSignatureModal}
+      />
+
+      <hr className="mt-10 mb-6 border-t-[2px] border-neutral-light200" />
+
+      <ContractBody
+        receiptSignature={receiptSignature}
+        openSignatureModal={openSignatureModal}
+      />
+
+      <hr className="mt-10 mb-6 border-t-[2px] border-neutral-light200" />
+
+      <SpecialTerms />
+
+      <hr className="mt-10 mb-6 border-t-[2px] border-neutral-light200" />
+
+      <LessorInfoSection />
+
+      <LesseeInfoSection />
+
+      <SignatureModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onSave={handleSaveSignature}
+      />
     </section>
   );
 };
