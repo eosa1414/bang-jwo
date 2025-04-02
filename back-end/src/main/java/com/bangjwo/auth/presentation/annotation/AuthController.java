@@ -1,4 +1,4 @@
-package com.bangjwo.auth.presentation;
+package com.bangjwo.auth.presentation.annotation;
 
 import java.util.Map;
 
@@ -24,7 +24,7 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseEntity<KakaoAuthResponseDto> login(@RequestBody Map<String, String> body) {
-		String authCode = body.get("authCode");
+		String authCode = body.get("code");
 		KakaoAuthResponseDto response = authService.loginWithKakao(authCode);
 
 		return ResponseEntity.ok(response);
