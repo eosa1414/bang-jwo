@@ -7,39 +7,44 @@ export interface Pagable {
 
 export interface Room {
   roomId: number;
-  roomType: string;
-  monthlyRent: number;
+  memberId: number;
+  isLiked: boolean;
+  buildingType: string;
+  status: string;
   deposit: number;
-  supplyArea: number;
+  monthlyRent: number;
   exclusiveArea: number;
+  supplyArea: number;
   maintenanceCost: number;
   simpleDescription: string;
-  addressDetail: string;
   floor: string;
-  direction: string;
-  image: string;
-  like: boolean;
+  imageUrl: string;
 }
 
 export const defaultRoom: Room = {
   roomId: 0,
-  roomType: "",
-  monthlyRent: 0,
+  memberId: 0,
+  isLiked: false,
+  buildingType: "",
+  status: "",
   deposit: 0,
-  supplyArea: 0,
+  monthlyRent: 0,
   exclusiveArea: 0,
+  supplyArea: 0,
   maintenanceCost: 0,
   simpleDescription: "",
-  addressDetail: "",
   floor: "",
-  direction: "",
-  image: "",
-  like: false,
+  imageUrl: "",
 };
 
 export interface RoomResponse {
-  pagable: Pagable;
-  data: Room[];
+  totalItems: number;
+  totalPages: number;
+  currentPage: number;
+  size: number;
+  currentPageItemCount: number;
+  offset: number;
+  items: Room[];
 }
 
 // 쿼리
@@ -47,9 +52,9 @@ export interface RoomQueryParams {
   buildingType?: string;
   price?: string;
   area?: string;
-  lat?: string;
-  lng?: string;
-  zoom?: string;
+  lat?: number;
+  lng?: number;
+  zoom?: number;
   page?: number;
 }
 
@@ -57,8 +62,8 @@ export const defaultParams: RoomQueryParams = {
   buildingType: "",
   price: "",
   area: "",
-  lat: "",
-  lng: "",
-  zoom: "",
+  lat: 33.450701,
+  lng: 126.570667,
+  zoom: 4,
   page: 1,
 };
