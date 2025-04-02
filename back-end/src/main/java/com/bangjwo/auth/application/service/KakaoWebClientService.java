@@ -3,6 +3,7 @@ package com.bangjwo.auth.application.service;
 import java.util.Map;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class KakaoWebClientService {
+
 	private static final String KAKAO_OAUTH_URL = "https://kauth.kakao.com/oauth/token";
 	private static final String KAKAO_USER_INFO_URL = "https://kapi.kakao.com/v2/user/me";
 
@@ -27,46 +29,64 @@ public class KakaoWebClientService {
 	private final KakaoConfig kakaoConfig;
 
 	public KakaoUserInfo loginWithKakaoAuthCode(String authCode) {
-		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-		formData.add("grant_type", "authorization_code");
-		formData.add("client_id", kakaoConfig.getClientId());
-		formData.add("redirect_uri", kakaoConfig.getRedirectUri());
-		formData.add("code", authCode);
+		String accessToken = requestAccessToken(authCode);
 
-		Map<String, Object> tokenMap = webClient.post()
-			.uri(KAKAO_OAUTH_URL)
-			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-			.body(BodyInserters.fromFormData(formData))
-			.retrieve()
-			.bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-			})
-			.block();
+		return getKakaoUserInfo(accessToken);
+	}
 
-		if (tokenMap == null || !tokenMap.containsKey("access_token")) {
+	private String requestAccessToken(String authCode) {
+		try {
+			MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+			formData.add("grant_type", "authorization_code");
+			formData.add("client_id", kakaoConfig.getClientId());
+			formData.add("redirect_uri", kakaoConfig.getRedirectUri());
+			formData.add("code", authCode);
+
+			Map<String, Object> tokenMap = webClient.post()
+				.uri(KAKAO_OAUTH_URL)
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.body(BodyInserters.fromFormData(formData))
+				.retrieve()
+				.onStatus(
+					HttpStatusCode::isError,
+					clientResponse -> clientResponse.bodyToMono(String.class)
+						.flatMap(errorBody ->
+							reactor.core.publisher.Mono.error(
+								new BusinessException(AuthErrorCode.KAKAO_TOKEN_REQUEST_FAILED)
+							)
+						)
+				)
+				.bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+				})
+				.block();
+
+			return (String)tokenMap.get("access_token");
+		} catch (Exception e) {
 			throw new BusinessException(AuthErrorCode.KAKAO_TOKEN_REQUEST_FAILED);
 		}
+	}
 
-		String accessToken = (String)tokenMap.get("access_token");
-		KakaoUserInfo userInfo = getKakaoUserInfo(accessToken);
-
-		if (userInfo == null || userInfo.getKakaoId() == null) {
+	public KakaoUserInfo getKakaoUserInfo(String accessToken) {
+		try {
+			return webClient.get()
+				.uri(KAKAO_USER_INFO_URL)
+				.header("Authorization", "Bearer " + accessToken)
+				.retrieve()
+				.onStatus(
+					HttpStatusCode::isError,
+					clientResponse -> clientResponse.bodyToMono(String.class)
+						.flatMap(errorBody ->
+							reactor.core.publisher.Mono.error(
+								new BusinessException(AuthErrorCode.KAKAO_USER_INFO_REQUEST_FAILED)
+							)
+						)
+				)
+				.bodyToMono(KakaoUserInfo.class)
+				.block();
+		} catch (Exception e) {
 			throw new BusinessException(AuthErrorCode.KAKAO_USER_INFO_REQUEST_FAILED);
 		}
-
-		return userInfo;
 	}
-
-	/**
-	 * GET 요청 (Authorization 헤더 포함)
-	 */
-	public KakaoUserInfo getKakaoUserInfo(String accessToken) {
-		return webClient.get()
-			.uri(KAKAO_USER_INFO_URL)
-			.header("Authorization", "Bearer " + accessToken)
-			.retrieve()
-			.bodyToMono(KakaoUserInfo.class)
-			.block();
-	}
-
 }
+
 
