@@ -2,7 +2,7 @@ import axios, { AxiosResponse, AxiosError } from "axios";
 import { StatusCodes } from "../constants/statusCodes";
 
 const axiosInstance = axios.create({
-  baseURL: "https://api.example.com",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000, //최대 대기 시간(10초)
 });
 

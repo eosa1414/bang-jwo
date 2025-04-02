@@ -1,4 +1,6 @@
 import { Room, defaultRoom } from "../types/roomTypes";
+import Button from "./buttons/Button";
+import MaterialIcon from "./MaterialIcon";
 
 interface ListItemRoomProps {
   room: Room;
@@ -18,13 +20,13 @@ const ListItemRoom = ({ room, onSelectRoom }: ListItemRoomProps) => {
       onClick={handleClick}
     >
       {/* left side */}
-      <div className="bg-neutral-light100 w-[8.2rem] h-[8.8rem] rounded-md overflow-hidden relative">
+      <div className="bg-neutral-light100 w-[8.2rem] h-[8.8rem] rounded-md overflow-hidden relative flex-shrink-0">
         {/* 이미지가 있다면 <img> 노출 */}
-        {roomData.image ? (
+        {roomData.imageUrl ? (
           <img
             className="w-full h-full object-cover"
-            src={roomData.image}
-            alt={`room image of ${roomData.roomType}`}
+            src={roomData.imageUrl}
+            alt={`room image of ${roomData.buildingType}`}
           />
         ) : (
           <div className="w-full h-full flex justify-center items-center text-sm text-neutral-gray">
@@ -37,10 +39,10 @@ const ListItemRoom = ({ room, onSelectRoom }: ListItemRoomProps) => {
 
         {/* 하트 아이콘 */}
         <div className="absolute bottom-2 right-2 flex justify-center items-center text-neutral-white">
-          <i className="material-symbols-rounded">favorite</i>
+          <MaterialIcon icon="favorite" fill={roomData.isLiked} />
         </div>
       </div>
-
+      {/* right side */}
       <div className="flex flex-col gap-1.5 pt-[6px] pb-[6px]">
         <p className="flex gap-1 font-bold">
           <span>월세</span>
@@ -49,11 +51,12 @@ const ListItemRoom = ({ room, onSelectRoom }: ListItemRoomProps) => {
           </span>
         </p>
         <p className="text-sm text-neutral-dark100 font-light">
-          {roomData.roomType}
+          {roomData.buildingType}
         </p>
-        <p className="flex gap-0.5 text-sm">
+        <p className="flex flex-wrap gap-0.5 text-sm">
           <span>
-            {roomData.supplyArea}/{roomData.exclusiveArea}
+            {roomData.supplyArea.toFixed(2)}/{roomData.exclusiveArea.toFixed(2)}
+            ㎡
           </span>
           <span>·</span>
           <span>{roomData.floor}</span>
@@ -63,7 +66,9 @@ const ListItemRoom = ({ room, onSelectRoom }: ListItemRoomProps) => {
         <p className="text-sm text-neutral-dark100">
           {roomData.simpleDescription}
         </p>
-        <p className="text-sm">집주인</p>
+        <Button size="small" variant="gold" isAngular>
+          집주인
+        </Button>
       </div>
     </div>
   );

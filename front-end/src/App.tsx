@@ -13,6 +13,7 @@ import { AuthProvider } from "./contexts/AuthProvider";
 import RedirectIfNotLoggedIn from "./features/auth/components/RedirectIfNotLoggedIn";
 import PageMy from "./features/mypage/pages/PageMy";
 import PageAccount from "./features/mypage/account/pages/PageAccount";
+import RedirectRoomFind from "./features/room-find/components/RedirectRoomFind";
 
 function App() {
   return (
@@ -28,14 +29,14 @@ function App() {
             }
           />
           <Route
-            path="/room/find"
+            path="/room/find/:category?"
             element={
               <LayoutMain
                 wrapperClassName="h-screen min-h-[calc(24rem+55px+7.9rem)] min-w-[calc(5.035rem+660px)]"
                 mainClassName="flex flex-row overflow-hidden"
                 hasFooter={false}
               >
-                <PageRoomFind />
+                <RedirectRoomFind />
               </LayoutMain>
             }
           />
@@ -58,7 +59,10 @@ function App() {
           <Route path="/test" element={<PageTest />} />
           <Route path="/test/button" element={<PageTestButton />} />
           <Route path="/seller-contract" element={<SellerContract />} />
-          <Route path="/seller-contract-form" element={<SellerContractPage />} />
+          <Route
+            path="/seller-contract-form"
+            element={<SellerContractPage />}
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
