@@ -3,10 +3,12 @@ package com.bangjwo.room.domain.entity;
 import com.bangjwo.room.domain.vo.MaintenanceIncludeName;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,7 +37,11 @@ public class MaintenanceInclude {
 	private Long maintenanceId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "room_id", nullable = false)
+	@JoinColumn(
+		name = "room_id",
+		nullable = false,
+		foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
+	)
 	private Room room;
 
 	@Enumerated(EnumType.STRING)

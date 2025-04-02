@@ -6,9 +6,11 @@ import com.bangjwo.room.domain.entity.Room;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,7 +42,11 @@ public class Contract extends BaseEntity {
 	private Long contractId;
 
 	@OneToOne
-	@JoinColumn(name = "room_id", unique = true)
+	@JoinColumn(
+		name = "room_id",
+		unique = true,
+		foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
+	)
 	private Room room;
 
 	@Column(name = "landlord_id", nullable = false)
@@ -50,15 +56,27 @@ public class Contract extends BaseEntity {
 	private Long tenantId;
 
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "landlord_info_id", nullable = false)
+	@JoinColumn(
+		name = "landlord_info_id",
+		nullable = false,
+		foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
+	)
 	private LandlordInfo landlordInfo;
 
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "tenant_info_id", nullable = false)
+	@JoinColumn(
+		name = "tenant_info_id",
+		nullable = false,
+		foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
+	)
 	private TenantInfo tenantInfo;
 
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "special_clause_id", nullable = false)
+	@JoinColumn(
+		name = "special_clause_id",
+		nullable = false,
+		foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
+	)
 	private SpecialClause specialClause;
 
 	@Column(nullable = false)
