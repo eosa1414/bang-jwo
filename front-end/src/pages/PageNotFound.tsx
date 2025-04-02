@@ -20,7 +20,7 @@ const PageNotFound = () => {
       </div>
 
       {/* content */}
-      <div className="flex flex-col flex-grow gap-10 items-center justify-center">
+      <div className="flex flex-col flex-grow gap-10 items-center justify-center px-4 py-6">
         <div className="flex flex-col gap-2  items-center justify-center">
           <p className="sm:hidden font-['TmonMonsori'] text-9xl whitespace-nowrap">
             404
