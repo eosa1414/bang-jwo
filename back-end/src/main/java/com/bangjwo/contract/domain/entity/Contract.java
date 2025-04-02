@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "CONTRACT", indexes = {
+@Table(indexes = {
 	@Index(name = "idx_room_id", columnList = "room_id"),
 	@Index(name = "idx_landlord_id", columnList = "landlord_id"),
 	@Index(name = "idx_tenant_id", columnList = "tenant_id"),
@@ -64,6 +64,9 @@ public class Contract extends BaseEntity {
 	@Column(nullable = false)
 	private String ipfsKey; // 암호화
 
+	@Column(columnDefinition = "TEXT", nullable = false)
+	private String aesKey;
+
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private ContractStatus contractStatus;
@@ -76,5 +79,13 @@ public class Contract extends BaseEntity {
 
 	public void updateContractStatus(ContractStatus status) {
 		this.contractStatus = status;
+	}
+
+	public void updateIpfsKey(String ipfsKey) {
+		this.ipfsKey = ipfsKey;
+	}
+
+	public void updateAesKey(String aesKey) {
+		this.aesKey = aesKey;
 	}
 }

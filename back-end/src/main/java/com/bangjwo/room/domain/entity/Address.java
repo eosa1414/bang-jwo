@@ -23,13 +23,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@Table(
-	name = "ADDRESS",
-	indexes = {
-		@Index(name = "idx_room_id", columnList = "room_id"),
-		@Index(name = "idx_lat_lng", columnList = "lat, lng"),
-	}
-)
+@Table(indexes = {
+	@Index(name = "idx_room_id", columnList = "room_id"),
+	@Index(name = "idx_lat_lng", columnList = "lat, lng")
+})
 public class Address {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

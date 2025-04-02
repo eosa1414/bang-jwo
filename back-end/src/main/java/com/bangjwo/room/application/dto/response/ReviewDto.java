@@ -11,7 +11,7 @@ import lombok.Getter;
 @Getter
 public class ReviewDto {
 	long reviewId;
-	long lesseeId;
+	long landlordId;
 	long roomId;
 	String content;
 	LocalDate createdAt;
