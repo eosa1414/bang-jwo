@@ -1,3 +1,4 @@
+import Button from "../../../components/buttons/Button";
 import HeaderContract from "../../../components/headers/HeaderContract";
 import NoticeDefault from "../../../components/notices/NoticeDefault";
 import SellerContract from "../components/SellerContract";
@@ -27,6 +28,15 @@ const SellerContractPage = () => {
         </div>
 
         <SellerContract />
+
+        <div className="flex justify-center gap-6 pt-8 pb-16">
+          <Button size="medium" variant="default">
+            임시저장
+          </Button>
+          <Button size="medium" variant="point">
+            등록완료
+          </Button>
+        </div>
       </main>
     </div>
   );

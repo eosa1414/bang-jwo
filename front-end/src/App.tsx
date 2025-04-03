@@ -8,6 +8,7 @@ import PageTest from "./pages/PageTest";
 import PageTestButton from "./pages/PageTestButton";
 import SellerContract from "./features/contract/components/SellerContract";
 import SellerContractPage from "./features/contract/pages/SellerContractPage";
+import "react-datepicker/dist/react-datepicker.css";
 import { AuthProvider } from "./contexts/AuthProvider";
 import RedirectIfNotLoggedIn from "./features/auth/components/RedirectIfNotLoggedIn";
 import PageMy from "./features/mypage/pages/PageMy";
