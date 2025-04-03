@@ -1,8 +1,9 @@
-import { fetchRooms } from "../apis/room";
+import { fetchRooms, fetchDetailRoom } from "../apis/room";
 import {
   RoomResponse,
   RoomQueryParams,
   defaultParams,
+  RoomDetailResponse,
 } from "../types/roomTypes";
 
 export const getRooms = async (params: RoomQueryParams = defaultParams) => {
@@ -11,6 +12,18 @@ export const getRooms = async (params: RoomQueryParams = defaultParams) => {
     return roomsData;
   } catch (err) {
     console.error("Error fetching rooms:", err);
+    throw err;
+  }
+};
+
+export const getRoomDetail = async (
+  roomId: number
+): Promise<RoomDetailResponse> => {
+  try {
+    const room = await fetchDetailRoom(roomId);
+    return room;
+  } catch (err) {
+    console.error("Error  fetching room detail:", err);
     throw err;
   }
 };

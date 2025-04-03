@@ -67,3 +67,83 @@ export const defaultParams: RoomQueryParams = {
   zoom: 4,
   page: 1,
 };
+
+export interface RoomImage {
+  imageId: number;
+  imageUrl: string;
+}
+
+export type MaintenanceIncludeName =
+  | "WATER"
+  | "ELECTRICITY"
+  | "INTERNET"
+  | "GAS"
+  | "CLEANING"
+  | "CABLE_TV"
+  | "PARKING"
+  | "HEATING"
+  | "ELEVATOR_MAINTENANCE";
+
+export type RoomOption =
+  | "ELEVATOR"
+  | "ROOFTOP"
+  | "AIR_CONDITIONER"
+  | "WASHING_MACHINE"
+  | "REFRIGERATOR"
+  | "MICROWAVE"
+  | "GAS_RANGE"
+  | "INDUCTION"
+  | "BED";
+
+  export type RoomBuildingType =
+  | "ONEROOM_TWOROOM"
+  | "APARTMENT"
+  | "VILLA_HOUSE"
+  | "OFFICETEL";
+
+  export type RoomDirection = 
+  | "NORTH"
+  | "NORTH_EAST"
+  | "EAST"
+  | "SOUTH_EAST"
+  | "SOUTH"
+  | "SOUTH_WEST"
+  | "WEST"
+  | "NORTH_WEST"
+
+export interface RoomDetailResponse {
+  roomId: number;
+  memberId: number;
+  isLiked: boolean;
+  roomStatus: string;
+  buildingType: string;
+  realEstateId: string;
+  postalCode: string;
+  address: string;
+  addressDetail: string;
+  lat: number;
+  lng: number;
+  deposit: number;
+  monthlyRent: number;
+  exclusiveArea: number;
+  supplyArea: number;
+  totalUnits: number;
+  floor: string;
+  maxFloor: number;
+  parkingSpaces: number;
+  availableFrom: string;
+  permissionDate: string;
+  simpleDescription: string;
+  description: string;
+  maintenanceCost: number;
+  roomCnt: number;
+  bathroomCnt: number;
+  direction: string;
+  discussable: boolean;
+  discussDetail: string;
+  reviewable: boolean;
+  isPhonePublic: boolean;
+  maintenanceIncludes: MaintenanceIncludeName[];
+  options: RoomOption[];
+  images: RoomImage[];
+}
