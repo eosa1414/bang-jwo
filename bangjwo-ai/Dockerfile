@@ -30,3 +30,6 @@ COPY . .
 RUN mkdir -p /app/law_db
 
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5000"]
+
+
+
