@@ -33,6 +33,9 @@ public class Member extends BaseEntity {
 	@Column(nullable = false, unique = true)
 	private Long kakaoId;
 
+	@Column(nullable = false)
+	private Boolean isAuth;
+
 	@Column(length = 20)
 	private String name;
 
@@ -47,5 +50,17 @@ public class Member extends BaseEntity {
 
 	@Column
 	private String profileUrl;
+
+	public void updateNickname(String nickname) {
+		if (nickname != null) {
+			this.nickname = nickname;
+		}
+	}
+
+	public void updateProfileUrl(String profileUrl) {
+		if (profileUrl != null) {
+			this.profileUrl = profileUrl;
+		}
+	}
 }
 
