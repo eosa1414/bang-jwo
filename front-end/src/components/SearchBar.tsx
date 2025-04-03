@@ -1,4 +1,5 @@
 import { ChangeEvent, useState } from "react";
+import MaterialIcon from "./MaterialIcon";
 
 const SearchBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,7 +13,7 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="flex w-full max-w-sm border border-neutral-light100 rounded-full overflow-hidden p-[0.25rem_0.5rem_0.25rem_0.875rem]">
+    <div className="flex w-full max-w-md border border-neutral-light100 rounded-full overflow-hidden p-[0.25rem_0.5rem_0.25rem_0.875rem] bg-real-white">
       <input
         type="text"
         value={searchQuery}
@@ -26,7 +27,7 @@ const SearchBar = () => {
         className="flex rounded-full justify-center items-center text-neutral-black bg-transparent cursor-pointer"
         onClick={search}
       >
-        <i className="material-symbols-rounded">search</i>
+        <MaterialIcon icon="search" />
       </div>
     </div>
   );

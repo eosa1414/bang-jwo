@@ -6,6 +6,7 @@ interface LayoutMainProps {
   children: ReactNode;
   wrapperClassName?: string;
   mainClassName?: string;
+  darkHeader?: boolean;
   hasFooter?: boolean;
 }
 
@@ -13,11 +14,12 @@ const LayoutMain = ({
   children,
   wrapperClassName = "",
   mainClassName = "",
+  darkHeader,
   hasFooter = true,
 }: LayoutMainProps) => {
   return (
     <div className={`w-full min-h-screen flex flex-col ${wrapperClassName}`}>
-      <HeaderDefault />
+      <HeaderDefault variant={darkHeader ? "dark" : "light"} />
       <main className={`flex-grow ${mainClassName}`}>{children}</main>
       {hasFooter && <FooterDefault />}
     </div>
