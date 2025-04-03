@@ -13,6 +13,7 @@ import RedirectIfNotLoggedIn from "./features/auth/components/RedirectIfNotLogge
 import PageMy from "./features/mypage/pages/PageMy";
 import PageAccount from "./features/mypage/account/pages/PageAccount";
 import RedirectRoomFind from "./features/room-find/components/RedirectRoomFind";
+import PageNotFound from "./pages/PageNotFound";
 import PageLogin from "./features/auth/pages/PageLogin";
 import PageKakaoRedirect from "./features/auth/pages/PageKakaoRedirect";
 
@@ -72,6 +73,15 @@ function App() {
           <Route
             path="/seller-contract-form"
             element={<SellerContractPage />}
+          />
+          {/* 그 외 모든 페이지는 404 not found */}
+          <Route
+            path="*"
+            element={
+              <LayoutMain wrapperClassName="bg-gold-light" mainClassName="flex">
+                <PageNotFound />
+              </LayoutMain>
+            }
           />
         </Routes>
       </BrowserRouter>
