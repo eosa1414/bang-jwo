@@ -3,6 +3,7 @@ package com.bangjwo.room.application.convert;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.bangjwo.member.domain.entity.Member;
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.response.ImageResponseDto;
@@ -61,6 +62,8 @@ public class RoomConverter {
 	public static SearchDetailRoomResponseDto convert(Room room,
 		Boolean isLiked,
 		Address address,
+		Member member,
+		int reviewCnt,
 		List<Options> options,
 		List<MaintenanceInclude> maintenanceIncludes,
 		List<Image> images) {
@@ -112,6 +115,11 @@ public class RoomConverter {
 			.discussDetail(room.getDiscussDetail())
 			.reviewable(room.getReviewable())
 			.isPhonePublic(room.getIsPhonePublic())
+			.nickname(member.getNickname())
+			.reviewCnts(reviewCnt)
+			.phoneNumber(member.getPhone())
+			.createDate(room.getCreatedAt())
+			.updateDate(room.getUpdatedAt())
 
 			// 변환된 리스트들
 			.maintenanceIncludes(maintenanceIncludeList)
