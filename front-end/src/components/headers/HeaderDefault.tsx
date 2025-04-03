@@ -1,23 +1,14 @@
-// src/components/Header.tsx
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import Logo from "/logo.svg";
+import Logo from "../Logo";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface HeaderProps {
   title?: string;
+  variant?: "dark" | "light";
 }
 
-const Header = ({ title }: HeaderProps) => {
-  // 임시로 로그인 안 된 상태를 설정
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // 임시 로그인/로그아웃 함수 (차후 API 연결시 변동)
-  const handleLogin = () => {
-    setIsLoggedIn(true); //임시 로그인 처리
-  };
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
+const Header = ({ title, variant = "light" }: HeaderProps) => {
+  const { user, login, logout } = useAuth();
 
   // 모바일 가로일 때 메뉴 동작 - 차후 추가
   // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -29,9 +20,17 @@ const Header = ({ title }: HeaderProps) => {
     <header className="flex w-full h-[55px] p-[12px_14px] justify-center items-center gap-[16px] border-b-1 border-neutral-light100">
       {/* Logo */}
       <div>
-        <Link to="/" className="flex gap-2 items-center">
-          <img src={Logo} className="w-[35.28px]" alt="BangJwo logo" />
-          <span className={`text-lg font-['TmonMonsori'] text-gold`}>방줘</span>
+        <Link to="/" className="flex gap-2 items-center justify-center">
+          <span className="pb-[3.5px]">
+            <Logo className="w-[35.28px]" variant={variant} />
+          </span>
+          <span
+            className={`text-lg font-['TmonMonsori'] ${
+              variant === "light" ? "text-gold" : "text-neutral-black"
+            }`}
+          >
+            방줘
+          </span>
         </Link>
       </div>
 
@@ -50,7 +49,7 @@ const Header = ({ title }: HeaderProps) => {
                 <Link to="/room/sell">
                   <li className="text-neutral-black">집 내놓기</li>
                 </Link>
-                {isLoggedIn ? (
+                {user ? (
                   <Link to="/mypage">
                     <li className="text-neutral-black">마이페이지</li>
                   </Link>
@@ -58,14 +57,14 @@ const Header = ({ title }: HeaderProps) => {
               </ul>
             </nav>
             {/* 임시 로그인/로그아웃 버튼 */}
-            {isLoggedIn ? (
+            {user ? (
               <>
                 <i className="material-symbols-rounded">chat</i>
                 <i className="material-symbols-rounded">account_circle</i>
-                <button onClick={handleLogout}>임시 로그아웃</button>
+                <button onClick={logout}>임시 로그아웃</button>
               </>
             ) : (
-              <button onClick={handleLogin}>임시 로그인</button>
+              <button onClick={() => login("example")}>임시 로그인</button>
             )}
           </div>
         </>

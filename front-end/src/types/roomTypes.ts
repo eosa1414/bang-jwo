@@ -7,39 +7,44 @@ export interface Pagable {
 
 export interface Room {
   roomId: number;
-  roomType: string;
-  monthlyRent: number;
+  memberId: number;
+  isLiked: boolean;
+  buildingType: string;
+  status: string;
   deposit: number;
-  supplyArea: number;
+  monthlyRent: number;
   exclusiveArea: number;
+  supplyArea: number;
   maintenanceCost: number;
   simpleDescription: string;
-  addressDetail: string;
   floor: string;
-  direction: string;
-  image: string;
-  like: boolean;
+  imageUrl: string;
 }
 
 export const defaultRoom: Room = {
   roomId: 0,
-  roomType: "",
-  monthlyRent: 0,
+  memberId: 0,
+  isLiked: false,
+  buildingType: "",
+  status: "",
   deposit: 0,
-  supplyArea: 0,
+  monthlyRent: 0,
   exclusiveArea: 0,
+  supplyArea: 0,
   maintenanceCost: 0,
   simpleDescription: "",
-  addressDetail: "",
   floor: "",
-  direction: "",
-  image: "",
-  like: false,
+  imageUrl: "",
 };
 
 export interface RoomResponse {
-  pagable: Pagable;
-  data: Room[];
+  totalItems: number;
+  totalPages: number;
+  currentPage: number;
+  size: number;
+  currentPageItemCount: number;
+  offset: number;
+  items: Room[];
 }
 
 // 쿼리
@@ -47,9 +52,9 @@ export interface RoomQueryParams {
   buildingType?: string;
   price?: string;
   area?: string;
-  lat?: string;
-  lng?: string;
-  zoom?: string;
+  lat?: number;
+  lng?: number;
+  zoom?: number;
   page?: number;
 }
 
@@ -57,8 +62,88 @@ export const defaultParams: RoomQueryParams = {
   buildingType: "",
   price: "",
   area: "",
-  lat: "",
-  lng: "",
-  zoom: "",
+  lat: 33.450701,
+  lng: 126.570667,
+  zoom: 4,
   page: 1,
 };
+
+export interface RoomImage {
+  imageId: number;
+  imageUrl: string;
+}
+
+export type MaintenanceIncludeName =
+  | "WATER"
+  | "ELECTRICITY"
+  | "INTERNET"
+  | "GAS"
+  | "CLEANING"
+  | "CABLE_TV"
+  | "PARKING"
+  | "HEATING"
+  | "ELEVATOR_MAINTENANCE";
+
+export type RoomOption =
+  | "ELEVATOR"
+  | "ROOFTOP"
+  | "AIR_CONDITIONER"
+  | "WASHING_MACHINE"
+  | "REFRIGERATOR"
+  | "MICROWAVE"
+  | "GAS_RANGE"
+  | "INDUCTION"
+  | "BED";
+
+  export type RoomBuildingType =
+  | "ONEROOM_TWOROOM"
+  | "APARTMENT"
+  | "VILLA_HOUSE"
+  | "OFFICETEL";
+
+  export type RoomDirection = 
+  | "NORTH"
+  | "NORTH_EAST"
+  | "EAST"
+  | "SOUTH_EAST"
+  | "SOUTH"
+  | "SOUTH_WEST"
+  | "WEST"
+  | "NORTH_WEST"
+
+export interface RoomDetailResponse {
+  roomId: number;
+  memberId: number;
+  isLiked: boolean;
+  roomStatus: string;
+  buildingType: string;
+  realEstateId: string;
+  postalCode: string;
+  address: string;
+  addressDetail: string;
+  lat: number;
+  lng: number;
+  deposit: number;
+  monthlyRent: number;
+  exclusiveArea: number;
+  supplyArea: number;
+  totalUnits: number;
+  floor: string;
+  maxFloor: number;
+  parkingSpaces: number;
+  availableFrom: string;
+  permissionDate: string;
+  simpleDescription: string;
+  description: string;
+  maintenanceCost: number;
+  roomCnt: number;
+  bathroomCnt: number;
+  direction: string;
+  discussable: boolean;
+  discussDetail: string;
+  reviewable: boolean;
+  isPhonePublic: boolean;
+  maintenanceIncludes: MaintenanceIncludeName[];
+  options: RoomOption[];
+  images: RoomImage[];
+}
