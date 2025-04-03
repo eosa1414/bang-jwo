@@ -26,9 +26,9 @@ import lombok.Builder;
 public class RoomConverter {
 
 	@Builder
-	public static Room convert(CreateRoomRequestDto requestDto) {
+	public static Room convert(CreateRoomRequestDto requestDto, Long memberId) {
 		return Room.builder()
-			.memberId(requestDto.getMemberId())
+			.memberId(memberId)
 			.buildingType(requestDto.getBuildingType())
 			.status(RoomStatus.UNDER_VERIFICATION)
 			.realEstateId(requestDto.getRealEstateId())
@@ -121,10 +121,10 @@ public class RoomConverter {
 			.build();
 	}
 
-	public static Memo convert(Room room, UpdateRoomMemoRequestDto requestDto) {
+	public static Memo convert(Room room, UpdateRoomMemoRequestDto requestDto, Long memberId) {
 		return Memo.builder()
 			.room(room)
-			.memberId(requestDto.getMemberId())
+			.memberId(memberId)
 			.content(requestDto.getContent())
 			.build();
 	}

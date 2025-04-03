@@ -102,16 +102,16 @@ public class ContractService {
 		return contract;
 	}
 
-	public Long createContract(CreateContractRequestDto requestDto) {
+	public Long createContract(CreateContractRequestDto requestDto, Long memberId) {
 		Room room = roomService.findRoom(requestDto.getRoomId());
-		Contract contract = ContractConverter.convert(room, requestDto);
+		Contract contract = ContractConverter.convert(room, requestDto, memberId);
 		Contract saved = contractRepository.save(contract);
 		return saved.getContractId();
 	}
 
 	@Transactional
-	public void draftLandlordInfo(UpdateLandlordInfoDto requestDto) {
-		Contract contract = validateLandlordDraftContract(requestDto.getContractId(), requestDto.getLandlordId());
+	public void draftLandlordInfo(UpdateLandlordInfoDto requestDto, Long memberId) {
+		Contract contract = validateLandlordDraftContract(requestDto.getContractId(), memberId);
 		LandlordInfo landlordInfo = contract.getLandlordInfo();
 		SpecialClause specialClause = contract.getSpecialClause();
 		LandlordInfoConverter.updateDraft(landlordInfo, requestDto);
@@ -119,8 +119,8 @@ public class ContractService {
 	}
 
 	@Transactional
-	public void finalLandlordInfo(UpdateLandlordInfoDto requestDto) {
-		Contract contract = validateLandlordFinalContract(requestDto.getContractId(), requestDto.getLandlordId());
+	public void finalLandlordInfo(UpdateLandlordInfoDto requestDto, Long memberId) {
+		Contract contract = validateLandlordFinalContract(requestDto.getContractId(), memberId);
 		LandlordInfo landlordInfo = contract.getLandlordInfo();
 		SpecialClause specialClause = contract.getSpecialClause();
 		LandlordInfoConverter.updateFinal(landlordInfo, requestDto);
@@ -138,15 +138,15 @@ public class ContractService {
 	}
 
 	@Transactional
-	public void draftTenantInfo(UpdateTenantInfoDto requestDto) {
-		Contract contract = validateTenantDraftContract(requestDto.getContractId(), requestDto.getTenantId());
+	public void draftTenantInfo(UpdateTenantInfoDto requestDto, Long memberId) {
+		Contract contract = validateTenantDraftContract(requestDto.getContractId(), memberId);
 		TenantInfo tenantInfo = contract.getTenantInfo();
 		TenantInfoConverter.updateDraft(tenantInfo, requestDto);
 	}
 
 	@Transactional
-	public void finalTenantInfo(UpdateTenantInfoDto requestDto) {
-		Contract contract = validateTenantFinalContract(requestDto.getContractId(), requestDto.getTenantId());
+	public void finalTenantInfo(UpdateTenantInfoDto requestDto, Long memberId) {
+		Contract contract = validateTenantFinalContract(requestDto.getContractId(), memberId);
 		TenantInfo tenantInfo = contract.getTenantInfo();
 		TenantInfoConverter.updateFinal(tenantInfo, requestDto);
 		contract.updateContractStatus(ContractStatus.TENANT_COMPLETED);
@@ -162,9 +162,9 @@ public class ContractService {
 	}
 
 	@Transactional(readOnly = true)
-	public ContractStatusResponseDto getContractStatus(Long contractId, Long userId) {
+	public ContractStatusResponseDto getContractStatus(Long contractId, Long memberId) {
 		Contract contract = findContract(contractId);
-		validateUserAccess(contract, userId);
+		validateUserAccess(contract, memberId);
 		return ContractStatusResponseDto.builder()
 			.contractId(contract.getContractId())
 			.status(contract.getContractStatus())
@@ -180,17 +180,17 @@ public class ContractService {
 	}
 
 	@Transactional(readOnly = true)
-	public ContractDetailResponseDto getContractDetail(Long contractId, Long userId) {
+	public ContractDetailResponseDto getContractDetail(Long contractId, Long memberId) {
 		Contract contract = findContract(contractId);
-		validateUserAccess(contract, userId);
+		validateUserAccess(contract, memberId);
 		return ContractDetailConverter.toDto(contract);
 	}
 
 	@Transactional
-	public void updateLandlordSignatures(LandlordSignatureUpdateRequestDto dto) {
+	public void updateLandlordSignatures(LandlordSignatureUpdateRequestDto dto, Long memberId) {
 		Contract contract = findContract(dto.getContractId());
 		Optional.of(contract.getLandlordId())
-			.filter(id -> id.equals(dto.getLandlordId()))
+			.filter(id -> id.equals(memberId))
 			.orElseThrow(() -> new BusinessException(ContractErrorCode.INVALID_CONTRACT_ACCESS));
 		Optional.of(contract.getContractStatus())
 			.filter(status -> status.equals(ContractStatus.TENANT_SIGNED))
@@ -201,10 +201,10 @@ public class ContractService {
 	}
 
 	@Transactional
-	public void updateTenantSignature(TenantSignatureUpdateRequestDto dto) {
+	public void updateTenantSignature(TenantSignatureUpdateRequestDto dto, Long memberId) {
 		Contract contract = findContract(dto.getContractId());
 		Optional.of(contract.getTenantId())
-			.filter(id -> id.equals(dto.getTenantId()))
+			.filter(id -> id.equals(memberId))
 			.orElseThrow(() -> new BusinessException(ContractErrorCode.INVALID_CONTRACT_ACCESS));
 		Optional.of(contract.getContractStatus())
 			.filter(status -> status.equals(ContractStatus.TENANT_COMPLETED))

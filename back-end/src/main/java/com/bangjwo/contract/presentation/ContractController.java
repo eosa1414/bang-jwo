@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bangjwo.auth.resolver.MemberHeader;
 import com.bangjwo.contract.application.dto.request.CompleteDto;
 import com.bangjwo.contract.application.dto.request.CreateContractRequestDto;
 import com.bangjwo.contract.application.dto.request.LandlordSignatureUpdateRequestDto;
@@ -35,6 +36,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +53,7 @@ public class ContractController {
 	@Operation(
 		summary = "계약서 생성",
 		description = "방 ID를 기반으로 새로운 계약서를 생성합니다.",
+		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "계약 생성 성공",
 				content = @Content(schema = @Schema(implementation = Long.class))),
@@ -59,8 +62,9 @@ public class ContractController {
 		}
 	)
 	@PostMapping
-	public ResponseEntity<Long> createContract(@RequestBody CreateContractRequestDto requestDto) {
-		Long contractId = contractService.createContract(requestDto);
+	public ResponseEntity<Long> createContract(@RequestBody CreateContractRequestDto requestDto,
+		@MemberHeader Long memberId) {
+		Long contractId = contractService.createContract(requestDto, memberId);
 
 		return ResponseEntity.ok(contractId);
 	}
@@ -68,6 +72,7 @@ public class ContractController {
 	@Operation(
 		summary = "임대인 계약 정보 임시 저장",
 		description = "입력된 정보만 계약서에 임시로 저장합니다. (모든 필드가 필수는 아님)",
+		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "204", description = "임시 저장 성공"),
 			@ApiResponse(responseCode = "400", description = "요청 데이터 오류", content = @Content),
@@ -77,8 +82,8 @@ public class ContractController {
 	)
 	@PatchMapping("/landlord")
 	public ResponseEntity<Void> draftLandlordInfo(
-		@Validated(TempSave.class) @RequestBody UpdateLandlordInfoDto requestDto) {
-		contractService.draftLandlordInfo(requestDto);
+		@Validated(TempSave.class) @RequestBody UpdateLandlordInfoDto requestDto, @MemberHeader Long memberId) {
+		contractService.draftLandlordInfo(requestDto, memberId);
 
 		return ResponseEntity.noContent().build();
 	}
@@ -86,6 +91,7 @@ public class ContractController {
 	@Operation(
 		summary = "임대인 계약 정보 최종 저장",
 		description = "모든 필수 정보를 포함하여 계약서에 임대인 정보를 최종 저장합니다.",
+		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "204", description = "최종 저장 성공"),
 			@ApiResponse(responseCode = "400", description = "검증 실패 또는 데이터 누락", content = @Content),
@@ -95,9 +101,9 @@ public class ContractController {
 	)
 	@PatchMapping("/landlord/final")
 	public ResponseEntity<Void> finalLandlordInfo(
-		@Validated(FinalSave.class) @RequestBody UpdateLandlordInfoDto requestDto) {
+		@Validated(FinalSave.class) @RequestBody UpdateLandlordInfoDto requestDto, @MemberHeader Long memberId) {
 
-		contractService.finalLandlordInfo(requestDto);
+		contractService.finalLandlordInfo(requestDto, memberId);
 
 		return ResponseEntity.noContent().build();
 	}
@@ -105,6 +111,7 @@ public class ContractController {
 	@Operation(
 		summary = "임차인 계약 정보 임시 저장",
 		description = "입력된 정보만 계약서에 임시 저장합니다.",
+		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "204", description = "임시 저장 성공"),
 			@ApiResponse(responseCode = "403", description = "임차인 접근 권한 없음", content = @Content),
@@ -113,8 +120,9 @@ public class ContractController {
 	)
 	@PatchMapping("/tenant")
 	public ResponseEntity<Void> draftTenantInfo(
-		@Validated(TempSave.class) @RequestBody UpdateTenantInfoDto requestDto) {
-		contractService.draftTenantInfo(requestDto);
+		@Validated(TempSave.class) @RequestBody UpdateTenantInfoDto requestDto,
+		@MemberHeader Long memberId) {
+		contractService.draftTenantInfo(requestDto, memberId);
 
 		return ResponseEntity.noContent().build();
 	}
@@ -122,6 +130,7 @@ public class ContractController {
 	@Operation(
 		summary = "임차인 계약 정보 최종 저장",
 		description = "필수 정보를 포함하여 계약서에 임차인 정보를 최종 저장합니다.",
+		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "204", description = "최종 저장 성공"),
 			@ApiResponse(responseCode = "400", description = "검증 실패 또는 데이터 누락", content = @Content),
@@ -131,8 +140,9 @@ public class ContractController {
 	)
 	@PatchMapping("/tenant/final")
 	public ResponseEntity<Void> finalTenantInfo(
-		@Validated(FinalSave.class) @RequestBody UpdateTenantInfoDto requestDto) {
-		contractService.finalTenantInfo(requestDto);
+		@Validated(FinalSave.class) @RequestBody UpdateTenantInfoDto requestDto,
+		@MemberHeader Long memberId) {
+		contractService.finalTenantInfo(requestDto, memberId);
 
 		return ResponseEntity.noContent().build();
 	}
@@ -140,6 +150,7 @@ public class ContractController {
 	@Operation(
 		summary = "계약서의 임대인 정보 조회",
 		description = "계약 ID와 임대인 ID를 기반으로 해당 계약서에 저장된 임대인 정보를 조회합니다.",
+		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "조회 성공",
 				content = @Content(schema = @Schema(implementation = LandlordInfoResponseDto.class))),
@@ -150,7 +161,7 @@ public class ContractController {
 	@GetMapping("/landlord")
 	public ResponseEntity<LandlordInfoResponseDto> getLandlordInfo(
 		@Parameter(description = "계약 ID", required = true) @RequestParam Long contractId,
-		@Parameter(description = "임대인 ID", required = true) @RequestParam Long landlordId) {
+		@MemberHeader Long landlordId) {
 		LandlordInfoResponseDto dto = contractService.getLandlordInfo(contractId, landlordId);
 
 		return ResponseEntity.ok(dto);
@@ -159,6 +170,7 @@ public class ContractController {
 	@Operation(
 		summary = "계약서의 임차인 정보 조회",
 		description = "계약 ID와 임차인 ID를 기반으로 해당 계약서에 저장된 임차인 정보를 조회합니다.",
+		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "조회 성공",
 				content = @Content(schema = @Schema(implementation = TenantInfoResponseDto.class))),
@@ -169,7 +181,7 @@ public class ContractController {
 	@GetMapping("/tenant")
 	public ResponseEntity<TenantInfoResponseDto> getTenantInfo(
 		@Parameter(description = "계약 ID", required = true) @RequestParam Long contractId,
-		@Parameter(description = "임차인 ID", required = true) @RequestParam Long tenantId) {
+		@MemberHeader Long tenantId) {
 		TenantInfoResponseDto dto = contractService.getTenantInfo(contractId, tenantId);
 
 		return ResponseEntity.ok(dto);
@@ -178,6 +190,7 @@ public class ContractController {
 	@Operation(
 		summary = "계약서 상태 조회",
 		description = "계약 ID와 임대인 ID를 기반으로 계약 상태를 조회합니다.",
+		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "조회 성공",
 				content = @Content(schema = @Schema(implementation = ContractStatusResponseDto.class))),
@@ -188,8 +201,8 @@ public class ContractController {
 	@GetMapping("/status")
 	public ResponseEntity<ContractStatusResponseDto> getContractStatus(
 		@Parameter(description = "계약 ID", required = true) @RequestParam Long contractId,
-		@Parameter(description = "유저 ID (임대인 or 임차인)", required = true) @RequestParam Long userId) {
-		ContractStatusResponseDto dto = contractService.getContractStatus(contractId, userId);
+		@MemberHeader Long memberId) {
+		ContractStatusResponseDto dto = contractService.getContractStatus(contractId, memberId);
 
 		return ResponseEntity.ok(dto);
 	}
@@ -197,6 +210,7 @@ public class ContractController {
 	@Operation(
 		summary = "계약서 통합 정보 조회",
 		description = "계약 ID와 사용자 ID(임대인 또는 임차인)를 통해 통합된 계약 정보를 조회합니다.",
+		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "조회 성공",
 				content = @Content(schema = @Schema(implementation = ContractDetailResponseDto.class))),
@@ -207,33 +221,43 @@ public class ContractController {
 	@GetMapping("/detail")
 	public ResponseEntity<ContractDetailResponseDto> getContractDetail(
 		@Parameter(description = "계약 ID", required = true) @RequestParam Long contractId,
-		@Parameter(description = "유저 ID (임대인 or 임차인)", required = true) @RequestParam Long userId) {
-		ContractDetailResponseDto dto = contractService.getContractDetail(contractId, userId);
+		@MemberHeader Long memberId) {
+		ContractDetailResponseDto dto = contractService.getContractDetail(contractId, memberId);
 
 		return ResponseEntity.ok(dto);
 	}
 
+	@Operation(
+		summary = "임대인 서명 이미지 등록",
+		description = "임차인 최종 조회 이후 임대인이 최종 조회 후 임대인 서명 이미지를 저장하여 계약을 완료합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
 	@PatchMapping(value = "/landlord/signatures", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	@Operation(summary = "임대인 서명 이미지 등록")
 	public ResponseEntity<Void> uploadLandlordSignatures(
-		@Valid @ModelAttribute LandlordSignatureUpdateRequestDto requestDto) {
-		contractService.updateLandlordSignatures(requestDto);
+		@Valid @ModelAttribute LandlordSignatureUpdateRequestDto requestDto,
+		@MemberHeader Long memberId) {
+		contractService.updateLandlordSignatures(requestDto, memberId);
 
 		return ResponseEntity.noContent().build();
 	}
 
+	@Operation(
+		summary = "임차인 서명 이미지 등록",
+		description = "임차인 최종 조회 이후 더 이상 계약서를 수정하지 않아도 괜찮다고 판단한다면 서명 이미지를 저장합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
 	@PatchMapping(value = "/tenant/signature", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	@Operation(summary = "임차인 서명 이미지 등록")
 	public ResponseEntity<Void> uploadTenantSignature(
-		@Valid @ModelAttribute TenantSignatureUpdateRequestDto requestDto) {
-		contractService.updateTenantSignature(requestDto);
+		@Valid @ModelAttribute TenantSignatureUpdateRequestDto requestDto,
+		@MemberHeader Long memberId) {
+		contractService.updateTenantSignature(requestDto, memberId);
 
 		return ResponseEntity.noContent().build();
 	}
 
 	@Operation(summary = "최종 계약")
 	@PatchMapping("/complete")
-	public ResponseEntity<Void> completeContract(@ModelAttribute CompleteDto completeDto) {
+	public ResponseEntity<Void> completeContract(@ModelAttribute CompleteDto completeDto) {    // 유저 로그인 정보 추가 필요
 		contractService.completeContract(completeDto);
 		return ResponseEntity.noContent().build();
 	}

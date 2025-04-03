@@ -8,4 +8,6 @@ import com.bangjwo.member.domain.entity.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findByKakaoId(Long kakaoId);
+
+	Optional<Member> findByMemberId(Long memberId);
 }
