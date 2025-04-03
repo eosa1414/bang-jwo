@@ -20,8 +20,6 @@ const CircularText = ({
       style={{
         width: computedSize,
         height: computedSize,
-        paddingRight: ".6rem",
-        paddingBottom: ".6rem",
       }}
       animate={rotateSpeed ? { rotate: 360 } : {}}
       transition={
@@ -37,7 +35,7 @@ const CircularText = ({
             key={i}
             className="absolute left-1/2 top-1/2 text-lg leading-none"
             style={{
-              transform: `rotate(${angle}deg) translate(${size}px) rotate(90deg)`,
+              transform: `translate(-50%, -50%) rotate(${angle}deg) translate(${size}px) rotate(90deg)`,
               transformOrigin: "center",
             }}
           >

@@ -30,26 +30,25 @@ const PageHome = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry, idx) => {
-          if (entry.isIntersecting) {
-            setVisibleSections((prev) => ({ ...prev, [idx]: true }));
+        entries.forEach((entry) => {
+          const index = sectionsRef.current.indexOf(
+            entry.target as HTMLElement
+          );
+          if (entry.isIntersecting && index !== -1) {
+            setVisibleSections((prev) => ({ ...prev, [index]: true }));
           }
         });
       },
-      { threshold: 0.5 } // 50% 이상 보이면 트리거
+      { threshold: 0.5 }
     );
 
     sectionsRef.current.forEach((section) => {
-      if (section) {
-        observer.observe(section);
-      }
+      if (section) observer.observe(section);
     });
 
     return () => {
       sectionsRef.current.forEach((section) => {
-        if (section) {
-          observer.unobserve(section);
-        }
+        if (section) observer.unobserve(section);
       });
     };
   }, []);
@@ -57,7 +56,7 @@ const PageHome = () => {
   return (
     <>
       {/* first */}
-      <section className="flex flex-col items-center min-h-screen pt-[2rem]">
+      <section className="flex flex-col items-center min-h-[50vh] sm:min-h-screen pt-[2rem]">
         <div className="w-full z-1 flex flex-col items-center gap-6 p-6">
           <div className="text-[clamp(1.25rem,calc(100vw/12),3rem)] font-bold">
             어떤 집을 찾고 있나요?
@@ -80,7 +79,7 @@ const PageHome = () => {
       {/* second */}
       <section
         ref={(el) => (sectionsRef.current[0] = el)}
-        className="bg-neutral-black min-h-screen flex flex-col justify-center pb-12"
+        className="bg-neutral-black min-h-[50vh] sm:min-h-screen flex flex-col justify-center pb-12"
       >
         {visibleSections[0] && (
           <motion.div
