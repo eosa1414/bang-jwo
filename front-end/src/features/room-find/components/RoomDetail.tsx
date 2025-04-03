@@ -1,5 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { getRoomDetail } from "../../../services/roomService";
+import { RoomDetailResponse } from "../../../types/roomTypes";
 import TabMenu from "./TabMenu";
 import Accordion from "../../../components/Accordion";
 import ListItemLine from "../../../components/ListItemLine";
@@ -8,6 +11,8 @@ import TabContent from "./TabContent";
 import Button from "../../../components/buttons/Button";
 import RoomOptions from "./RoomOptions";
 import BoxHeader from "./BoxHeader";
+import { roomBuildingTypeLabel, roomDirectionTypeLabel, roomOptionLabel, maintenanceIncludeLabel } from "../../../utils/roomMapper";
+import { RoomBuildingType, RoomDirection, RoomOption, MaintenanceIncludeName } from "../../../types/roomTypes";
 
 interface RoomDetailProps {
   selectedRoomId: number | null;
@@ -15,6 +20,7 @@ interface RoomDetailProps {
 }
 
 const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
+  // 모든 state와 ref를 먼저 선언
   const [isHeaderColorChange, setIsHeaderColorChange] = useState(false);
   const [isTitleScrolled, setIsTitleScrolled] = useState(false);
   const [tabMenuHeight, setTabMenuHeight] = useState(0);
@@ -24,6 +30,19 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   const headerRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
   const textStartRef = useRef<HTMLDivElement | null>(null);
+  const tabContentsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  // 그 다음 useQuery 훅 호출
+  const {
+    data: room,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<RoomDetailResponse, Error>({
+    queryKey: ["roomDetail", selectedRoomId],
+    queryFn: () => getRoomDetail(selectedRoomId!),
+    enabled: !!selectedRoomId,
+  });
 
   const tabTitles = [
     "기본 정보",
@@ -33,21 +52,30 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
     "위치",
     "등기부등본 · 위험도",
   ];
-  const roomOptions = ["보안/안전", "엘리베이터", "냉장고", "세탁기"];
-  const maintenanceOptions = [
-    "전기세",
-    "인터넷",
-    "가스",
-    "청소비",
-    "유선 TV",
-    "주차비",
-    "난방비",
-  ];
-  const notMaintenanceOptions = ["수도세"];
+  const roomOptions: string[] =
+  room?.options
+    .map((option) =>
+      option in roomOptionLabel
+        ? roomOptionLabel[option as RoomOption]
+        : undefined
+    )
+    .filter((label): label is string => typeof label === "string") || [];
+
+  const allMaintenanceKeys = Object.keys(maintenanceIncludeLabel) as MaintenanceIncludeName[];
+
+  const includedKeys = room?.maintenanceIncludes ?? [];
+  const excludedKeys = allMaintenanceKeys.filter(
+    (key) => !includedKeys.includes(key)
+  );
+
+  const maintenanceOptions: string[] = includedKeys.map(
+    (key) => maintenanceIncludeLabel[key]
+  );
+  const notMaintenanceOptions: string[] = excludedKeys.map(
+    (key) => maintenanceIncludeLabel[key]
+  );
 
   // tab scroll
-  const tabContentsRef = useRef<(HTMLDivElement | null)[]>([]);
-
   const handleTabClick = (idx: number) => {
     tabContentsRef.current[idx]?.scrollIntoView({
       behavior: "smooth",
@@ -106,6 +134,12 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
     };
   });
 
+  // 조건부 렌더링 처리
+  if (!selectedRoomId) return null;
+  if (isLoading) return <div>불러오는 중...</div>;
+  if (isError || !room)
+    return <div>에러 발생: {(error as Error).message}</div>;
+
   return (
     <AnimatePresence>
       {selectedRoomId && (
@@ -156,6 +190,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                       as="div"
                     >
                       집주인
+                      {room.memberId}
                     </Button>
                     <Button
                       size="small"
@@ -179,13 +214,13 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                           keyboard_arrow_down
                         </i>
                         <span className="text-neutral-dark100">
-                          가격 조정 가능
+                          {room.discussable ? "가격 조정 가능" : "가격 조정 불가"}
                         </span>
                       </Button>
                     }
                   >
                     <div className="text-neutral-dark100 py-2">
-                      보증금 1000에 25로 합의 가능합니다.
+                      {room.discussDetail}
                     </div>
                   </Accordion>
 
@@ -193,9 +228,11 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                     ref={titleRef}
                     className="flex flex-wrap gap-2 items-center"
                   >
-                    <span className="font-semibold text-xl">월세 500/40</span>
+                    <span className="font-semibold text-xl">월세 {room.deposit}/{room.monthlyRent}</span>
                     <span className="font-light text-neutral-dark100">
-                      아파트
+                      {room.buildingType in roomBuildingTypeLabel
+                        ? roomBuildingTypeLabel[room.buildingType as RoomBuildingType]
+                        : "기타"}
                     </span>
                   </div>
                   {/* review buttom */}
@@ -210,7 +247,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
                 {/* save price */}
                 <div className="p-[.875rem_1rem] font-semibold border rounded-md border-neutral-light100">
-                  직거래로 <span className="text-gold-dark">247,500원</span>을
+                  직거래로 <span className="text-gold-dark">{room.deposit * 220}원</span>을
                   아낄 수 있어요!
                 </div>
 
@@ -262,7 +299,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   }}
                   scrollMarginTop={48 + tabMenuHeight}
                 >
-                  <div>깔끔하고 전망 좋은 12층 집입니다.</div>
+                  <div>{room.simpleDescription}</div>
                   <RoomOptions roomOptions={roomOptions} />
                 </TabContent>
 
@@ -275,7 +312,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   }}
                   scrollMarginTop={48 + tabMenuHeight}
                 >
-                  <p className="text-xl font-bold">120,000원</p>
+                  <p className="text-xl font-bold">{room.maintenanceCost * 10000}원</p>
                   <RoomOptions
                     title="관리비 포함 항목"
                     roomOptions={maintenanceOptions}
@@ -297,13 +334,8 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                 >
                   <div>
                     <p>
-                      12층이고 창문 앞으로 가로 막힌 게 없어서 전망이 좋습니다.
-                      곰팡이 같은 것 없이 깔끔한 상태이구요.
+                      {room.description}
                     </p>
-                    <br />
-                    <p>반려동물은 가능합니다.</p>
-                    <br />
-                    <p>주차 공간은 따로 없어요.</p>
                   </div>
                 </TabContent>
 
@@ -316,32 +348,36 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   }}
                   scrollMarginTop={48 + tabMenuHeight}
                 >
-                  <ListItemLine title="입주 가능일" content="즉시입주가능" />
+                  <ListItemLine title="입주 가능일" content={`${room.availableFrom}`} />
                   <div className="flex flex-1 items-center gap-1">
                     <ListItemLine
                       title="면적 (공급/전용)"
-                      content="138.52㎡ / 110.57㎡"
+                      content={`${room.supplyArea}㎡ / ${room.exclusiveArea}㎡`}
                     />
                     <button>평</button>
                   </div>
-                  <ListItemLine title="방 수 / 욕실 수" content="1개 / 1개" />
-                  <ListItemLine title="위치" content="1동 12층 (총 20층)" />
-                  <ListItemLine title="방향" content="남향 (거실 기준)" />
+                  <ListItemLine title="방 수 / 욕실 수" content={`${room.roomCnt}개 / ${room.bathroomCnt}개`} />
+                  <ListItemLine title="위치" content={`${room.floor}층 (총 ${room.maxFloor}층)`} />
+                  <ListItemLine title="방향" content={`${room.direction in roomDirectionTypeLabel 
+                    ? roomDirectionTypeLabel[room.direction as RoomDirection] 
+                    : "비공개"} (거실 기준)`} />
                   <ListItemLine
                     title="주소"
-                    content="서울특별시 강남구 테헤란로 212 1동 12층"
+                    content={`${room.address}`}
                   />
-                  <ListItemLine title="사용 승인일" content="2007. 5. 14" />
+                  <ListItemLine title="사용 승인일" content={`${room.permissionDate}`} />
                   <ListItemLine
                     title="주차대수"
-                    content="1,335대(세대 당 1.87대)"
+                    content={`${room.parkingSpaces}대(세대 당 ${room.parkingSpaces / room.totalUnits}대)`}
                   />
                   <ListItemLine
                     title="부동산 고유 번호"
-                    content="1345-2017-021929"
+                    content={`${room.realEstateId}`}
                   />
-                  <ListItemLine title="총 세대 수" content="713세대" />
-                  <ListItemLine title="유형" content="아파트" />
+                  <ListItemLine title="총 세대 수" content={`${room.totalUnits}`} />
+                  <ListItemLine title="유형" content={room.buildingType in roomBuildingTypeLabel
+                        ? roomBuildingTypeLabel[room.buildingType as RoomBuildingType]
+                        : "기타"} />
                 </TabContent>
 
                 <div className="divider" />
@@ -355,7 +391,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                 >
                   <div className="w-full h-[160px] bg-neutral-gray"></div>
                   <div className="font-medium">
-                    서울특별시 강남구 테헤란로 212
+                    {room.address}
                   </div>
                 </TabContent>
 
