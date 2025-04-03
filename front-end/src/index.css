@@ -78,6 +78,10 @@
   background-color: var(--color-neutral-black);
 }
 
+.writing-mode-vertical-rl {
+  writing-mode: vertical-lr;
+}
+
 /*구글 머티리얼 아이콘 사이즈 커스텀*/
 .material-symbols-rounded.text-base {
   @apply text-base;

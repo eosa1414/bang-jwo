@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import Button from "../components/buttons/Button";
 import ScrollToTop from "../components/ScrollToTop";
 import { useNavigate } from "react-router-dom";
+import MotionArrow from "../components/MotionArrow";
 
 const PageHome = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -56,7 +57,13 @@ const PageHome = () => {
   return (
     <>
       {/* first */}
-      <section className="flex flex-col items-center min-h-[50vh] sm:min-h-screen pt-[2rem]">
+      <section className="relative flex flex-col items-center min-h-[50vh] sm:min-h-screen pt-[2rem]">
+        <div className="hidden sm:flex absolute left-0 top-0 m-4 flex-grow min-h-[16.5rem]">
+          <MotionArrow addClass="hidden sm:flex" />
+          <p className="writing-mode-vertical-rl">
+            Scroll for know more about BangJwo
+          </p>
+        </div>
         <div className="w-full z-1 flex flex-col items-center gap-6 p-6">
           <div className="text-[clamp(1.25rem,calc(100vw/12),3rem)] font-bold">
             어떤 집을 찾고 있나요?
@@ -78,7 +85,9 @@ const PageHome = () => {
 
       {/* second */}
       <section
-        ref={(el) => (sectionsRef.current[0] = el)}
+        ref={(el) => {
+          sectionsRef.current[0] = el;
+        }}
         className="bg-neutral-black min-h-[50vh] sm:min-h-screen flex flex-col justify-center pb-12"
       >
         {visibleSections[0] && (
@@ -101,7 +110,9 @@ const PageHome = () => {
 
       {/* third */}
       <section
-        ref={(el) => (sectionsRef.current[1] = el)}
+        ref={(el) => {
+          sectionsRef.current[1] = el;
+        }}
         className="relative min-h-screen"
       >
         <video
@@ -123,7 +134,7 @@ const PageHome = () => {
             transition={{ duration: 1, ease: "easeOut" }} // 1초 동안 애니메이션
             className="relative flex justify-center items-center min-h-screen text-white bg-black/50"
           >
-            <div className="flex flex-col gap-6 items-center">
+            <div className="flex flex-col gap-6 items-center p-12">
               <div className="text-gold-light text-6xl font-bold">
                 <p>지금 바로</p>
                 <p>안전하게</p>
