@@ -10,7 +10,7 @@ import com.bangjwo.chat.application.dto.ChatRoomSummary;
 
 public interface RedisChatRoomService {
 
-	void createChatRoom(ChatRoomDto.ResponseDto dto);
+	void createChatRoom(ChatRoomDto.ChatResponseDto dto);
 
 	void updateChatRoom(Long chatRoomId, Long userId);
 

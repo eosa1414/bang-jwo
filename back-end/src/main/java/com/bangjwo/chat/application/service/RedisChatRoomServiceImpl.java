@@ -37,7 +37,7 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 	* */
 	@Override
 	@Transactional
-	public void createChatRoom(ChatRoomDto.ResponseDto dto) {
+	public void createChatRoom(ChatRoomDto.ChatResponseDto dto) {
 		Long senderId = dto.tenantId(); // 세입자
 		Long receiverId = dto.landlordId(); // 집주인
 		Long roomId = dto.roomId(); // 매물

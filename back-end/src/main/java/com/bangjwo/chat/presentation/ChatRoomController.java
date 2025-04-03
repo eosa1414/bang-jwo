@@ -61,10 +61,10 @@ public class ChatRoomController {
 		}
 	)
 	@PostMapping("/new")
-	public ResponseEntity<ChatRoomDto.ResponseDto> createChatRoom(
-		@RequestBody ChatRoomDto.RequestDto requestDto) {
+	public ResponseEntity<ChatRoomDto.ChatResponseDto> createChatRoom(
+		@RequestBody ChatRoomDto.ChatRequestDto chatRequestDto) {
 
-		ChatRoomDto.ResponseDto response = chatroomService.requestClass(requestDto);
+		ChatRoomDto.ChatResponseDto response = chatroomService.requestClass(chatRequestDto);
 
 		// 채팅방이 생성되면 Redis에 새로 채팅방 추가.
 		redisChatRoomService.createChatRoom(response);

@@ -3,9 +3,10 @@ package com.bangjwo.chat.application.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
+@Schema(description = "채팅방 생성 DTO")
 public record ChatRoomDto() {
 	@Schema(description = "채팅방 생성 요청 DTO")
-	public record RequestDto(
+	public record ChatRequestDto(
 
 		@Schema(description = "임대인 ID", example = "2", requiredMode = Schema.RequiredMode.REQUIRED)
 		Long landlordId,
@@ -20,7 +21,7 @@ public record ChatRoomDto() {
 
 	@Builder
 	@Schema(description = "채팅방 생성 응답 DTO")
-	public record ResponseDto(
+	public record ChatResponseDto(
 
 		@Schema(description = "임대인 ID", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
 		Long landlordId,
