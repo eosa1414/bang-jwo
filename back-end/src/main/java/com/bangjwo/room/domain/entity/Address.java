@@ -3,8 +3,10 @@ package com.bangjwo.room.domain.entity;
 import java.math.BigDecimal;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,7 +35,11 @@ public class Address {
 	private Long addressId;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "room_id", unique = true)
+	@JoinColumn(
+		name = "room_id",
+		unique = true,
+		foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
+	)
 	private Room room;
 
 	@Column

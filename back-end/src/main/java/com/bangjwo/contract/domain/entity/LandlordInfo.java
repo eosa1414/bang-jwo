@@ -141,16 +141,16 @@ public class LandlordInfo extends BaseEntity {
 	@Column
 	private String tenantBurden;
 
-	@Column
+	@Column(name = "landlord_signature_url_1")
 	private String landlordSignatureUrl1;
 
-	@Column
+	@Column(name = "landlord_signature_url_2")
 	private String landlordSignatureUrl2;
 
-	@Column
+	@Column(name = "landlord_signature_url_3")
 	private String landlordSignatureUrl3;
 
-	@Column
+	@Column(name = "landlord_signature_url_4")
 	private String landlordSignatureUrl4;
 
 }

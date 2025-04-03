@@ -10,12 +10,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(indexes = {
 	@Index(name = "idx_member_id", columnList = "memberId"),
 	@Index(name = "idx_kakao_id", columnList = "kakaoId")
@@ -26,10 +30,10 @@ public class Member extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long memberId;
 
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private Long kakaoId;
 
-	@Column(length = 20, nullable = false)
+	@Column(length = 20)
 	private String name;
 
 	@Column(length = 10, nullable = false)
@@ -38,7 +42,7 @@ public class Member extends BaseEntity {
 	@Column(length = 20)
 	private String birthday;
 
-	@Column(length = 20, nullable = false)
+	@Column(length = 20)
 	private String phone;
 
 	@Column
