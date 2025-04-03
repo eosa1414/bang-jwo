@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.bangjwo.auth.resolver.MemberHeader;
 import com.bangjwo.chat.application.service.ChatAlertService;
 import com.bangjwo.chat.domain.entity.ChatAlert;
 
@@ -38,9 +39,9 @@ public class AlertController {
 			@ApiResponse(responseCode = "400", description = "요청 데이터 오류")
 		}
 	)
-	@GetMapping("/alert/{userId}")
+	@GetMapping()
 	public ResponseEntity<List<ChatAlert>> getAlerts(
-		@PathVariable("userId") Long userId) {
+		@MemberHeader() Long userId) {
 
 		return ResponseEntity.ok().body(chatAlertService.getAlerts(userId));
 	}
@@ -56,9 +57,9 @@ public class AlertController {
 			@ApiResponse(responseCode = "400", description = "요청 데이터 오류")
 		}
 	)
-	@PutMapping("/{userId}/alert/{chatRoomId}")
+	@PutMapping("/{chatRoomId}")
 	public ResponseEntity<String> readAlert(
-		@PathVariable("userId") Long userId,
+		@MemberHeader() Long userId,
 		@PathVariable("chatRoomId") Long chatRoomId){
 		chatAlertService.markAlertAsRead(chatRoomId, userId);
 

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.bangjwo.auth.resolver.MemberHeader;
 import com.bangjwo.chat.application.convert.AlertConverter;
 import com.bangjwo.chat.application.dto.ChatMessageDto;
 import com.bangjwo.chat.application.dto.ChatRoomDto;
@@ -59,7 +60,7 @@ public class ChatRoomController {
 			@ApiResponse(responseCode = "400", description = "요청 데이터 오류")
 		}
 	)
-	@PostMapping("/new-chat")
+	@PostMapping("/new")
 	public ResponseEntity<ChatRoomDto.ResponseDto> createChatRoom(
 		@RequestBody ChatRoomDto.RequestDto requestDto) {
 
@@ -85,9 +86,9 @@ public class ChatRoomController {
 			@ApiResponse(responseCode = "400", description = "요청 데이터 오류")
 		}
 	)
-	@GetMapping("/{userId}/enter/{chatRoomId}")
+	@GetMapping("/enter/{chatRoomId}")
 	public ResponseEntity<List<ChatMessageDto>> getChatMessages(
-		@PathVariable("userId") Long userId,
+		@MemberHeader() Long userId,
 		@PathVariable("chatRoomId") Long chatRoomId) {
 
 		webSocketSessionTracker.roomConnect(chatRoomId, userId);
@@ -173,7 +174,6 @@ public class ChatRoomController {
 	/*
 	* 채팅 리스트 조회 : Redis에 있는 목록 가져오기
 	* JSON 값을 파싱하여 사용
-	* user값 토큰에서 꺼내는걸로 변경
 	* */
 	@Operation(
 		summary = "채팅방 목록 조회",
@@ -183,9 +183,9 @@ public class ChatRoomController {
 			@ApiResponse(responseCode = "400", description = "요청 데이터 오류")
 		}
 	)
-	@GetMapping("/{userId}/chat-list")
+	@GetMapping("/list")
 	public ResponseEntity<Set<ZSetOperations.TypedTuple<String>>> getChatRooms(
-		@PathVariable("userId") Long userId) {
+		@MemberHeader() Long userId) {
 
 		return ResponseEntity.ok(redisChatRoomService.getRoomList(userId));
 	}
@@ -201,9 +201,9 @@ public class ChatRoomController {
 			@ApiResponse(responseCode = "400", description = "요청 데이터 오류")
 		}
 	)
-	@PostMapping("/{userId}/leave/{chatRoomId}")
+	@PostMapping("/leave/{chatRoomId}")
 	public ResponseEntity<String> leaveChatRoom(
-		@PathVariable("userId") Long userId,
+		@MemberHeader() Long userId,
 		@PathVariable("chatRoomId") Long chatRoomId) {
 		webSocketSessionTracker.roomDisconnect(chatRoomId, userId);
 		log.info("유저({})가 채팅방({})에서 나갔습니다.", userId, chatRoomId);

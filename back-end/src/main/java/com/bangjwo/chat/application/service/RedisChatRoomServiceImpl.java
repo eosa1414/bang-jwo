@@ -62,15 +62,18 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 		ChatRoomSummary receiverSummary = ChatCoverter.createReceiverSummary(
 			chatRoomId, roomId, message, senderId, senderImage, senderNickname, sendAt);
 
+
 		try {
-			String senderJson = objectMapper.writeValueAsString(senderSummary);
-			double senderScore = Instant.parse(sendAt).toEpochMilli();
-			redisTemplate.opsForZSet().add(senderKey, senderJson, senderScore); // 새로 추가
-
-			String receiverJson = objectMapper.writeValueAsString(receiverSummary);
-			double receiverScore = Instant.parse(sendAt).toEpochMilli();
-			redisTemplate.opsForZSet().add(receiverKey, receiverJson, receiverScore); // 새로 추가
-
+			if(getChatRoomSummary(senderKey, chatRoomId)==null){
+				String senderJson = objectMapper.writeValueAsString(senderSummary);
+				double senderScore = Instant.parse(sendAt).toEpochMilli();
+				redisTemplate.opsForZSet().add(senderKey, senderJson, senderScore); // 새로 추가
+			}
+			if(getChatRoomSummary(receiverKey, chatRoomId)==null){
+				String receiverJson = objectMapper.writeValueAsString(receiverSummary);
+				double receiverScore = Instant.parse(sendAt).toEpochMilli();
+				redisTemplate.opsForZSet().add(receiverKey, receiverJson, receiverScore); // 새로 추가
+			}
 		} catch (JsonProcessingException e) {
 			log.error("Redis 직렬화 실패", e);
 			throw new BusinessException(ChatErrorCode.CHAT_REDIS_SERIALIZATION_FAILED);
