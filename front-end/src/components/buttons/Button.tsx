@@ -26,7 +26,7 @@ const baseClasses =
 const sizeClasses = {
   basic: `${baseClasses} h-9 min-w-[64px] px-3 text-base`,
   small: `${baseClasses} h-7 min-w-[48px] px-2 text-sm`,
-  medium: `${baseClasses} h-12 min-w-[160px] px-4 text-lg`,
+  medium: `${baseClasses} min-h-12 min-w-[160px] px-4 text-lg`,
   large: `${baseClasses} min-w-[210px] max-w-full p-[0.625rem_0.75rem] text-base`,
 };
 

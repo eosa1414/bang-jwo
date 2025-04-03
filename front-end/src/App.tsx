@@ -26,7 +26,7 @@ function App() {
           <Route
             path="/"
             element={
-              <LayoutMain>
+              <LayoutMain darkHeader wrapperClassName="bg-gold-light">
                 <PageHome />
               </LayoutMain>
             }

@@ -4,6 +4,7 @@
   --color-gold: #f5c400;
   --color-gold-dark: #e2a600;
   --color-gold-light: #ffda45;
+  --color-gold-bright: #fdeeb3;
 
   --color-real-white: #ffffff;
   --color-neutral-white: #fefdfc;
@@ -86,6 +87,10 @@
   height: 100%;
   display: inline-block;
   background-color: var(--color-neutral-black);
+}
+
+.writing-mode-vertical-rl {
+  writing-mode: vertical-lr;
 }
 
 /*구글 머티리얼 아이콘 사이즈 커스텀*/

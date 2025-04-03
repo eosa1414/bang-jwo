@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
-import Logo from "/logo.svg";
+import Logo from "../Logo";
 import { useAuth } from "../../contexts/AuthContext";
 
 interface HeaderProps {
   title?: string;
+  variant?: "dark" | "light";
 }
 
-const Header = ({ title }: HeaderProps) => {
+const Header = ({ title, variant = "light" }: HeaderProps) => {
   const { user, login, logout } = useAuth();
 
   // 모바일 가로일 때 메뉴 동작 - 차후 추가
@@ -19,9 +20,17 @@ const Header = ({ title }: HeaderProps) => {
     <header className="flex w-full h-[55px] p-[12px_14px] justify-center items-center gap-[16px] border-b-1 border-neutral-light100">
       {/* Logo */}
       <div>
-        <Link to="/" className="flex gap-2 items-center">
-          <img src={Logo} className="w-[35.28px]" alt="BangJwo logo" />
-          <span className={`text-lg font-['TmonMonsori'] text-gold`}>방줘</span>
+        <Link to="/" className="flex gap-2 items-center justify-center">
+          <span className="pb-[3.5px]">
+            <Logo className="w-[35.28px]" variant={variant} />
+          </span>
+          <span
+            className={`text-lg font-['TmonMonsori'] ${
+              variant === "light" ? "text-gold" : "text-neutral-black"
+            }`}
+          >
+            방줘
+          </span>
         </Link>
       </div>
 
