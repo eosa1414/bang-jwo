@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.bangjwo.global.common.error.registry.RegistryErrorCode;
+import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.global.common.page.PageResponse;
 import com.bangjwo.global.common.page.PaginationRequest;
 import com.bangjwo.register.application.convert.RegistryConverter;
@@ -38,7 +40,7 @@ public class RegistryService {
 	 * @param request 등기부 등록 요청 DTO (결제ID, 회원ID, 매물ID, JSON URL, PDF URL 포함)
 	 * @return 변환된 RegistryResponseDto
 	 */
-	public void parseAndSave(RegistryRequestDto request) {
+	public void parseAndSave(RegistryRequestDto request, Long memberId) {
 		// S3 JSON URL을 올바른 키로 변환
 		String jsonKey = request.getJsonUrl();
 		if (!jsonKey.startsWith(JSON_FOLDER)) {
@@ -47,7 +49,7 @@ public class RegistryService {
 		RegistryHyphenDto dto = hyphenParsing.parseHyphenJson(jsonKey);
 
 		// 변환 로직을 RegistryConverter로 위임
-		RegistryDocument doc = RegistryConverter.convertToEntity(dto, request);
+		RegistryDocument doc = RegistryConverter.convertToEntity(dto, request, memberId);
 		registryRepo.save(doc);
 	}
 
@@ -57,8 +59,13 @@ public class RegistryService {
 	 * @param id 등기부 문서 ID
 	 * @return RegistryResponseDto (문서가 없으면 null 반환)
 	 */
-	public RegistryDocument findById(String id) {
-		return registryRepo.findById(id).orElse(null);
+	public RegistryDocument findById(String id, Long memberId) {
+		var registry = registryRepo.findById(id).orElse(null);
+		if (registry != null && !registry.getServerData().getMemberId().equals(memberId)) {
+			throw new BusinessException(RegistryErrorCode.NO_AUTH_TO__REGISTRY);
+		}
+
+		return registry;
 	}
 
 	/**
