@@ -132,7 +132,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
     return () => {
       boxElement?.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  });
 
   // 조건부 렌더링 처리
   if (!selectedRoomId) return null;
