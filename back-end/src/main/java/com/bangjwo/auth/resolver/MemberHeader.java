@@ -13,4 +13,5 @@ import io.swagger.v3.oas.annotations.Parameter;
 @Parameter(hidden = true)
 @Documented
 public @interface MemberHeader {
+	boolean required() default true;
 }

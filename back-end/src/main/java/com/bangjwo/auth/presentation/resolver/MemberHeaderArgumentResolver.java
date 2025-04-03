@@ -29,9 +29,15 @@ public class MemberHeaderArgumentResolver implements HandlerMethodArgumentResolv
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 		String authorizationHeader = request.getHeader("Authorization");
-		
+
+		MemberHeader memberHeader = parameter.getParameterAnnotation(MemberHeader.class);
+
 		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-			throw new BusinessException(AuthErrorCode.INVALID_AUTHORIZATION_TOKEN);
+			if (!memberHeader.required()) {
+				return null;
+			} else {
+				throw new BusinessException(AuthErrorCode.NOT_EXIST_AUTHORIZATION_TOKEN);
+			}
 		}
 		String token = authorizationHeader.substring(7);
 		String memberIdStr = jwtTokenProvider.getClaims(token);
