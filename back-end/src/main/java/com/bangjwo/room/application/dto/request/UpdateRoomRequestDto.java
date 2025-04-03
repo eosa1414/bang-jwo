@@ -20,9 +20,6 @@ import lombok.Setter;
 @Schema(description = "매물 정보 수정 요청 DTO")
 public class UpdateRoomRequestDto {
 
-	@Schema(description = "회원 ID (이후 토큰 처리로 대체 예정)", example = "1")
-	private Long memberId;
-
 	@Schema(description = "보증금", example = "10000000", minimum = "0")
 	private Integer deposit;
 
@@ -95,7 +92,7 @@ public class UpdateRoomRequestDto {
 	@Schema(description = "매물 옵션 리스트", example = "[\"BED\", \"AIR_CONDITIONER\"]")
 	private List<RoomOption> options;
 
-	@Schema(description = "매물 이미지 파일 리스트(최소 3개 이상 등록)", example = "[File1, File2, File3]")
+	@Schema(description = "매물 이미지 파일 리스트(최소 3개 이상 등록)")
 	private List<MultipartFile> images;
 
 	@Schema(description = "삭제할 매물 이미지 ID 리스트", example = "[1, 2]")

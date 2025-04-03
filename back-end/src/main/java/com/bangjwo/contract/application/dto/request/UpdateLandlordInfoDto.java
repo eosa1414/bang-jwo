@@ -24,11 +24,6 @@ public class UpdateLandlordInfoDto {
 	@Min(1)
 	private Long contractId;
 
-	@Schema(description = "임대인 유저 ID", example = "1")
-	@NotNull
-	@Min(1)
-	private Long landlordId;    // 해당 임대인 유저 ID는 로그인 이후 삭제 예정
-
 	@Schema(description = "임대인 이름", example = "홍길동")
 	@NotNull(groups = FinalSave.class)
 	private String name;

@@ -20,11 +20,6 @@ public class UpdateTenantInfoDto {
 	@Min(1)
 	private Long contractId;
 
-	@Schema(description = "임차인 유저 ID", example = "2", requiredMode = Schema.RequiredMode.REQUIRED)
-	@NotNull
-	@Min(1)
-	private Long tenantId;
-
 	@Schema(description = "이름", example = "김철수")
 	@NotNull(groups = FinalSave.class)
 	private String name;

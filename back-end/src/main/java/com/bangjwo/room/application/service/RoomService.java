@@ -46,8 +46,8 @@ public class RoomService {
 	private final MemoService memoService;
 
 	@Transactional
-	public void createRoom(CreateRoomRequestDto requestDto) {
-		var savedRoom = roomRepository.save(RoomConverter.convert(requestDto));
+	public void createRoom(CreateRoomRequestDto requestDto, Long memberId) {
+		var savedRoom = roomRepository.save(RoomConverter.convert(requestDto, memberId));
 
 		addressService.createAndSaveAddress(savedRoom, requestDto.getAddress(),
 			requestDto.getAddressDetail(), requestDto.getPostalCode());
@@ -57,10 +57,10 @@ public class RoomService {
 	}
 
 	@Transactional
-	public void updateRoom(Long roomId, UpdateRoomRequestDto requestDto) {
+	public void updateRoom(Long roomId, UpdateRoomRequestDto requestDto, Long memberId) {
 		var searchRoom = findRoom(roomId);
 
-		if (!searchRoom.getMemberId().equals(requestDto.getMemberId())) {
+		if (!searchRoom.getMemberId().equals(memberId)) {
 			throw new BusinessException(RoomErrorCode.NO_AUTH_TO_UPDATE_ROOM);
 		}
 
@@ -71,8 +71,11 @@ public class RoomService {
 	}
 
 	@Transactional
-	public void deleteRoom(Long roomId) {
+	public void deleteRoom(Long roomId, Long memberId) {
 		var searchRoom = findRoom(roomId);
+		if (!searchRoom.getMemberId().equals(memberId)) {
+			throw new BusinessException(RoomErrorCode.NO_AUTH_TO_DELETE_ROOM);
+		}
 
 		searchRoom.softDelete();
 	}
@@ -107,23 +110,23 @@ public class RoomService {
 	}
 
 	@Transactional
-	public void updateRoomMemo(Long roomId, UpdateRoomMemoRequestDto requestDto) {
+	public void updateRoomMemo(Long roomId, UpdateRoomMemoRequestDto requestDto, Long memberId) {
 		var room = findRoom(roomId);
 
-		var memo = memoService.findByRoomAndMemberId(room, requestDto.getMemberId());
+		var memo = memoService.findByRoomAndMemberId(room, memberId);
 
 		if (memo.isPresent()) {
 			memo.get().updateContent(requestDto.getContent());
 		} else {
-			createRoomMemo(roomId, requestDto);
+			createRoomMemo(roomId, requestDto, memberId);
 		}
 	}
 
 	@Transactional
-	public void createRoomMemo(Long roomId, UpdateRoomMemoRequestDto requestDto) {
+	public void createRoomMemo(Long roomId, UpdateRoomMemoRequestDto requestDto, Long memberId) {
 		var room = findRoom(roomId);
 
-		memoService.saveMemo(RoomConverter.convert(room, requestDto));
+		memoService.saveMemo(RoomConverter.convert(room, requestDto, memberId));
 	}
 
 	@Transactional

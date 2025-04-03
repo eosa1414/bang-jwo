@@ -18,10 +18,6 @@ public class TenantSignatureUpdateRequestDto {
 	@NotNull
 	private Long contractId;
 
-	@Schema(description = "임차인 ID", example = "2")
-	@NotNull
-	private Long tenantId;
-
 	@Schema(description = "서명 이미지", type = "string", format = "binary")
 	@NotEmptyMultipartFile(message = "서명 이미지는 필수 항목입니다.")
 	private MultipartFile signature;
