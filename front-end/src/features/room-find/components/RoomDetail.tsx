@@ -61,15 +61,19 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
     )
     .filter((label): label is string => typeof label === "string") || [];
 
-  const maintenanceOptions: string[] =
-  room?.maintenanceIncludes
-    .map((includes) =>
-      includes in maintenanceIncludeLabel
-        ? maintenanceIncludeLabel[includes as MaintenanceIncludeName]
-        : undefined
-    )
-    .filter((label): label is string => typeof label === "string") || [];
-  const notMaintenanceOptions = ["수도세"];
+  const allMaintenanceKeys = Object.keys(maintenanceIncludeLabel) as MaintenanceIncludeName[];
+
+  const includedKeys = room?.maintenanceIncludes ?? [];
+  const excludedKeys = allMaintenanceKeys.filter(
+    (key) => !includedKeys.includes(key)
+  );
+
+  const maintenanceOptions: string[] = includedKeys.map(
+    (key) => maintenanceIncludeLabel[key]
+  );
+  const notMaintenanceOptions: string[] = excludedKeys.map(
+    (key) => maintenanceIncludeLabel[key]
+  );
 
   // tab scroll
   const handleTabClick = (idx: number) => {
@@ -332,10 +336,6 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                     <p>
                       {room.description}
                     </p>
-                    <br />
-                    <p>반려동물은 가능합니다.</p>
-                    <br />
-                    <p>주차 공간은 따로 없어요.</p>
                   </div>
                 </TabContent>
 
