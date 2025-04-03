@@ -13,6 +13,7 @@ import RoomOptions from "./RoomOptions";
 import BoxHeader from "./BoxHeader";
 import { roomBuildingTypeLabel, roomDirectionTypeLabel, roomOptionLabel, maintenanceIncludeLabel } from "../../../utils/roomMapper";
 import { RoomBuildingType, RoomDirection, RoomOption, MaintenanceIncludeName } from "../../../types/roomTypes";
+import ModalPhoneCheck from "../../modal/pages/ModalPhoneCheck";
 
 interface RoomDetailProps {
   selectedRoomId: number | null;
@@ -25,6 +26,9 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   const [isTitleScrolled, setIsTitleScrolled] = useState(false);
   const [tabMenuHeight, setTabMenuHeight] = useState(0);
   const [activeTab, setActiveTab] = useState<number>(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [direction, setDirection] = useState<"left" | "right">("right");
+  const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
 
   const boxRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
@@ -166,13 +170,56 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
               {/* Image */}
               <div className="bg-neutral-light100 w-full h-[13rem] overflow-hidden relative">
-                <img
-                  className="w-full h-full object-cover"
-                  src="https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                  alt={`room image of number ${selectedRoomId}`}
-                />
-                {/* 그라데이션 오버레이 */}
-                <div className="absolute top-0 left-0 bottom-0 right-0 w-full h-full bg-gradient-to-b from-black via-transparent to-transparent opacity-50"></div>
+                {/* 이미지 슬라이더 */}
+                <div className="relative w-full h-[13rem] overflow-hidden group bg-neutral-light100 rounded-lg">
+                  {room.images.length > 0 && (
+                    <AnimatePresence initial={false} custom={direction}>
+                      <motion.img
+                        key={room.images[currentImageIndex].imageId}
+                        src={room.images[currentImageIndex].imageUrl}
+                        alt={`room image ${room.images[currentImageIndex].imageId}`}
+                        className="absolute w-full h-full object-cover"
+                        custom={direction}
+                        initial={{ x: direction === "left" ? -300 : 300, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: direction === "left" ? 300 : -300, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                      />
+                    </AnimatePresence>
+                  )}
+
+                  {/* 그라데이션 오버레이 */}
+                  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black via-transparent to-transparent opacity-50 pointer-events-none" />
+
+                  {/* 좌우 화살표 */}
+                  {room.images.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setDirection("left");
+                          setCurrentImageIndex((prev) =>
+                            prev === 0 ? room.images.length - 1 : prev - 1
+                          );
+                        }}
+                        className="absolute top-1/2 left-2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-10"
+                      >
+                        <i className="material-symbols-rounded">chevron_left</i>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setDirection("right");
+                          setCurrentImageIndex((prev) =>
+                            prev === room.images.length - 1 ? 0 : prev + 1
+                          );
+                        }}
+                        className="absolute top-1/2 right-2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-10"
+                      >
+                        <i className="material-symbols-rounded">chevron_right</i>
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
 
               {/* Info */}
@@ -238,7 +285,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   {/* review buttom */}
                   <div className="flex flex-wrap gap-1 items-center cursor-pointer">
                     <i className="material-symbols-rounded text-lg">reviews</i>
-                    <span className="font-semibold">리뷰 1개</span>
+                    <span className="font-semibold">리뷰 ${room.reviewCnt}개</span>
                     <i className="material-symbols-rounded text-base">
                       arrow_forward_ios
                     </i>
@@ -262,16 +309,16 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   <div className="flex gap-1">
                     <span>작성자</span>
                     <span>·</span>
-                    <span>집에 가고 싶은 쥐</span>
+                    <span>{room.nickname}</span>
                   </div>
                 </div>
 
                 <div className="divider" />
 
                 <div className="text-neutral-dark100 flex flex-wrap gap-1">
-                  <span>3일 전</span>
+                  <span>{room.createDate}</span>
                   <span>·</span>
-                  <span>1일 전 수정</span>
+                  <span>{room.updateDate} 수정</span>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   <Button size="small" variant="dark">
@@ -416,7 +463,12 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
               {/* box footer */}
               <div className="flex w-full h-[48px] bg-gold-light justify-around items-center bottom-[0px] absolute py-[0.875rem] text-base font-semibold">
                 <div className="flex-grow text-center">
-                  <p className="cursor-pointer">전화</p>
+                  <p className="cursor-pointer" onClick={() => setIsPhoneModalOpen(true)}>전화</p>
+                  <ModalPhoneCheck
+                    isOpen={isPhoneModalOpen}
+                    closeModal={() => setIsPhoneModalOpen(false)}
+                    phone={room.phoneNumber}
+                  />
                 </div>
                 <span className="separator"></span>
                 <div className="flex-grow text-center">
