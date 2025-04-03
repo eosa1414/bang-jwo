@@ -19,9 +19,6 @@ public class RegistryRequestDto {
 	@Schema(description = "결제 ID", example = "12")
 	private String paymentId;
 
-	@Schema(description = "회원 ID", example = "1")
-	private Long memberId;
-
 	@Schema(description = "매물 ID", example = "1")
 	private Long roomId;
 

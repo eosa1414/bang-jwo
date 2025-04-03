@@ -16,11 +16,6 @@ public class CreateContractRequestDto {
 	@Min(1)
 	private Long roomId;
 
-	@Schema(description = "임대인(유저) ID", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-	@NotNull
-	@Min(1)
-	private Long landlordId;
-
 	@Schema(description = "임차인(유저) ID", example = "2", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
 	@Min(1)

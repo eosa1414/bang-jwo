@@ -23,12 +23,6 @@ import lombok.Setter;
 @Setter
 @Schema(description = "새로운 매물(Room) 생성 요청 DTO")
 public class CreateRoomRequestDto {
-
-	@Schema(description = "회원 ID (이후 토큰 처리로 대체 예정)", example = "1", requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0")
-	@NotNull
-	@Min(1)
-	private Long memberId;
-
 	@Schema(description = "건물 유형", example = "APARTMENT", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
 	private RoomBuildingType buildingType;

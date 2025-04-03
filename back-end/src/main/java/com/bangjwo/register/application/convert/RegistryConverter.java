@@ -14,11 +14,11 @@ public class RegistryConverter {
 	 * RegistryHyphenDto와 RegistryRequestDto를 사용하여 RegistryDocument 엔티티를 빌더 패턴으로 생성합니다.
 	 */
 	public static RegistryDocument convertToEntity(RegistryHyphenDto dto,
-		com.bangjwo.register.application.dto.request.RegistryRequestDto request) {
+		com.bangjwo.register.application.dto.request.RegistryRequestDto request, Long memberId) {
 		// BangJwoData 생성 (요청에서 받은 값들을 그대로 저장)
 		RegistryDocument.BangJwoData serverData = RegistryDocument.BangJwoData.builder()
 			.paymentId(request.getPaymentId())
-			.memberId(request.getMemberId())
+			.memberId(memberId)
 			.roomId(request.getRoomId())
 			.jsonUrl(request.getJsonUrl())  // 상대 경로 저장
 			.pdfUrl(request.getPdfUrl())     // 상대 경로 저장
