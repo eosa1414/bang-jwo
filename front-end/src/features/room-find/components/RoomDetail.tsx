@@ -69,15 +69,6 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
         : undefined
     )
     .filter((label): label is string => typeof label === "string") || [];
-  const maintenanceOptions2 = [
-    "전기세",
-    "인터넷",
-    "가스",
-    "청소비",
-    "유선 TV",
-    "주차비",
-    "난방비",
-  ];
   const notMaintenanceOptions = ["수도세"];
 
   // tab scroll
