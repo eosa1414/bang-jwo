@@ -1,0 +1,21 @@
+name: bangjwo-ai-env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9
+  - pip
+  - pip:
+      - chromadb
+      - langchain
+      - langchain-community
+      - langchain-chroma
+      - langchain_openai
+      - langchain-text-splitters
+      - python-dotenv
+      - openai
+      - fastapi
+      - uvicorn
+      - beautifulsoup4
+      - selenium
+      - webdriver-manager
