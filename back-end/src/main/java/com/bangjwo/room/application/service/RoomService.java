@@ -15,6 +15,8 @@ import com.bangjwo.global.common.error.room.RoomErrorCode;
 import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.global.common.exception.RoomException;
 import com.bangjwo.global.common.page.PaginationRequest;
+import com.bangjwo.member.application.service.MemberService;
+import com.bangjwo.member.domain.entity.Member;
 import com.bangjwo.room.application.convert.RoomConverter;
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
@@ -44,6 +46,8 @@ public class RoomService {
 	private final RoomImageService imageService;
 	private final LikeService likeService;
 	private final MemoService memoService;
+	private final ReviewService reviewService;
+	private final MemberService memberService;
 
 	@Transactional
 	public void createRoom(CreateRoomRequestDto requestDto, Long memberId) {
@@ -96,8 +100,9 @@ public class RoomService {
 		var isLiked = likeService.getLike(room, memberId)
 			.map(Likes::getFlag)
 			.orElse(false);
-
-		return RoomConverter.convert(room, isLiked, address, options, maintenanceIncludes, images);
+		int reviewCnt = reviewService.getReviews(room.getRealEstateId(), address.getAddressDetail()).size();
+		var member = memberService.searchMember(memberId);
+		return RoomConverter.convert(room, isLiked, address, member, reviewCnt, options, maintenanceIncludes, images);
 	}
 
 	@Transactional(readOnly = true)

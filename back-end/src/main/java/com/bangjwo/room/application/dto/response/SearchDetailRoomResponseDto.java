@@ -2,6 +2,7 @@ package com.bangjwo.room.application.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.bangjwo.room.domain.vo.MaintenanceIncludeName;
@@ -113,6 +114,21 @@ public class SearchDetailRoomResponseDto {
 
 	@Schema(description = "전화번호 공개 여부", example = "false")
 	private Boolean isPhonePublic;
+
+	@Schema(description = "리뷰 갯수", example = "2")
+	private int reviewCnts;
+
+	@Schema(description = "닉네임", example = "방줘방줘")
+	private String nickname;
+
+	@Schema(description = "생성 일자", example = "2025-04-01")
+	private LocalDateTime createDate;
+
+	@Schema(description = "수정 일자", example = "2025-04-01")
+	private LocalDateTime updateDate;
+
+	@Schema(description = "전화번호", example = "010-1234-1234")
+	private String phoneNumber;
 
 	@Schema(description = "관리비 포함 항목 리스트", example = "[\"INTERNET\", \"GAS\"]")
 	private List<MaintenanceIncludeName> maintenanceIncludes;
