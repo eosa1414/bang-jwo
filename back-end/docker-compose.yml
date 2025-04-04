@@ -124,12 +124,10 @@ services:
     networks:
       - bangjwo-network
     environment:
-      - output.elasticsearch.hosts=["http://elasticsearch:9200"]
-      - setup.kibana.host=http://kibana:5601
+      - output.elasticsearch.hosts=["http://j12a404.p.ssafy.io:9200"]
+      - setup.kibana.host=http://j12a404.p.ssafy.io:5601
       - apm-server.host=0.0.0.0:8200
-    depends_on:
-      - elasticsearch
-      - kibana
+
 
 volumes:
   db-volume:
