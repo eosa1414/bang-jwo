@@ -260,9 +260,9 @@ public class ContractController {
 		description = "작성한 계약서를 IPFS, 블록체인에 저장합니다.",
 		security = @SecurityRequirement(name = "JWT")
 	)
-	@PatchMapping("/complete")
+	@PatchMapping(path = "/complete", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<Void> completeContract(@ModelAttribute CompleteDto completeDto,
-		@MemberHeader long memberId) {    // 유저 로그인 정보 추가 필요
+		@MemberHeader Long memberId) {    // 유저 로그인 정보 추가 필요
 		contractService.completeContract(completeDto, memberId);
 		return ResponseEntity.noContent().build();
 	}
