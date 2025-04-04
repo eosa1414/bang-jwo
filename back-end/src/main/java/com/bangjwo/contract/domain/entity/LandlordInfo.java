@@ -3,6 +3,7 @@ package com.bangjwo.contract.domain.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.bangjwo.contract.domain.vo.MonthlyRentType;
 import com.bangjwo.global.common.entity.BaseEntity;
 import com.bangjwo.room.domain.vo.ContractType;
 import com.bangjwo.room.domain.vo.LeaseType;
@@ -45,7 +46,7 @@ public class LandlordInfo extends BaseEntity {
 	private String address;
 
 	@Column
-	private String residentRegistrationNumber; // 암호화
+	private String residentRegistrationNumber;
 
 	@Column(columnDefinition = "TEXT")
 	private String rentalPropertyAddress;
@@ -59,31 +60,19 @@ public class LandlordInfo extends BaseEntity {
 	@Column(precision = 10, scale = 2)
 	private BigDecimal propertyArea;
 
-	@Column(columnDefinition = "TEXT")
-	private String repairResponsibility;
+	@Column(length = 50)
+	private String rentalPartAddress;
 
-	@Column
-	private Boolean priorityConfirmedDateYn;
-
-	@Column
-	private Boolean taxArrears;
-
-	@Column(length = 100)
-	private String locationOfRentalHousing;
+	@Column(length = 50)
+	private String rentalPartDetailAddress;
 
 	@Column
 	private String rentalHousingLandType;
 
+	@Column(precision = 10, scale = 2)
 	private BigDecimal rentalHousingLandArea;
 
-	@Column(length = 50)
-	private String rentalHousingUsage;
-
-	private BigDecimal rentalHousingArea;
-
-	@Column(length = 50)
-	private String rentalPartAddress;
-
+	@Column(precision = 10, scale = 2)
 	private BigDecimal rentalPartArea;
 
 	@Column(length = 20)
@@ -106,21 +95,32 @@ public class LandlordInfo extends BaseEntity {
 	@Column
 	private LocalDate leaseEndDate;
 
+	@Column
 	private Integer contractFee;
+
+	@Column
 	private Integer middleFee;
 
-	private LocalDate downPaymentDate;
+	@Column
 	private LocalDate interimPaymentDate;
+
+	@Column
 	private Integer balance;
+
+	@Column
 	private LocalDate balancePaymentDate;
 
 	@Column(length = 2)
 	private String monthlyRentPaymentDate;
 
 	@Column
-	private Integer fixedManagementFee;
+	@Enumerated(EnumType.STRING)
+	private MonthlyRentType monthlyRentType;
 
 	@Column
+	private Integer fixedManagementFee;
+
+	@Column(columnDefinition = "TEXT")
 	private String unfixedManagementFee;
 
 	@Column(length = 20)
@@ -136,10 +136,43 @@ public class LandlordInfo extends BaseEntity {
 	private String facilitiesRepairContent;
 
 	@Column
+	private LocalDate repairCompletionByBalanceDate;
+
+	@Column
+	private String repairCompletionEtc;
+
+	@Column
+	private LocalDate notRepairedByBalanceDate;
+
+	@Column
+	private String notRepairedEtc;
+
+	@Column
+	private Boolean priorityConfirmedDateYn;
+
+	@Column
+	private Boolean taxArrears;
+
+	@Column
 	private String landlordBurden;
 
 	@Column
 	private String tenantBurden;
+
+	@Column
+	private LocalDate previousLeaseStartDate;
+
+	@Column
+	private LocalDate previousLeaseEndDate;
+
+	@Column
+	private Long previousDepositAmount;
+
+	@Column
+	private Long previousMonthlyRent;
+
+	@Column
+	private LocalDate contractWrittenDate;
 
 	@Column(name = "landlord_signature_url_1")
 	private String landlordSignatureUrl1;
@@ -152,6 +185,4 @@ public class LandlordInfo extends BaseEntity {
 
 	@Column(name = "landlord_signature_url_4")
 	private String landlordSignatureUrl4;
-
 }
-

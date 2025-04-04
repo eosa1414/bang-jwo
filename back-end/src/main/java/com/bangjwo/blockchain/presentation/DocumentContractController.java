@@ -17,11 +17,13 @@ import com.bangjwo.global.common.exception.BusinessException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("api/v1/blockchain")
 @RequiredArgsConstructor
+@Tag(name = "Blockchain", description = "블록체인 확인")
 public class DocumentContractController {
 
 	private final BlockchainService blockchainService;
@@ -34,13 +36,17 @@ public class DocumentContractController {
 	)
 	@GetMapping("/compare")
 	public ResponseEntity<Map<String, Boolean>> getContract(@RequestParam BigInteger contractId,
-		@MemberHeader BigInteger memberId) {
+		@MemberHeader Long memberId) {
+		System.out.println(contractId + " " + memberId);
 		// 서버의 값과 비교하여 결과 반환 구현
-		String onBlockchain = blockchainService.getContractData(contractId, memberId);
+		BigInteger requesterId = BigInteger.valueOf(memberId);
+		String onBlockchain = blockchainService.getContractData(contractId, requesterId);
 		if (onBlockchain == null) {
 			throw new BusinessException(BlockchainErrorCode.BLOCKCHAIN_NOT_FOUND);
 		}
 		String onDatabae = contractService.findContract(contractId.longValue()).getIpfsKey();
+		System.out.println(onDatabae);
+		System.out.println(onBlockchain);
 		return ResponseEntity.ok(Map.of("isMatch", onBlockchain.equals(onDatabae)));
 	}
 }

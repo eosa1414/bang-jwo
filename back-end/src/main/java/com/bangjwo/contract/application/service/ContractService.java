@@ -242,6 +242,7 @@ public class ContractService {
 			String ipfsKey = pinataStorageService.uploadEncryptedPdf(encryptedPdf,
 				completeDto.getContractId());
 			String encryptedIpfsKey = aesService.encryptToString(aesKey, ipfsKey);
+			System.out.println(encryptedIpfsKey);
 
 			// 4. 블록체인에 CID 저장 구현
 			var result = blockchainService.registerContract(BigInteger.valueOf(completeDto.getContractId()),

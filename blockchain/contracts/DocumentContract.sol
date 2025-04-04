@@ -2,7 +2,8 @@
 pragma solidity ^0.8.0;
 
 contract DocumentContract {
-    address private immutable owner;
+    address private owner;
+    address private proposedOwner;
 
     struct Contract {
         string ipfsHash;  // 계약서 CID (IPFS)
@@ -13,15 +14,41 @@ contract DocumentContract {
     mapping(uint256 => Contract) private contracts;
 
     event ContractCreated(uint256 indexed contractId, string ipfsHash, uint64 landlord, uint64 tenant);
+    event OwnershipProposed(address indexed currentOwner, address indexed newOwner);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Not authorized");
         _;
     }
 
-    constructor(address _owner) {
+    modifier onlyProposedOwner() {
+        require(msg.sender == proposedOwner, "Not proposed owner");
+        _;
+    }
+
+    constructor(address _owner, address _proposedOwner) {
         require(_owner != address(0), "Invalid owner address");
+        require(_proposedOwner != address(0), "Invalid proposed owner address");
         owner = _owner;
+        proposedOwner = _proposedOwner;
+
+        emit OwnershipProposed(_owner, _proposedOwner);
+    }
+
+    function proposeOwnership(address _newOwner) external onlyOwner {
+        require(_newOwner != address(0), "New owner is zero address");
+        require(_newOwner != owner, "New owner is current owner");
+        require(_newOwner == proposedOwner, "New owner is already proposed");
+        
+        proposedOwner = _newOwner;
+        emit OwnershipProposed(owner, _newOwner);
+    }
+
+    function acceptOwnership() external onlyProposedOwner {
+        emit OwnershipTransferred(owner, proposedOwner);
+        owner = proposedOwner;
+        proposedOwner = address(0);
     }
 
     function registerContract(
@@ -31,7 +58,7 @@ contract DocumentContract {
         uint64 _tenant
     ) external onlyOwner {
         require(contracts[_id].landlord == 0, "Contract ID exists");
-        require(isValidCID(_ipfsHash), "Invalid IPFS CID");
+        require(!isCID(_ipfsHash), "Invalid IPFS CID");
 
         contracts[_id] = Contract(_ipfsHash, _landlord, _tenant);
         emit ContractCreated(_id, _ipfsHash, _landlord, _tenant);
@@ -45,7 +72,7 @@ contract DocumentContract {
         return c.ipfsHash;
     }
 
-    function isValidCID(string calldata _cid) internal pure returns (bool) {
+    function isCID(string calldata _cid) internal pure returns (bool) {
         bytes memory cidBytes = bytes(_cid);
         uint256 length = cidBytes.length;
 
