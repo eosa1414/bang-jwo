@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bangjwo.global.common.error.review.ReviewErrorCode;
 import com.bangjwo.global.common.error.room.RoomErrorCode;
-import com.bangjwo.global.common.exception.Exceptions;
+import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.global.common.exception.RoomException;
 import com.bangjwo.room.application.convert.ReviewConverter;
 import com.bangjwo.room.application.dto.response.ReviewDto;
@@ -28,28 +28,34 @@ public class ReviewService {
 	private final AddressService addressService;
 
 	@Transactional
-	public Review createReview(long roomId, String content) {
+	public Review createReview(long roomId, long memberId, String content) {
 		Room room = roomRepository.findByRoomIdAndDeletedAtIsNull(roomId)
 			.orElseThrow(() -> new RoomException(RoomErrorCode.NOT_FOUND_SEARCH_ROOM));
 		Address address = addressService.findByRoom(room);
-		return reviewRepository.save(ReviewConverter.convert(room, address, content));
+		return reviewRepository.save(ReviewConverter.convert(room, address, content, memberId));
 	}
 
 	@Transactional(readOnly = true)
 	public Review findReview(long reviewId) {
 		return reviewRepository.findByReviewIdAndDeletedAtIsNull(reviewId)
-			.orElseThrow(() -> new Exceptions(ReviewErrorCode.REVIEW_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(ReviewErrorCode.REVIEW_NOT_FOUND));
 	}
 
 	@Transactional
-	public void deleteReview(long reviewId) {
+	public void deleteReview(long reviewId, long memberId) {
 		Review review = findReview(reviewId);
+		if (!review.getTenantId().equals(memberId)) {
+			throw new BusinessException(ReviewErrorCode.NOT_WRITER);
+		}
 		review.softDelete();
 	}
 
 	@Transactional
-	public Review updateReview(long reviewId, String content) {
+	public Review updateReview(long reviewId, long memberId, String content) {
 		Review review = findReview(reviewId);  // 기존 리뷰 조회
+		if (!review.getTenantId().equals(memberId)) {
+			throw new BusinessException(ReviewErrorCode.NOT_WRITER);
+		}
 		review.updateContent(content);         // 내용만 수정 (엔티티 메서드 사용 권장)
 		return review;
 	}
