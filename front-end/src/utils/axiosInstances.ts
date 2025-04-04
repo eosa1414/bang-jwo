@@ -1,4 +1,8 @@
-import axios, { AxiosResponse, AxiosError } from "axios";
+import axios, {
+  AxiosResponse,
+  AxiosError,
+  InternalAxiosRequestConfig,
+} from "axios";
 import { StatusCodes } from "../constants/statusCodes";
 
 const axiosInstance = axios.create({
@@ -6,11 +10,27 @@ const axiosInstance = axios.create({
   timeout: 10000, //최대 대기 시간(10초)
 });
 
-const successHandler = (res: AxiosResponse) => {
+// 요청시 Bearer 헤더 추가
+const requestHandler = (config: InternalAxiosRequestConfig) => {
+  const token = localStorage.getItem("accessToken");
+  const isHeaderSettable =
+    config.headers && typeof config.headers.set === "function";
+
+  if (token && isHeaderSettable) {
+    config.headers.set("Authorization", `Bearer ${token}`);
+  }
+  return config;
+};
+
+const requestErrorHandler = (error: any) => {
+  return Promise.reject(error);
+};
+
+const responseHandler = (res: AxiosResponse) => {
   return res;
 };
 
-const errorHandler = (err: AxiosError) => {
+const responseErrorHandler = (err: AxiosError) => {
   if (err.response) {
     switch (err.response.status) {
       case StatusCodes.NOT_FOUND:
@@ -29,6 +49,7 @@ const errorHandler = (err: AxiosError) => {
   return Promise.reject(err); //에러를 호출한 곳으로 전달함
 };
 
-axiosInstance.interceptors.response.use(successHandler, errorHandler);
+axiosInstance.interceptors.request.use(requestHandler, requestErrorHandler);
+axiosInstance.interceptors.response.use(responseHandler, responseErrorHandler);
 
 export default axiosInstance;

@@ -14,7 +14,7 @@ const PageAccount = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3 flex-wrap flex-grow">
             <div className="rounded-full w-[48px] h-[48px] bg-neutral-light100" />
-            <div className="font-semibold text-lg">{user}</div>
+            <div className="font-semibold text-lg">{user?.nickname}</div>
           </div>
           <Button size="small">프로필 수정</Button>
         </div>

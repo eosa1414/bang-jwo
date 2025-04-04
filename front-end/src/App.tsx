@@ -55,6 +55,10 @@ function App() {
               </LayoutMain>
             }
           />
+          <Route
+            path="/welcome"
+            element={<LayoutMain>회원가입 완료</LayoutMain>}
+          />
           <Route path="/auth/kakao/callback" element={<PageKakaoRedirect />} />
           <Route
             path="/mypage"
@@ -79,7 +83,11 @@ function App() {
           <Route
             path="*"
             element={
-              <LayoutMain wrapperClassName="bg-gold-light" mainClassName="flex">
+              <LayoutMain
+                wrapperClassName="bg-gold-light"
+                mainClassName="flex"
+                darkHeader
+              >
                 <PageNotFound />
               </LayoutMain>
             }

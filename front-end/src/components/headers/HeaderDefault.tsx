@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../Logo";
 import { useAuth } from "../../contexts/AuthContext";
+import Button from "../buttons/Button";
 
 interface HeaderProps {
   title?: string;
@@ -8,7 +9,8 @@ interface HeaderProps {
 }
 
 const Header = ({ title, variant = "light" }: HeaderProps) => {
-  const { user, login, logout } = useAuth();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   // 모바일 가로일 때 메뉴 동작 - 차후 추가
   // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -61,10 +63,11 @@ const Header = ({ title, variant = "light" }: HeaderProps) => {
               <>
                 <i className="material-symbols-rounded">chat</i>
                 <i className="material-symbols-rounded">account_circle</i>
-                <button onClick={logout}>임시 로그아웃</button>
               </>
             ) : (
-              <button onClick={() => login("example")}>임시 로그인</button>
+              <Button size="small" onClick={() => navigate("/login")}>
+                로그인 및 회원가입
+              </Button>
             )}
           </div>
         </>
