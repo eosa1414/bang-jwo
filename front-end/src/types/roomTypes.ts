@@ -143,6 +143,11 @@ export interface RoomDetailResponse {
   discussDetail: string;
   reviewable: boolean;
   isPhonePublic: boolean;
+  reviewCnt: number;
+  nickname: string;
+  phoneNumber: string;
+  createDate: string;
+  updateDate: string;
   maintenanceIncludes: MaintenanceIncludeName[];
   options: RoomOption[];
   images: RoomImage[];
