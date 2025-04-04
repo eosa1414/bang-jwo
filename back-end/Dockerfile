@@ -18,10 +18,5 @@ COPY elastic-apm-agent.jar /elastic-apm-agent.jar
 COPY --from=builder /app/build/libs/bangjwo-0.0.1-SNAPSHOT.jar app.jar
 
 # Run Application with APM agent
-ENTRYPOINT ["java",
-  "-javaagent:/elastic-apm-agent.jar",
-  "-Delastic.apm.service_name=bangjwo-app",
-  "-Delastic.apm.server_url=http://apm-server:8200",
-  "-Delastic.apm.environment=production",
-  "-Delastic.apm.application_packages=com.bangjwo",
-  "-jar", "app.jar"]
+ENTRYPOINT ["java", "-javaagent:/elastic-apm-agent.jar", "-Delastic.apm.service_name=bangjwo-app", "-Delastic.apm.server_url=http://apm-server:8200", "-Delastic.apm.environment=production", "-Delastic.apm.application_packages=com.bangjwo", "-jar", "app.jar"]
+
