@@ -11,6 +11,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ReviewErrorCode implements ErrorCode {
 	REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW4001", "해당 리뷰가 존재하지 않습니다"),
+	NOT_WRITER(HttpStatus.BAD_REQUEST, "REVIEW4002", "리뷰 작성자가 아닙니다"),
 	;
 	private final HttpStatus httpStatus;
 	private final String code;
