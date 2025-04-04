@@ -8,12 +8,12 @@ import com.bangjwo.room.domain.entity.Review;
 import com.bangjwo.room.domain.entity.Room;
 
 public class ReviewConverter {
-	public static Review convert(Room room, Address address, String content) {
+	public static Review convert(Room room, Address address, String content, long memberId) {
 
 		return Review.builder()
 			.roomId(room.getRoomId())
 			.landlordId(room.getMemberId())
-			.tenantId(room.getMemberId())
+			.tenantId(memberId)
 			.realEstateId(room.getRealEstateId())
 			.addressDetail(address.getAddressDetail())
 			.content(content)

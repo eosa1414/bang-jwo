@@ -33,6 +33,7 @@ import com.bangjwo.contract.domain.entity.SpecialClause;
 import com.bangjwo.contract.domain.entity.TenantInfo;
 import com.bangjwo.contract.domain.repository.ContractRepository;
 import com.bangjwo.contract.domain.vo.ContractStatus;
+import com.bangjwo.global.common.error.blockchain.BlockchainErrorCode;
 import com.bangjwo.global.common.error.contract.ContractErrorCode;
 import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.global.common.exception.RoomException;
@@ -221,9 +222,12 @@ public class ContractService {
 	}
 
 	@Transactional
-	public void completeContract(CompleteDto completeDto) {
+	public void completeContract(CompleteDto completeDto, long memberId) {
 		try {
 			Contract contract = findContract(completeDto.getContractId());
+			if (!contract.getLandlordId().equals(memberId)) {
+				throw new BusinessException(ContractErrorCode.INVALID_CONTRACT_ACCESS);
+			}
 
 			// 1. AES 키 생성
 			SecretKey aesKey = aesService.generateAESKey();
@@ -240,9 +244,13 @@ public class ContractService {
 			String encryptedIpfsKey = aesService.encryptToString(aesKey, ipfsKey);
 
 			// 4. 블록체인에 CID 저장 구현
-			blockchainService.registerContract(BigInteger.valueOf(completeDto.getContractId()), encryptedIpfsKey,
+			var result = blockchainService.registerContract(BigInteger.valueOf(completeDto.getContractId()),
+				encryptedIpfsKey,
 				BigInteger.valueOf(completeDto.getLandlord()),
 				BigInteger.valueOf(completeDto.getTenant()));
+			if (result == null) {
+				throw new BusinessException(BlockchainErrorCode.BLOCKCHAIN_REJECTED);
+			}
 
 			// 5. DB 업데이트
 			contract.updateAesKey(encryptedAesKey);
@@ -253,9 +261,13 @@ public class ContractService {
 	}
 
 	@Transactional(readOnly = true)
-	public byte[] getPdf(long contractId) {
+	public byte[] getPdf(long contractId, long memberId) {
 		Contract contract = findContract(contractId);
-		// 계약 당사자들인지 확인 구현 필요
+
+		if (!contract.getLandlordId().equals(memberId) && !contract.getTenantId().equals(memberId)) {
+			throw new BusinessException(ContractErrorCode.INVALID_CONTRACT_ACCESS);
+		}
+
 		try {
 			SecretKey aesKey = rsaService.decryptAesKey(contract.getAesKey());
 			String ipfsKey = aesService.decryptFromString(aesKey, contract.getIpfsKey());

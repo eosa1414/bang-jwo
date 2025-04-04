@@ -255,17 +255,26 @@ public class ContractController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@Operation(summary = "최종 계약")
+	@Operation(
+		summary = "계약 확정",
+		description = "작성한 계약서를 IPFS, 블록체인에 저장합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
 	@PatchMapping("/complete")
-	public ResponseEntity<Void> completeContract(@ModelAttribute CompleteDto completeDto) {    // 유저 로그인 정보 추가 필요
-		contractService.completeContract(completeDto);
+	public ResponseEntity<Void> completeContract(@ModelAttribute CompleteDto completeDto,
+		@MemberHeader long memberId) {    // 유저 로그인 정보 추가 필요
+		contractService.completeContract(completeDto, memberId);
 		return ResponseEntity.noContent().build();
 	}
 
-	@Operation(summary = "계약서 조회")
+	@Operation(
+		summary = "계약서 조회",
+		description = "저장된 계약서를 조회합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
 	@GetMapping("/{contractId}")
-	public ResponseEntity<?> getTenantInfo(@PathVariable Long contractId) {
-		byte[] pdf = contractService.getPdf(contractId);
+	public ResponseEntity<?> getContractDocs(@PathVariable Long contractId, @MemberHeader Long memberId) {
+		byte[] pdf = contractService.getPdf(contractId, memberId);
 		HttpHeaders headers = new HttpHeaders();
 		// 파일 형식 PDF
 		headers.setContentType(MediaType.APPLICATION_PDF);
