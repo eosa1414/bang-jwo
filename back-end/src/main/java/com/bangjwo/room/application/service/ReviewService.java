@@ -6,13 +6,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bangjwo.global.common.error.review.ReviewErrorCode;
+import com.bangjwo.global.common.error.room.RoomErrorCode;
 import com.bangjwo.global.common.exception.Exceptions;
+import com.bangjwo.global.common.exception.RoomException;
 import com.bangjwo.room.application.convert.ReviewConverter;
 import com.bangjwo.room.application.dto.response.ReviewDto;
 import com.bangjwo.room.domain.entity.Address;
 import com.bangjwo.room.domain.entity.Review;
 import com.bangjwo.room.domain.entity.Room;
 import com.bangjwo.room.domain.repository.ReviewRepository;
+import com.bangjwo.room.domain.repository.RoomRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,12 +24,13 @@ import lombok.RequiredArgsConstructor;
 public class ReviewService {
 
 	private final ReviewRepository reviewRepository;
-	private final RoomService roomService;
+	private final RoomRepository roomRepository;
 	private final AddressService addressService;
 
 	@Transactional
 	public Review createReview(long roomId, String content) {
-		Room room = roomService.findRoom(roomId);
+		Room room = roomRepository.findByRoomIdAndDeletedAtIsNull(roomId)
+			.orElseThrow(() -> new RoomException(RoomErrorCode.NOT_FOUND_SEARCH_ROOM));
 		Address address = addressService.findByRoom(room);
 		return reviewRepository.save(ReviewConverter.convert(room, address, content));
 	}

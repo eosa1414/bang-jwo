@@ -16,7 +16,6 @@ import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.global.common.exception.RoomException;
 import com.bangjwo.global.common.page.PaginationRequest;
 import com.bangjwo.member.application.service.MemberService;
-import com.bangjwo.member.domain.entity.Member;
 import com.bangjwo.room.application.convert.RoomConverter;
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
