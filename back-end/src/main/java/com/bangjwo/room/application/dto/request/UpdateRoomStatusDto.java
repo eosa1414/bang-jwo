@@ -15,6 +15,10 @@ public class UpdateRoomStatusDto {
 	@Min(1)
 	private Long roomId;
 
-	@Schema(description = "변경할 매물 상태", example = "ON_SALE")
+	@Schema(
+		description = "변경할 매물 상태 (집주인 인증 중, 판매 중, 판매 완료)",
+		example = "ON_SALE",
+		allowableValues = {"UNDER_VERIFICATION", "ON_SALE", "SOLD_OUT"}
+	)
 	private RoomStatus status;
 }

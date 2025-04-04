@@ -97,17 +97,24 @@ public class UpdateLandlordInfoDto {
 	private BigDecimal rentalPartArea;
 
 	@Schema(
-		description = "계약 유형 (최종저장 시 필수)",
+		description = "계약 유형 (NEW: 신규 계약, RENEW_BY_AGREEMENT: 합의에 의한 재계약, EXTENSION: 갱신계약)",
 		example = "NEW",
-		allowableValues = {"신규 계약", "합의에 의한 재계약", "갱신계약"}
+		allowableValues = {
+			"NEW",
+			"RENEW_BY_AGREEMENT",
+			"EXTENSION"
+		}
 	)
 	@NotNull(groups = FinalSave.class)
 	private ContractType contractType;
 
 	@Schema(
-		description = "임대 유형 (최종저장 시 필수)",
+		description = "임대 유형 (MONTHLY_WITH_DEPOSIT: 보증금 있는 월세, PURE_MONTHLY: 월세)",
 		example = "MONTHLY_WITH_DEPOSIT",
-		allowableValues = {"보증금 있는 월세", "월세"}
+		allowableValues = {
+			"MONTHLY_WITH_DEPOSIT",
+			"PURE_MONTHLY"
+		}
 	)
 	@NotNull(groups = FinalSave.class)
 	private LeaseType leaseType;
