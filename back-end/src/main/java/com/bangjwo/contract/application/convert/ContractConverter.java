@@ -8,6 +8,7 @@ import com.bangjwo.contract.domain.entity.LandlordInfo;
 import com.bangjwo.contract.domain.entity.SpecialClause;
 import com.bangjwo.contract.domain.entity.TenantInfo;
 import com.bangjwo.contract.domain.vo.ContractStatus;
+import com.bangjwo.contract.domain.vo.MonthlyRentType;
 import com.bangjwo.global.common.error.contract.ContractErrorCode;
 import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.room.domain.entity.Room;
@@ -43,16 +44,9 @@ public class ContractConverter {
 	}
 
 	private static TenantInfo createTenantInfo() {
-		return TenantInfo.builder()
-			.build();
+		return TenantInfo.builder().build();
 	}
 
-	/**
-	 * 매물(Room) 정보와 RegistryDocument의 데이터를 사용하여 LandlordInfo 엔티티를 생성합니다.
-	 * 의미가 같은 필드는 RegistryDocument의 데이터를 매핑하고, 나머지는 기본값(null, 0 등)으로 둡니다.
-	 *
-	 * @return 생성된 LandlordInfo 엔티티
-	 */
 	private static LandlordInfo createLandlordInfo() {
 		return LandlordInfo.builder()
 			.name(null)
@@ -63,17 +57,16 @@ public class ContractConverter {
 			.propertyStructure(null)
 			.propertyPurpose(null)
 			.propertyArea(BigDecimal.ZERO)
-			.repairResponsibility(null)
-			.priorityConfirmedDateYn(false)
-			.taxArrears(false)
-			.locationOfRentalHousing(null)
 			.rentalHousingLandType(null)
 			.rentalHousingLandArea(BigDecimal.ZERO)
-			.rentalHousingUsage(null)
-			.rentalHousingArea(BigDecimal.ZERO)
 			.rentalPartAddress(null)
+			.rentalPartDetailAddress(null)
 			.rentalPartArea(BigDecimal.ZERO)
 			.contractType(null)
+			.previousLeaseStartDate(null)
+			.previousLeaseEndDate(null)
+			.previousDepositAmount(null)
+			.previousMonthlyRent(null)
 			.leaseType(null)
 			.depositAmount(0L)
 			.monthlyRent(0L)
@@ -81,19 +74,26 @@ public class ContractConverter {
 			.leaseEndDate(null)
 			.contractFee(0)
 			.middleFee(0)
-			.downPaymentDate(null)
 			.interimPaymentDate(null)
 			.balance(0)
 			.balancePaymentDate(null)
 			.monthlyRentPaymentDate("")
+			.monthlyRentType(MonthlyRentType.POSTPAID)
 			.fixedManagementFee(0)
 			.unfixedManagementFee(null)
 			.monthlyRentAccountBank(null)
 			.monthlyRentAccountNumber(null)
 			.facilitiesRepairStatus(false)
 			.facilitiesRepairContent(null)
+			.repairCompletionByBalanceDate(null)
+			.repairCompletionEtc(null)
+			.notRepairedByBalanceDate(null)
+			.notRepairedEtc(null)
+			.priorityConfirmedDateYn(false)
+			.taxArrears(false)
 			.landlordBurden(null)
 			.tenantBurden(null)
+			.contractWrittenDate(null)
 			.landlordSignatureUrl1(null)
 			.landlordSignatureUrl2(null)
 			.landlordSignatureUrl3(null)
@@ -110,6 +110,7 @@ public class ContractConverter {
 			.constructionPeriod(null)
 			.estimatedConstructionDuration(null)
 			.isDetailedAddressConsentGiven(null)
+			.etc(null)
 			.build();
 	}
 }
