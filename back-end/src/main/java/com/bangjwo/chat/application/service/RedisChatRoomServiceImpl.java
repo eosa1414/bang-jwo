@@ -37,7 +37,7 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 	* */
 	@Override
 	@Transactional
-	public void createChatRoom(ChatRoomDto.ResponseDto dto) {
+	public void createChatRoom(ChatRoomDto.ChatResponseDto dto) {
 		Long senderId = dto.tenantId(); // 세입자
 		Long receiverId = dto.landlordId(); // 집주인
 		Long roomId = dto.roomId(); // 매물
@@ -62,15 +62,18 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 		ChatRoomSummary receiverSummary = ChatCoverter.createReceiverSummary(
 			chatRoomId, roomId, message, senderId, senderImage, senderNickname, sendAt);
 
+
 		try {
-			String senderJson = objectMapper.writeValueAsString(senderSummary);
-			double senderScore = Instant.parse(sendAt).toEpochMilli();
-			redisTemplate.opsForZSet().add(senderKey, senderJson, senderScore); // 새로 추가
-
-			String receiverJson = objectMapper.writeValueAsString(receiverSummary);
-			double receiverScore = Instant.parse(sendAt).toEpochMilli();
-			redisTemplate.opsForZSet().add(receiverKey, receiverJson, receiverScore); // 새로 추가
-
+			if(getChatRoomSummary(senderKey, chatRoomId)==null){
+				String senderJson = objectMapper.writeValueAsString(senderSummary);
+				double senderScore = Instant.parse(sendAt).toEpochMilli();
+				redisTemplate.opsForZSet().add(senderKey, senderJson, senderScore); // 새로 추가
+			}
+			if(getChatRoomSummary(receiverKey, chatRoomId)==null){
+				String receiverJson = objectMapper.writeValueAsString(receiverSummary);
+				double receiverScore = Instant.parse(sendAt).toEpochMilli();
+				redisTemplate.opsForZSet().add(receiverKey, receiverJson, receiverScore); // 새로 추가
+			}
 		} catch (JsonProcessingException e) {
 			log.error("Redis 직렬화 실패", e);
 			throw new BusinessException(ChatErrorCode.CHAT_REDIS_SERIALIZATION_FAILED);

@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bangjwo.auth.resolver.MemberHeader;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 @RestController
 public class TestController {
 	@GetMapping
@@ -13,6 +16,7 @@ public class TestController {
 		return "bangjwo-service";
 	}
 
+	@Operation(summary = "테스트 컨트롤러", security = @SecurityRequirement(name = "JWT"))
 	@GetMapping("/test")
 	public ResponseEntity<String> test2(@MemberHeader Long memberId) {
 		return ResponseEntity.ok("Current memberId: " + memberId);

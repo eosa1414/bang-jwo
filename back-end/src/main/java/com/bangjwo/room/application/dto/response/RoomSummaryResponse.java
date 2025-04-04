@@ -25,10 +25,18 @@ public class RoomSummaryResponse {
 	@Schema(description = "좋아요 여부", example = "true")
 	private Boolean isLiked;
 
-	@Schema(description = "건물 유형", example = "OFFICETEL")
+	@Schema(
+		description = "건물 유형 (원룸/투룸, 아파트, 빌라/주택, 오피스텔)",
+		example = "OFFICETEL",
+		allowableValues = {"ONEROOM_TWOROOM", "APARTMENT", "VILLA_HOUSE", "OFFICETEL"}
+	)
 	private RoomBuildingType buildingType;
 
-	@Schema(description = "매물 상태", example = "ACTIVE")
+	@Schema(
+		description = "매물 상태 (집주인 인증 중, 판매 중, 판매 완료)",
+		example = "ON_SALE",
+		allowableValues = {"UNDER_VERIFICATION", "ON_SALE", "SOLD_OUT"}
+	)
 	private RoomStatus status;
 
 	@Schema(description = "보증금", example = "1000")

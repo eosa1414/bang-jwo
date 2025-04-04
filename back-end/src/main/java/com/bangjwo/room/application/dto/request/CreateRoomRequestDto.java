@@ -23,13 +23,11 @@ import lombok.Setter;
 @Setter
 @Schema(description = "새로운 매물(Room) 생성 요청 DTO")
 public class CreateRoomRequestDto {
-
-	@Schema(description = "회원 ID (이후 토큰 처리로 대체 예정)", example = "1", requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0")
-	@NotNull
-	@Min(1)
-	private Long memberId;
-
-	@Schema(description = "건물 유형", example = "APARTMENT", requiredMode = Schema.RequiredMode.REQUIRED)
+	@Schema(
+		description = "건물 유형 (예: 원룸/투룸, 아파트, 빌라/주택, 오피스텔)",
+		example = "APARTMENT",
+		allowableValues = {"ONEROOM_TWOROOM", "APARTMENT", "VILLA_HOUSE", "OFFICETEL"}
+	)
 	@NotNull
 	private RoomBuildingType buildingType;
 
@@ -116,7 +114,11 @@ public class CreateRoomRequestDto {
 	@Min(0)
 	private Integer bathroomCnt;
 
-	@Schema(description = "방 향", example = "SOUTH", requiredMode = Schema.RequiredMode.REQUIRED)
+	@Schema(
+		description = "방 향 (예: 동향, 서향, 남향, 북향 등)",
+		example = "SOUTH",
+		allowableValues = {"EAST", "WEST", "SOUTH", "NORTH", "NORTHWEST", "NORTHEAST", "SOUTHWEST", "SOUTHEAST"}
+	)
 	@NotNull
 	private RoomDirection direction;
 
@@ -135,10 +137,24 @@ public class CreateRoomRequestDto {
 	@NotNull
 	private Boolean isPhonePublic;
 
-	@Schema(description = "관리비 포함 항목 리스트", example = "[\"INTERNET\", \"GAS\"]")
+	@Schema(
+		description = "관리비 포함 항목 리스트 (예: 수도료, 전기료, 인터넷비, 가스비 등)",
+		example = "[\"INTERNET\", \"GAS\"]",
+		allowableValues = {
+			"WATER", "ELECTRICITY", "INTERNET", "GAS", "CLEANING",
+			"CABLE_TV", "PARKING", "HEATING", "ELEVATOR_MAINTENANCE"
+		}
+	)
 	private List<MaintenanceIncludeName> maintenanceIncludes;
 
-	@Schema(description = "매물 옵션 리스트", example = "[\"BED\", \"AIR_CONDITIONER\"]")
+	@Schema(
+		description = "매물 옵션 리스트 (예: 침대, 에어컨, 세탁기 등)",
+		example = "[\"BED\", \"AIR_CONDITIONER\"]",
+		allowableValues = {
+			"ELEVATOR", "ROOFTOP", "AIR_CONDITIONER", "WASHING_MACHINE",
+			"REFRIGERATOR", "MICROWAVE", "GAS_RANGE", "INDUCTION", "BED"
+		}
+	)
 	private List<RoomOption> options;
 
 	@Schema(description = "매물 이미지 파일 리스트(최소 3개 이상 등록)", requiredMode = Schema.RequiredMode.REQUIRED)

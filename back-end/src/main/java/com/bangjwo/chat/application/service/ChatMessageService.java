@@ -2,7 +2,6 @@ package com.bangjwo.chat.application.service;
 
 import java.util.List;
 
-import com.bangjwo.chat.application.dto.ChatAlertDto;
 import com.bangjwo.chat.application.dto.ChatMessageDto;
 
 public interface ChatMessageService {

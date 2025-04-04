@@ -15,12 +15,12 @@ import com.bangjwo.room.domain.vo.RoomStatus;
 
 public class ContractConverter {
 
-	public static Contract convert(Room room, CreateContractRequestDto dto) {
+	public static Contract convert(Room room, CreateContractRequestDto dto, Long memberId) {
 		if (!room.getStatus().equals(RoomStatus.ON_SALE)) {
 			throw new BusinessException(ContractErrorCode.INVALID_ROOM_STATUS_FOR_CONTRACT);
 		}
 
-		if (!room.getMemberId().equals(dto.getLandlordId())) {
+		if (!room.getMemberId().equals(memberId)) {
 			throw new BusinessException(ContractErrorCode.UNAUTHORIZED_LANDLORD_FOR_CONTRACT);
 		}
 
@@ -29,7 +29,7 @@ public class ContractConverter {
 
 		return Contract.builder()
 			.room(room)
-			.landlordId(dto.getLandlordId())
+			.landlordId(memberId)
 			.tenantId(dto.getTenantId())
 			.landlordInfo(createLandlordInfo())
 			.tenantInfo(createTenantInfo())

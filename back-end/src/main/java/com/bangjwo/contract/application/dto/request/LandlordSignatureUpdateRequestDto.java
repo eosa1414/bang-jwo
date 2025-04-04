@@ -18,10 +18,6 @@ public class LandlordSignatureUpdateRequestDto {
 	@NotNull
 	private Long contractId;
 
-	@Schema(description = "임대인 ID", example = "1")
-	@NotNull
-	private Long landlordId;
-
 	@Schema(description = "서명 이미지 1", type = "string", format = "binary")
 	private MultipartFile signature1;
 

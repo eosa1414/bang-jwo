@@ -3,6 +3,7 @@ package com.bangjwo.room.application.convert;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.bangjwo.member.domain.entity.Member;
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.response.ImageResponseDto;
@@ -26,9 +27,9 @@ import lombok.Builder;
 public class RoomConverter {
 
 	@Builder
-	public static Room convert(CreateRoomRequestDto requestDto) {
+	public static Room convert(CreateRoomRequestDto requestDto, Long memberId) {
 		return Room.builder()
-			.memberId(requestDto.getMemberId())
+			.memberId(memberId)
 			.buildingType(requestDto.getBuildingType())
 			.status(RoomStatus.UNDER_VERIFICATION)
 			.realEstateId(requestDto.getRealEstateId())
@@ -61,6 +62,8 @@ public class RoomConverter {
 	public static SearchDetailRoomResponseDto convert(Room room,
 		Boolean isLiked,
 		Address address,
+		Member member,
+		int reviewCnt,
 		List<Options> options,
 		List<MaintenanceInclude> maintenanceIncludes,
 		List<Image> images) {
@@ -112,6 +115,11 @@ public class RoomConverter {
 			.discussDetail(room.getDiscussDetail())
 			.reviewable(room.getReviewable())
 			.isPhonePublic(room.getIsPhonePublic())
+			.nickname(member.getNickname())
+			.reviewCnts(reviewCnt)
+			.phoneNumber(member.getPhone())
+			.createDate(room.getCreatedAt())
+			.updateDate(room.getUpdatedAt())
 
 			// 변환된 리스트들
 			.maintenanceIncludes(maintenanceIncludeList)
@@ -121,10 +129,10 @@ public class RoomConverter {
 			.build();
 	}
 
-	public static Memo convert(Room room, UpdateRoomMemoRequestDto requestDto) {
+	public static Memo convert(Room room, UpdateRoomMemoRequestDto requestDto, Long memberId) {
 		return Memo.builder()
 			.room(room)
-			.memberId(requestDto.getMemberId())
+			.memberId(memberId)
 			.content(requestDto.getContent())
 			.build();
 	}

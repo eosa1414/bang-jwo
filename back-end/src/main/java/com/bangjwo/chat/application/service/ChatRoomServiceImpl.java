@@ -22,20 +22,20 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 	private final ChatRoomRepository chatRoomRepository;
 
 	@Override
-	public ChatRoomDto.ResponseDto requestClass(ChatRoomDto.RequestDto requestDto) {
+	public ChatRoomDto.ChatResponseDto requestClass(ChatRoomDto.ChatRequestDto chatRequestDto) {
 		try {
 			ChatRoom chatRoom;
 			// 기존 채팅방 조회
 			Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findByRoomIdAndTenantId(
-				requestDto.roomId(), requestDto.tenantId());
+				chatRequestDto.roomId(), chatRequestDto.tenantId());
 
 			// 존재하지 않으면 새로 생성
 			chatRoom = chatRoomOptional.orElseGet(() -> {
 				try {
 					return chatRoomRepository.saveAndFlush(ChatRoom.builder()
-						.landlordId(requestDto.landlordId())
-						.tenantId(requestDto.tenantId())
-						.roomId(requestDto.roomId())
+						.landlordId(chatRequestDto.landlordId())
+						.tenantId(chatRequestDto.tenantId())
+						.roomId(chatRequestDto.roomId())
 						.landloadUnreadCount(0L)
 						.tenantUnreadCount(0L)
 						.createdAt(LocalDateTime.now())
@@ -50,7 +50,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 				throw new BusinessException(ChatErrorCode.CHAT_ROOM_NOT_FOUND);
 			}
 
-			return ChatRoomDto.ResponseDto.builder()
+			return ChatRoomDto.ChatResponseDto.builder()
 				.landlordId(chatRoom.getLandlordId())
 				.tenantId(chatRoom.getTenantId())
 				.roomId(chatRoom.getRoomId())
