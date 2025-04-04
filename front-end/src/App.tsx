@@ -17,6 +17,7 @@ import RedirectRoomFind from "./features/room-find/components/RedirectRoomFind";
 import PageNotFound from "./pages/PageNotFound";
 import PageLogin from "./features/auth/pages/PageLogin";
 import PageKakaoRedirect from "./features/auth/pages/PageKakaoRedirect";
+import ChatPage from "./features/chat/pages/ChatPage";
 
 function App() {
   return (
@@ -75,6 +76,7 @@ function App() {
             path="/seller-contract-form"
             element={<SellerContractPage />}
           />
+          <Route path="/chat" element={<ChatPage />} />
           {/* 그 외 모든 페이지는 404 not found */}
           <Route
             path="*"
