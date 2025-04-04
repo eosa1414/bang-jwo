@@ -17,7 +17,9 @@ import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.global.config.kakao.KakaoConfig;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class KakaoWebClientService {
@@ -41,6 +43,10 @@ public class KakaoWebClientService {
 			formData.add("client_id", kakaoConfig.getClientId());
 			formData.add("redirect_uri", kakaoConfig.getRedirectUri());
 			formData.add("code", authCode);
+
+			log.warn("authCode : {}", authCode);
+			log.warn("client_id : {}", kakaoConfig.getClientId());
+			log.warn("redirect_uri : {}", kakaoConfig.getRedirectUri());
 
 			Map<String, Object> tokenMap = webClient.post()
 				.uri(KAKAO_OAUTH_URL)
