@@ -61,7 +61,7 @@ const ChatRoom = () => {
   };
 
   return (
-    <div className="w-full h-[600px] flex flex-col border border-neutral-light200 rounded-2xl shadow-xl overflow-hidden">
+    <div className="w-full h-full flex flex-col border border-neutral-light200 rounded-2xl shadow-xl overflow-hidden">
       <ChatHeader title="월세 50/500" onMenuClick={() => {}} />
 
       <div className="flex-1 overflow-y-auto bg-neutral-light300 p-4 custom-scroll">
