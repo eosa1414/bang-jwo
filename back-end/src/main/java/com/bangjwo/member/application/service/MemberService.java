@@ -12,8 +12,6 @@ import com.bangjwo.member.application.dto.response.MemberResponseDto;
 import com.bangjwo.member.application.dto.response.ReviewListResponseDto;
 import com.bangjwo.member.domain.entity.Member;
 import com.bangjwo.member.domain.repository.MemberRepository;
-import com.bangjwo.room.application.dto.response.RoomListResponseDto;
-import com.bangjwo.room.application.service.RoomService;
 import com.bangjwo.room.domain.repository.ReviewRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberService {
 	private final MemberRepository memberRepository;
 	private final MemberImageService memberImageService;
-	private final RoomService roomService;
 	private final ReviewRepository reviewRepository;
 
 	@Transactional(readOnly = true)
@@ -50,11 +47,6 @@ public class MemberService {
 		var total = reviewRepository.countMyReviews(memberId);
 
 		return new ReviewListResponseDto(total, page, size, reviewList);
-	}
-
-	@Transactional
-	public RoomListResponseDto getLikeRooms(Long memberId, Integer page, Integer size) {
-		return roomService.getLikeRooms(memberId, page, size);
 	}
 
 	@Transactional

@@ -15,6 +15,7 @@ import com.bangjwo.member.application.dto.response.MemberResponseDto;
 import com.bangjwo.member.application.dto.response.ReviewListResponseDto;
 import com.bangjwo.member.application.service.MemberService;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
+import com.bangjwo.room.application.service.RoomService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "Member", description = "회원 관련 API")
 public class MemberController {
 	private final MemberService memberService;
+	private final RoomService roomService;
 
 	@Operation(
 		summary = "내 정보 조회",
@@ -81,7 +83,7 @@ public class MemberController {
 		@MemberHeader Long memberId,
 		@RequestParam(required = false) Integer page,
 		@RequestParam(required = false) Integer size) {
-		var result = memberService.getLikeRooms(memberId, page, size);
+		var result = roomService.getLikeRooms(memberId, page, size);
 
 		return ResponseEntity.ok(result);
 	}
