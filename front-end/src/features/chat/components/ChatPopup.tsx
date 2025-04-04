@@ -1,29 +1,63 @@
 import { useEffect } from "react";
+import ReactDOM from "react-dom/client";
 import ChatPage from "../pages/ChatPage";
 
 const ChatPopup = ({ onClose }: { onClose: () => void }) => {
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, []);
+    // 새 창 열기
+    const newWindow = window.open(
+      "",
+      "_blank",
+      "width=1000,height=700,left=200,top=200,menubar=no,toolbar=no,location=no,status=no"
+    );
 
-  return (
-    <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
-      <div className="absolute inset-0" onClick={onClose} />
+    // 새 창의 문서 설정
+    if (newWindow) {
+      newWindow.document.title = "채팅";
+      const container = newWindow.document.createElement("div");
+      newWindow.document.body.appendChild(container);
+      newWindow.document.body.style.margin = "0";
 
-      <div className="relative w-[1000px] h-[700px] bg-white rounded-2xl shadow-xl z-10 overflow-hidden">
-        <ChatPage />
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-neutral-dark200 hover:text-black"
-        >
-          ✕
-        </button>
-      </div>
-    </div>
-  );
+      // React 앱 렌더링
+      const root = ReactDOM.createRoot(container);
+      root.render(
+        <div style={{ width: "100%", height: "100%", fontFamily: "sans-serif" }}>
+          <ChatPage />
+          <button
+            onClick={() => {
+              onClose();
+              newWindow.close();
+            }}
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              fontSize: "20px",
+              cursor: "pointer",
+              background: "none",
+              border: "none",
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      );
+
+      // 창이 닫히면 콜백 실행
+      const handleClose = () => {
+        onClose();
+      };
+      newWindow.addEventListener("beforeunload", handleClose);
+
+      return () => {
+        newWindow.removeEventListener("beforeunload", handleClose);
+        root.unmount();
+        newWindow.close();
+      };
+    }
+  }, [onClose]);
+
+  return null; // 더 이상 본 창에 아무것도 렌더링하지 않음
 };
 
 export default ChatPopup;
