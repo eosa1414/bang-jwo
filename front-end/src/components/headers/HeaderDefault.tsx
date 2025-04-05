@@ -17,6 +17,13 @@ const Header = ({ title, variant = "light" }: HeaderProps) => {
   // const toggleMobileMenu = () => {
   //   setIsMobileMenuOpen(!isMobileMenuOpen);
   // };
+  const openChatWindow = () => {
+    const chatWindow = window.open(
+      "/chat",
+      "_blank",
+      "width=1000,height=700,menubar=no,toolbar=no,location=no,status=no"
+    );
+  };
 
   return (
     <header className="flex w-full h-[55px] p-[12px_14px] justify-center items-center gap-[16px] border-b-1 border-neutral-light100">
@@ -59,6 +66,7 @@ const Header = ({ title, variant = "light" }: HeaderProps) => {
               </ul>
             </nav>
             {/* 임시 로그인/로그아웃 버튼 */}
+            <i className="material-symbols-rounded" onClick={openChatWindow}>chat</i>
             {user ? (
               <>
                 <i className="material-symbols-rounded">chat</i>
