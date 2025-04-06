@@ -2,6 +2,7 @@ import EditableInputBox from "./EditableInputBox";
 import NoticeGray from "../../../components/notices/NoticeGray";
 import ContractTypeSelector from "./ContractTypeSelector";
 import { useState } from "react";
+import { openAddressSearch } from "../../../utils/openAddressSearch";
 
 interface HouseInfoSectionProps {
   address: string;
@@ -26,29 +27,6 @@ interface HouseInfoSectionProps {
   openSignatureModal: (type: "unpaid" | "priority" | "receipt") => void;
 }
 
-declare global {
-  interface Window {
-    daum: {
-      Postcode: new (options: {
-        oncomplete: (data: DaumPostcodeData) => void;
-      }) => {
-        open(): void;
-      };
-    };
-  }
-}
-
-interface DaumPostcodeData {
-  roadAddress: string;
-  jibunAddress: string;
-  zonecode: string;
-  address: string;
-  addressType: "R" | "J";
-  buildingName: string;
-  apartment: "Y" | "N";
-  bname: string;
-}
-
 const HouseInfoSection = ({
   address,
   detailAddress,
@@ -70,15 +48,6 @@ const HouseInfoSection = ({
   const [showLandNotice, setShowLandNotice] = useState(false);
   const [showBuildingNotice, setShowBuildingNotice] = useState(false);
 
-  const openAddressSearch = () => {
-    new window.daum.Postcode({
-      oncomplete: function (data: DaumPostcodeData) {
-        const roadAddress = data.roadAddress;
-        onChange("address", roadAddress);
-      },
-    }).open();
-  };
-
   return (
     <div className="mt-10">
       <h3 className="text-lg font-extrabold">[임차주택의 표시]</h3>
@@ -87,7 +56,12 @@ const HouseInfoSection = ({
       <div className="mt-4 flex items-center gap-3">
         <span className="text-base font-medium whitespace-nowrap">소재지</span>
         <div className="flex gap-2">
-          <div className="cursor-pointer" onClick={openAddressSearch}>
+          <div
+            className="cursor-pointer"
+            onClick={() =>
+              openAddressSearch((data) => onChange("address", data.roadAddress))
+            }
+          >
             <EditableInputBox
               value={address}
               onChange={(val) => onChange("address", val)}
