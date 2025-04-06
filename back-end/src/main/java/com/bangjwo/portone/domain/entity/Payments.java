@@ -1,5 +1,6 @@
 package com.bangjwo.portone.domain.entity;
 
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.bangjwo.global.common.entity.BaseEntity;
@@ -11,15 +12,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
@@ -39,7 +36,7 @@ public class Payments extends BaseEntity {
 	@Column(name = "room_id", nullable = false)
 	private Long roomId;
 
-	@Column(name = "payment_status", nullable = false)
+	@Column(name = "payment_status")
 	private PaymentStatus status = PaymentStatus.READY;
 
 	public void changeStatus(PaymentStatus newStatus) {

@@ -1,7 +1,9 @@
 package com.bangjwo.portone.presentation;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -36,24 +38,31 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentController {
 
 	private final PaymentService paymentService;
-	/*
-	* 사전정보 저장
-	* 프론트에서 받은 정보들을 저장, 프론트에 반환하여 결제 진행
-	* */
-	@Operation(
-		summary = "사전 정보 입력",
-		description = "결제 전 사용자의 결제 정보를 저장합니다.",
-		responses  = {
-			@ApiResponse(responseCode = "200", description = "사전 정보 저장 성공"),
-			@ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content),
-			@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
-		}
-	)
-	@PostMapping("/prepayment")
-	public ResponseEntity<PaymentDto.ResponseDto> prepayment(
-		@RequestBody PaymentDto.RequestDto dto) {
 
-		return ResponseEntity.ok().body(paymentService.savePayment(dto));
+	@Operation(
+			summary = "사전 정보 입력",
+			description = "결제 전 아이엠포트에 사전등록 및 DB에 사용자의 결제 정보를 저장합니다.",
+			responses  = {
+					@ApiResponse(responseCode = "200", description = "사전 정보 저장 성공"),
+					@ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content),
+					@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+			}
+	)
+	@PostMapping("/prepare")
+	public ResponseEntity<Map<String, Object>> prepareOrder(
+			@RequestBody PaymentDto.RequestDto dto) {
+		String merchantUid = "ORD" + System.currentTimeMillis();
+		int amount = 1000;
+
+		paymentService.registerPaymentPrepare(merchantUid, amount);
+		paymentService.prePayment(dto, merchantUid);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("merchant_uid", merchantUid);
+		response.put("amount", amount);
+		response.put("product_name", "등기부등본 조회");
+
+		return ResponseEntity.ok(response);
 	}
 
 	/*
@@ -63,42 +72,21 @@ public class PaymentController {
 	* */
 	@Operation(
 		summary = "결제 검증",
-		description = "포트원에 결제 내역을 검증을 요청합니다.",
+		description = "포트원에 결제 내역을 검증을 요청하고 결제 내역을 DB에 저장합니다.",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "결제 검증 성공"),
 			@ApiResponse(responseCode = "400", description = "해당 결제 내역 없음", content = @Content),
 			@ApiResponse(responseCode = "500", description = "포트원 응답 오류", content = @Content)
 		}
 	)
-	@PostMapping("/validation/{impUid}")
+	@PostMapping("/validation")
 	public IamportResponse<Payment> validateIamport(
-		@PathVariable String impUid) throws
+		@RequestBody String impUid) throws
 		IamportResponseException, IOException {
 		log.info("impUid: {}", impUid);
 		log.info("validateIamport");
 
 		return paymentService.validateIamport(impUid);
-	}
-
-	/*
-	 * 프론트에서 결제 검증 이후 호출
-	 * 결제 결과 저장
-	 * */
-	@Operation(
-		summary = "결제 정보 입력",
-		description = "완료된 결제 내역을 저장합니다.",
-		responses = {
-			@ApiResponse(responseCode = "200", description = "결제 저장 성공"),
-			@ApiResponse(responseCode = "400", description = "요청 데이터 오류", content = @Content),
-			@ApiResponse(responseCode = "404", description = "해당 결제 정보 없음", content = @Content)
-		}
-	)
-	@PutMapping("/result/{impUid}/{status}")
-	public ResponseEntity<PaymentDto.ResponseDto> savePayment(
-		@PathVariable String impUid,
-		@PathVariable PaymentStatus status) {
-
-		return ResponseEntity.ok().body(paymentService.completePayment(impUid, status));
 	}
 
 	/*
