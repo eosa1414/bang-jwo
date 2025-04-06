@@ -38,7 +38,7 @@ const ReceivedBubble = ({
           </div>
 
           {/* 시간 & 읽음 수 */}
-          <div className="flex flex-col text-xs text-neutral-gray leading-tight min-w-[24px]">
+          <div className="flex flex-col text-xs text-neutral-dark100 leading-tight min-w-[24px]">
             {unreadCount !== undefined && unreadCount > 0 && (
               <span className="text-gold font-bold self-start">
                 {unreadCount}

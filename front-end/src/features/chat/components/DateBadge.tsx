@@ -1,13 +1,18 @@
 interface DateBadgeProps {
-  date: string; // 예: "2025-03-10"
+  date: string; // 예: "2025-03-26T00:52:49"
 }
 
 const DateBadge = ({ date }: DateBadgeProps) => {
   const formatDate = (dateStr: string): string => {
-    const dateObj = new Date(dateStr);
-    const year = dateObj.getFullYear();
-    const month = dateObj.getMonth() + 1;
-    const day = dateObj.getDate();
+    const parsedDate = new Date(dateStr);
+
+    if (isNaN(parsedDate.getTime())) {
+      return "유효하지 않은 날짜";
+    }
+
+    const year = parsedDate.getFullYear();
+    const month = parsedDate.getMonth() + 1;
+    const day = parsedDate.getDate();
 
     const weekdays = [
       "일요일",
@@ -18,7 +23,7 @@ const DateBadge = ({ date }: DateBadgeProps) => {
       "금요일",
       "토요일",
     ];
-    const weekday = weekdays[dateObj.getDay()];
+    const weekday = weekdays[parsedDate.getDay()];
 
     return `${year}년 ${month}월 ${day}일 ${weekday}`;
   };

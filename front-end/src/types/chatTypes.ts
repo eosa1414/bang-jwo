@@ -32,3 +32,17 @@ export interface CreateChatRoomRequest {
     }[];
   }
   
+  export type MessageType = "sent" | "received" | "system";
+
+export interface Message {
+  id: number;
+  type: MessageType;
+  text: string;
+  time: string;
+  date: string;
+  senderName?: string;
+  avatarUrl?: string;
+  isReadByMe?: boolean;
+  isReadByPartner?: boolean;
+  role?: "임대인" | "임차인"; // 시스템 메시지에만 사용
+}

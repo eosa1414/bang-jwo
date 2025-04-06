@@ -17,7 +17,6 @@ import RedirectRoomFind from "./features/room-find/components/RedirectRoomFind";
 import PageNotFound from "./pages/PageNotFound";
 import PageLogin from "./features/auth/pages/PageLogin";
 import PageKakaoRedirect from "./features/auth/pages/PageKakaoRedirect";
-import ChatPage from "./features/chat/pages/ChatPage";
 import ChatPageOnly from "./features/chat/pages/ChatPageOnly";
 
 function App() {
