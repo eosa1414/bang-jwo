@@ -75,7 +75,8 @@ public class PaymentController {
 	* */
 	@Operation(
 		summary = "결제 검증",
-		description = "포트원에 결제 내역을 검증을 요청하고 결제 내역을 DB에 저장합니다.",
+		description = "포트원에 결제 내역을 검증을 요청하고 결제 내역을 DB에 저장합니다."
+			+ "실제 결제 내역이 포트원 서버에 저장되는 것이 아니기 때문에 사용할 수 없습니다.",
 		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "결제 검증 성공"),

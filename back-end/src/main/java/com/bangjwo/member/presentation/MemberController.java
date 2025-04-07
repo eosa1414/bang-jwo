@@ -90,6 +90,9 @@ public class MemberController {
 		return ResponseEntity.ok(result);
 	}
 
+	@Operation(summary = "본인인증 정보 저장", description = "본인인증의 response 값인 이름, 생년월일, 전화번호를 사용자 정보에 저장합니다.",
+		security = @SecurityRequirement(name = "JWT"))
+	@ApiResponse(responseCode = "200", description = "정상적으로 사용자 정보에 등록되었습니다.")
 	@PutMapping("/verify")
 	public ResponseEntity<Void> setVerificationInformation(
 		@MemberHeader Long userId,
