@@ -133,7 +133,8 @@ a:hover {
   color: var(--color-gold-dark);
 }
 
-input::placeholder {
+input::placeholder,
+textarea::placeholder {
   color: var(--color-neutral-gray);
 }
 
