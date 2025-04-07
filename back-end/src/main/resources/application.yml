@@ -75,6 +75,8 @@ aws:
 imp:
   code: ${PORTONE_CUSTOMER}
   key: ${PORTONE_API_KEY}
-  secret: ${PORTONE_API_SECRET}
+  secret:
+    pay: ${PORTONE_API_SECRET}
+    verificate: ${PORTONEE_API_SECRET}
 
 

@@ -12,6 +12,7 @@ import com.bangjwo.member.application.dto.response.MemberResponseDto;
 import com.bangjwo.member.application.dto.response.ReviewListResponseDto;
 import com.bangjwo.member.domain.entity.Member;
 import com.bangjwo.member.domain.repository.MemberRepository;
+import com.bangjwo.portone.application.dto.VerificationDto;
 import com.bangjwo.room.domain.repository.ReviewRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,15 @@ public class MemberService {
 		}
 		if (requestDto.getNickname() != null && !requestDto.getNickname().isBlank()) {
 			member.updateNickname(requestDto.getNickname());
+		}
+	}
+
+	@Transactional
+	public void updateMemberForVerify(Long userId, VerificationDto dto) {
+		Member member = searchMember(userId);
+
+		if(dto.name()!= null && dto.birthDate() != null && dto.phone() != null) {
+			member.updateForVerify(dto.name(), dto.birthDate(), dto.phone());
 		}
 	}
 }
