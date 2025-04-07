@@ -1,6 +1,6 @@
 package com.bangjwo.portone.application.dto;
 
-public record CertificationDto(
+public record VerificationDto(
 	String name,
     String birthDate,
    	String phone

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.bangjwo.global.common.error.portone.PaymentErrorCode;
+import com.bangjwo.global.common.error.portone.PortoneErrorCode;
 import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.portone.application.convert.PaymentConverter;
 import com.bangjwo.portone.application.dto.PaymentDto;
@@ -37,7 +37,7 @@ public class PaymentServiceImpl implements PaymentService {
 			return PaymentConverter.toDto(result);
 		} catch (Exception e) {
 			log.error("사전 결제 정보 저장 실패", e);
-			throw new BusinessException(PaymentErrorCode.PREPAYMENT_SAVE_FAILED);
+			throw new BusinessException(PortoneErrorCode.PREPAYMENT_SAVE_FAILED);
 		}
 	}
 
@@ -46,16 +46,16 @@ public class PaymentServiceImpl implements PaymentService {
 		try {
 			IamportResponse<Payment> payment = iamportClient.paymentByImpUid(impUid);
 			if (payment == null || payment.getResponse() == null) {
-				throw new BusinessException(PaymentErrorCode.IMP_UID_NOT_FOUND);
+				throw new BusinessException(PortoneErrorCode.IMP_UID_NOT_FOUND);
 			}
 			log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}", payment.getResponse().getMerchantUid());
 			return payment;
 		} catch (IamportResponseException e) {
 			log.error("Iamport 응답 예외", e);
-			throw new BusinessException(PaymentErrorCode.IMP_PAYMENT_VERIFICATION_FAILED);
+			throw new BusinessException(PortoneErrorCode.IMP_PAYMENT_VERIFICATION_FAILED);
 		} catch (Exception e) {
 			log.error("결제 검증 중 예외", e);
-			throw new BusinessException(PaymentErrorCode.PAYMENT_INTERNAL_ERROR);
+			throw new BusinessException(PortoneErrorCode.PAYMENT_INTERNAL_ERROR);
 		}
 	}
 
@@ -63,11 +63,11 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional
 	public PaymentDto.ResponseDto completePayment(String impUid, PaymentStatus status) {
 		Payments result = paymentRepository.findByImpUid(impUid)
-			.orElseThrow(() -> new BusinessException(PaymentErrorCode.PAYMENT_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(PortoneErrorCode.PAYMENT_NOT_FOUND));
 
 		// 이미 결제 완료된 건 처리 방지
 		if (result.getStatus() == PaymentStatus.PAID) {
-			throw new BusinessException(PaymentErrorCode.PAYMENT_ALREADY_COMPLETED);
+			throw new BusinessException(PortoneErrorCode.PAYMENT_ALREADY_COMPLETED);
 		}
 
 		result.changeStatus(status);
@@ -77,7 +77,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public PaymentDto.ResponseDto getPaymentResult(Long paymentId) {
 		Payments payment = paymentRepository.findById(paymentId)
-			.orElseThrow(() -> new BusinessException(PaymentErrorCode.PAYMENT_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(PortoneErrorCode.PAYMENT_NOT_FOUND));
 		return PaymentConverter.toDto(payment);
 	}
 
