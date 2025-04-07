@@ -24,110 +24,102 @@ import VerifyOwner from "./features/room-sell/components/VerifyOwner";
 import CreateSuccess from "./features/room-sell/components/CreateSuccess";
 import RoomSellNotice from "./features/room-sell/components/RoomSellNotice";
 import ChatPageOnly from "./features/chat/pages/ChatPageOnly";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <LayoutMain darkHeader wrapperClassName="bg-gold-light">
-                  <PageHome />
-                </LayoutMain>
-              }
-            />
-            <Route
-              path="/room/find/:category?"
-              element={
-                <LayoutMain
-                  wrapperClassName="h-screen min-h-[calc(24rem+55px+7.9rem)] min-w-[calc(5.035rem+660px)]"
-                  mainClassName="flex flex-row overflow-hidden"
-                  hasFooter={false}
-                >
-                  <RedirectRoomFind />
-                </LayoutMain>
-              }
-            />
-            <Route
-              path="/room/sell"
-              element={
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <LayoutMain darkHeader wrapperClassName="bg-gold-light">
+                <PageHome />
+              </LayoutMain>
+            }
+          />
+          <Route
+            path="/room/find/:category?"
+            element={
+              <LayoutMain
+                wrapperClassName="h-screen min-h-[calc(24rem+55px+7.9rem)] min-w-[calc(5.035rem+660px)]"
+                mainClassName="flex flex-row overflow-hidden"
+                hasFooter={false}
+              >
+                <RedirectRoomFind />
+              </LayoutMain>
+            }
+          />
+          <Route
+            path="/room/sell"
+            element={
+              <LayoutMain>
+                <PageRoomSellCreate />
+              </LayoutMain>
+            }
+          >
+            <Route index element={<RoomSellNotice />} />
+            <Route path="write" element={<RoomForm type="create" />} />
+            <Route path="verify" element={<VerifyOwner />} />
+            <Route path="success" element={<CreateSuccess />} />
+          </Route>
+          <Route
+            path="/room/update/:roomId"
+            element={
+              <LayoutMain>
+                <PageRoomSellUpdate />
+              </LayoutMain>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <LayoutMain>
+                <PageLogin />
+              </LayoutMain>
+            }
+          />
+          <Route
+            path="/welcome"
+            element={<LayoutMain>회원가입 완료</LayoutMain>}
+          />
+          <Route path="/auth/kakao/callback" element={<PageKakaoRedirect />} />
+          <Route
+            path="/mypage"
+            element={
+              <RedirectIfNotLoggedIn>
                 <LayoutMain>
-                  <PageRoomSellCreate />
+                  <PageMy />
                 </LayoutMain>
-              }
-            >
-              <Route index element={<RoomSellNotice />} />
-              <Route path="write" element={<RoomForm type="create" />} />
-              <Route path="verify" element={<VerifyOwner />} />
-              <Route path="success" element={<CreateSuccess />} />
-            </Route>
-            <Route
-              path="/room/update/:roomId"
-              element={
-                <LayoutMain>
-                  <PageRoomSellUpdate />
-                </LayoutMain>
-              }
-            />
-            <Route
-              path="/login"
-              element={
-                <LayoutMain>
-                  <PageLogin />
-                </LayoutMain>
-              }
-            />
-            <Route
-              path="/welcome"
-              element={<LayoutMain>회원가입 완료</LayoutMain>}
-            />
-            <Route
-              path="/auth/kakao/callback"
-              element={<PageKakaoRedirect />}
-            />
-            <Route
-              path="/mypage"
-              element={
-                <RedirectIfNotLoggedIn>
-                  <LayoutMain>
-                    <PageMy />
-                  </LayoutMain>
-                </RedirectIfNotLoggedIn>
-              }
-            >
-              <Route index element={<PageAccount />} />
-            </Route>
-            <Route path="/test" element={<PageTest />} />
-            <Route path="/test/button" element={<PageTestButton />} />
-            <Route path="/seller-contract" element={<SellerContract />} />
-            <Route
-              path="/seller-contract-form"
-              element={<SellerContractPage />}
-            />
-            <Route path="/chat" element={<ChatPageOnly />} />
-            {/* 그 외 모든 페이지는 404 not found */}
-            <Route
-              path="*"
-              element={
-                <LayoutMain
-                  wrapperClassName="bg-gold-light"
-                  mainClassName="flex"
-                  darkHeader
-                >
-                  <PageNotFound />
-                </LayoutMain>
-              }
-            />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </QueryClientProvider>
+              </RedirectIfNotLoggedIn>
+            }
+          >
+            <Route index element={<PageAccount />} />
+          </Route>
+          <Route path="/test" element={<PageTest />} />
+          <Route path="/test/button" element={<PageTestButton />} />
+          <Route path="/seller-contract" element={<SellerContract />} />
+          <Route
+            path="/seller-contract-form"
+            element={<SellerContractPage />}
+          />
+          <Route path="/chat" element={<ChatPageOnly />} />
+          {/* 그 외 모든 페이지는 404 not found */}
+          <Route
+            path="*"
+            element={
+              <LayoutMain
+                wrapperClassName="bg-gold-light"
+                mainClassName="flex"
+                darkHeader
+              >
+                <PageNotFound />
+              </LayoutMain>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
