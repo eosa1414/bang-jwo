@@ -2,13 +2,13 @@ import { postKakaoAuth } from "../apis/auth";
 
 export const loginWithKakao = async (
   code: string,
-  login: (username: string) => void
+  login: (accessToken: string) => void
 ) => {
   try {
     const res = await postKakaoAuth(code);
     console.log("로그인 성공:", res.data);
 
-    login(res.data.user);
+    login(res.data.accessToken);
 
     return res.data;
   } catch (err) {

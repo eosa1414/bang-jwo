@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../Logo";
 import { useAuth } from "../../contexts/AuthContext";
+import Button from "../buttons/Button";
 
 interface HeaderProps {
   title?: string;
@@ -8,13 +9,21 @@ interface HeaderProps {
 }
 
 const Header = ({ title, variant = "light" }: HeaderProps) => {
-  const { user, login, logout } = useAuth();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   // 모바일 가로일 때 메뉴 동작 - 차후 추가
   // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // const toggleMobileMenu = () => {
   //   setIsMobileMenuOpen(!isMobileMenuOpen);
   // };
+  const openChatWindow = () => {
+    const chatWindow = window.open(
+      "/chat",
+      "_blank",
+      "width=1000,height=700,menubar=no,toolbar=no,location=no,status=no"
+    );
+  };
 
   return (
     <header className="flex w-full h-[55px] p-[12px_14px] justify-center items-center gap-[16px] border-b-1 border-neutral-light100">
@@ -57,14 +66,16 @@ const Header = ({ title, variant = "light" }: HeaderProps) => {
               </ul>
             </nav>
             {/* 임시 로그인/로그아웃 버튼 */}
+            <i className="material-symbols-rounded" onClick={openChatWindow}>chat</i>
             {user ? (
               <>
                 <i className="material-symbols-rounded">chat</i>
                 <i className="material-symbols-rounded">account_circle</i>
-                <button onClick={logout}>임시 로그아웃</button>
               </>
             ) : (
-              <button onClick={() => login("example")}>임시 로그인</button>
+              <Button size="small" onClick={() => navigate("/login")}>
+                로그인 및 회원가입
+              </Button>
             )}
           </div>
         </>

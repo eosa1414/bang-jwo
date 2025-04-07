@@ -23,6 +23,7 @@ import RoomForm from "./features/room-sell/components/RoomForm";
 import VerifyOwner from "./features/room-sell/components/VerifyOwner";
 import CreateSuccess from "./features/room-sell/components/CreateSuccess";
 import RoomSellNotice from "./features/room-sell/components/RoomSellNotice";
+import ChatPageOnly from "./features/chat/pages/ChatPageOnly";
 
 function App() {
   return (
@@ -78,6 +79,10 @@ function App() {
               </LayoutMain>
             }
           />
+          <Route
+            path="/welcome"
+            element={<LayoutMain>회원가입 완료</LayoutMain>}
+          />
           <Route path="/auth/kakao/callback" element={<PageKakaoRedirect />} />
           <Route
             path="/mypage"
@@ -98,11 +103,16 @@ function App() {
             path="/seller-contract-form"
             element={<SellerContractPage />}
           />
+          <Route path="/chat" element={<ChatPageOnly />} />
           {/* 그 외 모든 페이지는 404 not found */}
           <Route
             path="*"
             element={
-              <LayoutMain wrapperClassName="bg-gold-light" mainClassName="flex">
+              <LayoutMain
+                wrapperClassName="bg-gold-light"
+                mainClassName="flex"
+                darkHeader
+              >
                 <PageNotFound />
               </LayoutMain>
             }

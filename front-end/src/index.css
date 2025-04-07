@@ -21,6 +21,7 @@
 
   --color-coral-red: #ff5e5e;
   --color-green: #03c75a;
+  --color-forsythia: #FFE57D;
   --color-avocado: #568203;
   --color-pistachio: #84b067;
 
@@ -151,4 +152,23 @@ h1 {
     color: var(--color-neutral-dark300);
     background-color: #ffffff;
   }
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 14px !important;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: var(--color-neutral-light200);
+  border-radius: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--color-neutral-gray);
+  border-radius: 4px;
+}
+
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-neutral-gray) var(--color-neutral-light200);
 }
