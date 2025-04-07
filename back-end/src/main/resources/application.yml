@@ -76,7 +76,7 @@ imp:
   code: ${PORTONE_CUSTOMER}
   key: ${PORTONE_API_KEY}
   secret:
-    pay: ${PORTONE_API_SECRET}
+    pay: ${PORTONE_PAYMENT_API_SECRET}
     verificate: ${PORTONE_API_SECRET}
 
 
