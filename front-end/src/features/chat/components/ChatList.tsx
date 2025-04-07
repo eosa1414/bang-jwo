@@ -2,8 +2,7 @@ import ChatListHeader from "./ChatListHeader";
 import ChatListItem from "./ChatListItem";
 import { useChatStore } from "../../../store/chatStore.ts";
 import { useChatRooms } from "../../../hooks/useChatRooms";
-import { ChatRoomSummary, Message } from "../../../types/chatTypes";
-
+import { Message } from "../../../types/chatTypes";
 
 const ChatList = () => {
   const { selectedChatId, setSelectedChatId, messagesByChat } = useChatStore();
@@ -28,7 +27,7 @@ const ChatList = () => {
 
           return (
             <ChatListItem
-              key={room.chatRoomId+Date.now()}
+              key={room.chatRoomId + Date.now()}
               id={room.chatRoomId}
               title={room.nickname}
               price={`월세 ${room.deposit}/${room.monthly}`}

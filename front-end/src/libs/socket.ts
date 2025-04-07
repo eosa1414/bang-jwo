@@ -1,5 +1,5 @@
 // src/libs/socket.ts
-import { Client, IMessage } from '@stomp/stompjs';
+import { Client } from "@stomp/stompjs";
 
 const socket = new Client({
   brokerURL: import.meta.env.VITE_SOCKET_URL, // 예: ws://localhost:8080/ws
