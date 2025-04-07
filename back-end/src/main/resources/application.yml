@@ -47,7 +47,7 @@ spring:
 registration:
   kakao:
     client-id: ${KAKAO_REST_API_KEY}
-    redirect-uri: https://j12a404.p.ssafy.io/auth/kakao/callback
+    redirect-uri: http://localhost:5173/auth/kakao/callback
     authorization-grant-type: authorization_code
     scope: profile_nickname, profile_image, account_email
     client-name: kakao
@@ -77,6 +77,6 @@ imp:
   key: ${PORTONE_API_KEY}
   secret:
     pay: ${PORTONE_API_SECRET}
-    verificate: ${PORTONEE_API_SECRET}
+    verificate: ${PORTONE_API_SECRET}
 
 
