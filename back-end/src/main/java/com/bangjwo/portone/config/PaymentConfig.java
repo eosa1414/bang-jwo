@@ -11,7 +11,7 @@ public class PaymentConfig {
 	@Value("${imp.key}")
 	private String apiKey;
 
-	@Value("${imp.secret}")
+	@Value("${imp.secret.pay}")
 	private String secretKey;
 
 	@Bean
