@@ -51,5 +51,10 @@ const responseErrorHandler = (err: AxiosError) => {
 
 axiosInstance.interceptors.request.use(requestHandler, requestErrorHandler);
 axiosInstance.interceptors.response.use(responseHandler, responseErrorHandler);
+// axiosInstance.interceptors.request.use((config) => {
+//   console.log("📦 요청 보냄 →", config.method?.toUpperCase(), config.url);
+//   return config;
+// });
+// 요청 console
 
 export default axiosInstance;
