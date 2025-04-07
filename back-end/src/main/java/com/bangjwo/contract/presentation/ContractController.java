@@ -148,8 +148,8 @@ public class ContractController {
 	}
 
 	@Operation(
-		summary = "임차인 계약 정보 최종 저장 및 최종 조회 이후 수정",
-		description = "필수 정보를 포함하여 계약서에 임차인 정보를 최종 저장합니다. 최종 조회 이후 임차인이 서명하기 전 수정에서도 사용합니다.",
+		summary = "임차인 계약 최종 저장 및 정보 수정",
+		description = "필수 정보를 포함하여 계약서에 임차인 정보를 최종 저장합니다. 또는 최종 조회 이후 임차인이 서명하기 전 수정에서도 사용합니다.",
 		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "204", description = "최종 저장 성공"),
