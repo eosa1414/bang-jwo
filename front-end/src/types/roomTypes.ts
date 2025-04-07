@@ -37,6 +37,7 @@ export const defaultRoom: Room = {
   imageUrl: "",
 };
 
+//RoomListResponseDto
 export interface RoomResponse {
   totalItems: number;
   totalPages: number;
@@ -95,13 +96,13 @@ export type RoomOption =
   | "INDUCTION"
   | "BED";
 
-  export type RoomBuildingType =
+export type RoomBuildingType =
   | "ONEROOM_TWOROOM"
   | "APARTMENT"
   | "VILLA_HOUSE"
   | "OFFICETEL";
 
-  export type RoomDirection = 
+export type RoomDirection =
   | "NORTH"
   | "NORTH_EAST"
   | "EAST"
@@ -109,7 +110,7 @@ export type RoomOption =
   | "SOUTH"
   | "SOUTH_WEST"
   | "WEST"
-  | "NORTH_WEST"
+  | "NORTH_WEST";
 
 export interface RoomDetailResponse {
   roomId: number;
@@ -151,4 +152,42 @@ export interface RoomDetailResponse {
   maintenanceIncludes: MaintenanceIncludeName[];
   options: RoomOption[];
   images: RoomImage[];
+}
+
+export interface RoomRequestBaseDto {
+  deposit: number;
+  monthlyRent: number;
+  exclusiveArea: number;
+  supplyArea: number;
+  totalUnits: number;
+  floor: string;
+  maxFloor: number;
+  parkingSpaces: number;
+  availableFrom: string;
+  permissionDate: string;
+  simpleDescription: string;
+  description: string;
+  maintenanceCost: number;
+  roomCnt: number;
+  bathroomCnt: number;
+  direction: string;
+  discussable: boolean;
+  discussDetail: string;
+  reviewable: boolean;
+  isPhonePublic: boolean;
+  maintenanceIncludes: MaintenanceIncludeName[];
+  options: RoomOption[];
+  images: string[];
+}
+
+export interface CreateRoomRequestDto extends RoomRequestBaseDto {
+  buildingType: RoomBuildingType;
+  realEstateId: string;
+  postalCode: string;
+  address: string;
+  addressDetail: string;
+}
+
+export interface UpdateRoomRequestDto extends RoomRequestBaseDto {
+  deleteImageIds: number[];
 }
