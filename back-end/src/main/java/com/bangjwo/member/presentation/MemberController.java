@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import com.bangjwo.member.application.dto.request.UpdateMemberRequestDto;
 import com.bangjwo.member.application.dto.response.MemberResponseDto;
 import com.bangjwo.member.application.dto.response.ReviewListResponseDto;
 import com.bangjwo.member.application.service.MemberService;
+import com.bangjwo.portone.application.dto.VerificationDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
 import com.bangjwo.room.application.service.RoomService;
 
@@ -86,5 +88,17 @@ public class MemberController {
 		var result = roomService.getLikeRooms(memberId, page, size);
 
 		return ResponseEntity.ok(result);
+	}
+
+	@Operation(summary = "본인인증 정보 저장", description = "본인인증의 response 값인 이름, 생년월일, 전화번호를 사용자 정보에 저장합니다.",
+		security = @SecurityRequirement(name = "JWT"))
+	@ApiResponse(responseCode = "200", description = "정상적으로 사용자 정보에 등록되었습니다.")
+	@PutMapping("/verify")
+	public ResponseEntity<Void> setVerificationInformation(
+		@MemberHeader Long userId,
+		VerificationDto dto) {
+		memberService.updateMemberForVerify(userId, dto);
+
+		return ResponseEntity.ok().build();
 	}
 }
