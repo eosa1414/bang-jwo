@@ -14,6 +14,7 @@ import com.bangjwo.portone.application.service.VerificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ public class VerificationController {
 	@Operation(
 		summary = "사용자 검증",
 		description = "포트원에서 받은 identityVerificationId로 정보를 받아옵니다.",
+		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "사용자 인증 성공"),
 			@ApiResponse(responseCode = "400", description = "요청 데이터 오류", content = @Content),
@@ -46,6 +48,7 @@ public class VerificationController {
 	@Operation(
 		summary = "계약서 사용자 검증",
 		description = "포트원에서 받은 정보와 실제 회원 간의 정보를 비교합니다.",
+		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "사용자 인증 성공"),
 			@ApiResponse(responseCode = "400", description = "요청 데이터 오류", content = @Content),

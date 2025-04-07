@@ -48,6 +48,7 @@ public class PaymentServiceImpl implements PaymentService {
 		try {
 			Payments result = PaymentConverter.toEntity(dto);
 			result.setImpUid(merchantUid);
+			result.setStatus(PaymentStatus.PAID);
 			paymentRepository.save(result);
 
 			return PaymentConverter.toDto(result);
@@ -81,6 +82,7 @@ public class PaymentServiceImpl implements PaymentService {
 			return payment;
 		} catch (IamportResponseException e) {
 			log.error("Iamport 응답 예외", e);
+			e.printStackTrace();
 			throw new BusinessException(PortoneErrorCode.IMP_PAYMENT_VERIFICATION_FAILED);
 		} catch (Exception e) {
 			log.error("결제 검증 중 예외", e);
