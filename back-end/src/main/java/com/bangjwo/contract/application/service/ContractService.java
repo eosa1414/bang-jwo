@@ -33,10 +33,12 @@ import com.bangjwo.contract.domain.entity.SpecialClause;
 import com.bangjwo.contract.domain.entity.TenantInfo;
 import com.bangjwo.contract.domain.repository.ContractRepository;
 import com.bangjwo.contract.domain.vo.ContractStatus;
+import com.bangjwo.global.common.error.RedisLockErrorCode;
 import com.bangjwo.global.common.error.blockchain.BlockchainErrorCode;
 import com.bangjwo.global.common.error.contract.ContractErrorCode;
 import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.global.common.exception.RoomException;
+import com.bangjwo.global.common.lock.RedisLock;
 import com.bangjwo.room.application.service.RoomService;
 import com.bangjwo.room.domain.entity.Room;
 
@@ -122,10 +124,25 @@ public class ContractService {
 	@Transactional
 	public void finalLandlordInfo(UpdateLandlordInfoDto requestDto, Long memberId) {
 		Contract contract = validateLandlordFinalContract(requestDto.getContractId(), memberId);
-		LandlordInfo landlordInfo = contract.getLandlordInfo();
-		SpecialClause specialClause = contract.getSpecialClause();
-		LandlordInfoConverter.updateFinal(landlordInfo, requestDto);
-		SpecialClauseConverter.updateFinal(specialClause, requestDto);
+		if (contract.getContractStatus() != ContractStatus.BEFORE_WRITE) {
+			throw new BusinessException(ContractErrorCode.INVALID_CONTRACT_STATUS_FOR_LANDLORD_UPDATE);
+		}
+		updateContractInfo(contract, requestDto);
+	}
+
+	@Transactional
+	@RedisLock(key = "'contract:' + #requestDto.contractId", errorCode = RedisLockErrorCode.TENANT_IN_PROGRESS)
+	public void finalLandlordAfterTenant(UpdateLandlordInfoDto requestDto, Long memberId) {
+		Contract contract = validateLandlordFinalContract(requestDto.getContractId(), memberId);
+		if (contract.getContractStatus() != ContractStatus.TENANT_COMPLETED) {
+			throw new BusinessException(ContractErrorCode.INVALID_CONTRACT_STATUS_FOR_LANDLORD_UPDATE);
+		}
+		updateContractInfo(contract, requestDto);
+	}
+
+	private void updateContractInfo(Contract contract, UpdateLandlordInfoDto dto) {
+		LandlordInfoConverter.updateFinal(contract.getLandlordInfo(), dto);
+		SpecialClauseConverter.updateFinal(contract.getSpecialClause(), dto);
 		contract.updateContractStatus(ContractStatus.LANDLORD_COMPLETED);
 	}
 
@@ -202,8 +219,9 @@ public class ContractService {
 	}
 
 	@Transactional
-	public void updateTenantSignature(TenantSignatureUpdateRequestDto dto, Long memberId) {
-		Contract contract = findContract(dto.getContractId());
+	@RedisLock(key = "'contract:' + #requestDto.contractId", errorCode = RedisLockErrorCode.LANDLORD_IN_PROGRESS)
+	public void updateTenantSignature(TenantSignatureUpdateRequestDto requestDto, Long memberId) {
+		Contract contract = findContract(requestDto.getContractId());
 		Optional.of(contract.getTenantId())
 			.filter(id -> id.equals(memberId))
 			.orElseThrow(() -> new BusinessException(ContractErrorCode.INVALID_CONTRACT_ACCESS));
@@ -211,7 +229,7 @@ public class ContractService {
 			.filter(status -> status.equals(ContractStatus.TENANT_COMPLETED))
 			.orElseThrow(() -> new BusinessException(ContractErrorCode.INVALID_CONTRACT_STATUS_FOR_TENANT_SIGNATURE));
 		TenantInfo tenantInfo = contract.getTenantInfo();
-		contractImageService.updateTenantSignature(tenantInfo, dto);
+		contractImageService.updateTenantSignature(tenantInfo, requestDto);
 		contract.updateContractStatus(ContractStatus.TENANT_SIGNED);
 	}
 
@@ -279,4 +297,5 @@ public class ContractService {
 			return null;
 		}
 	}
+
 }

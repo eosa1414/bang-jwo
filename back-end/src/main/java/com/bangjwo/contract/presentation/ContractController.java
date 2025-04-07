@@ -90,7 +90,7 @@ public class ContractController {
 
 	@Operation(
 		summary = "임대인 계약 정보 최종 저장",
-		description = "모든 필수 정보를 포함하여 계약서에 임대인 정보를 최종 저장합니다.",
+		description = "모든 필수 정보를 포함하여 계약서에 임대인 정보를 최종 저장합니다. 계약 상태가 BEFORE_WRITE 인 경우만 호출 가능합니다.",
 		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "204", description = "최종 저장 성공"),
@@ -102,8 +102,28 @@ public class ContractController {
 	@PatchMapping("/landlord/final")
 	public ResponseEntity<Void> finalLandlordInfo(
 		@Validated(FinalSave.class) @RequestBody UpdateLandlordInfoDto requestDto, @MemberHeader Long memberId) {
-
 		contractService.finalLandlordInfo(requestDto, memberId);
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@Operation(
+		summary = "임차인 서명 전 임대인 수정",
+		description = "임차인 서명 전에 계약 상태가 TENANT_COMPLETED인 경우 임대인이 수정할 수 있습니다. 이 경우 동시성 방지를 위해 락이 적용됩니다.",
+		security = @SecurityRequirement(name = "JWT"),
+		responses = {
+			@ApiResponse(responseCode = "204", description = "수정 성공"),
+			@ApiResponse(responseCode = "400", description = "검증 실패 또는 데이터 누락", content = @Content),
+			@ApiResponse(responseCode = "403", description = "임대인 접근 권한 없음", content = @Content),
+			@ApiResponse(responseCode = "404", description = "계약서 또는 임대인 정보 없음", content = @Content),
+			@ApiResponse(responseCode = "409", description = "동시성 제어로 인한 요청 거부", content = @Content)
+		}
+	)
+	@PatchMapping("/landlord/final/after-tenant")
+	public ResponseEntity<Void> finalLandlordAfterTenant(
+		@Validated(FinalSave.class) @RequestBody UpdateLandlordInfoDto requestDto,
+		@MemberHeader Long memberId) {
+		contractService.finalLandlordAfterTenant(requestDto, memberId);
 
 		return ResponseEntity.noContent().build();
 	}
@@ -128,8 +148,8 @@ public class ContractController {
 	}
 
 	@Operation(
-		summary = "임차인 계약 정보 최종 저장",
-		description = "필수 정보를 포함하여 계약서에 임차인 정보를 최종 저장합니다.",
+		summary = "임차인 계약 정보 최종 저장 및 최종 조회 이후 수정",
+		description = "필수 정보를 포함하여 계약서에 임차인 정보를 최종 저장합니다. 최종 조회 이후 임차인이 서명하기 전 수정에서도 사용합니다.",
 		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "204", description = "최종 저장 성공"),
