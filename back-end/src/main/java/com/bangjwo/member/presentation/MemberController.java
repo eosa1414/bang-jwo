@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import com.bangjwo.member.application.dto.request.UpdateMemberRequestDto;
 import com.bangjwo.member.application.dto.response.MemberResponseDto;
 import com.bangjwo.member.application.dto.response.ReviewListResponseDto;
 import com.bangjwo.member.application.service.MemberService;
+import com.bangjwo.portone.application.dto.VerificationDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
 import com.bangjwo.room.application.service.RoomService;
 
@@ -86,5 +88,14 @@ public class MemberController {
 		var result = roomService.getLikeRooms(memberId, page, size);
 
 		return ResponseEntity.ok(result);
+	}
+
+	@PutMapping("/verify")
+	public ResponseEntity<Void> setVerificationInformation(
+		@MemberHeader Long userId,
+		VerificationDto dto) {
+		memberService.updateMemberForVerify(userId, dto);
+
+		return ResponseEntity.ok().build();
 	}
 }
