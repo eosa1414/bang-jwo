@@ -7,7 +7,7 @@ spring:
     name: bangjwo
 
   datasource:
-    url: jdbc:mysql://mysql-db:3306/bangjwo?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://mysql-db:13306/bangjwo?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: ${MYSQL_ROOT_PASSWORD}
     hikari:
