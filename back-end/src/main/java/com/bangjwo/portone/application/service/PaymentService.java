@@ -9,9 +9,9 @@ import com.siot.IamportRestClient.response.Payment;
 
 public interface PaymentService {
 
-	PaymentDto.ResponseDto savePayment(PaymentDto.RequestDto dto);
+	void registerPaymentPrepare(String merchantUid, int amount);
 
-	PaymentDto.ResponseDto completePayment(String impUid, PaymentStatus status);
+	PaymentDto.ResponseDto prePayment(PaymentDto.RequestDto dto, String merchantUid);
 
 	PaymentDto.ResponseDto getPaymentResult(Long paymentId);
 

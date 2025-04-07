@@ -12,7 +12,7 @@ import com.bangjwo.portone.domain.entity.PaymentStatus;
 public class PaymentConverter {
 	public static Payments toEntity(PaymentDto.RequestDto dto) {
 		return Payments.builder()
-			.impUid(UUID.randomUUID().toString().substring(0, 10))
+			.impUid("")
 			.memberId(dto.memberId())
 			.roomId(dto.roomId())
 			.status(PaymentStatus.READY)

@@ -22,6 +22,7 @@ public enum PortoneErrorCode implements ErrorCode {
 
 	// 결제 조회
 	PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "PAYMENT4006", "해당 결제 내역을 찾을 수 없습니다."),
+	PAYMENT_FAILED(HttpStatus.BAD_REQUEST, "PAYMENT4010", "결제가 이뤄지지 않았습니다."),
 	UNAUTHORIZED_USER_ACCESS(HttpStatus.FORBIDDEN, "PAYMENT4007", "결제 내역에 접근할 수 있는 권한이 없습니다."),
 
 	// 본인인증
