@@ -17,6 +17,12 @@ import RedirectRoomFind from "./features/room-find/components/RedirectRoomFind";
 import PageNotFound from "./pages/PageNotFound";
 import PageLogin from "./features/auth/pages/PageLogin";
 import PageKakaoRedirect from "./features/auth/pages/PageKakaoRedirect";
+import PageRoomSellCreate from "./features/room-sell/pages/PageRoomSellCreate";
+import PageRoomSellUpdate from "./features/room-sell/pages/PageRoomSellUpdate";
+import RoomForm from "./features/room-sell/components/RoomForm";
+import VerifyOwner from "./features/room-sell/components/VerifyOwner";
+import CreateSuccess from "./features/room-sell/components/CreateSuccess";
+import RoomSellNotice from "./features/room-sell/components/RoomSellNotice";
 import ChatPageOnly from "./features/chat/pages/ChatPageOnly";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -25,15 +31,69 @@ const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <LayoutMain darkHeader wrapperClassName="bg-gold-light">
-                  <PageHome />
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <LayoutMain darkHeader wrapperClassName="bg-gold-light">
+                <PageHome />
+              </LayoutMain>
+            }
+          />
+          <Route
+            path="/room/find/:category?"
+            element={
+              <LayoutMain
+                wrapperClassName="h-screen min-h-[calc(24rem+55px+7.9rem)] min-w-[calc(5.035rem+660px)]"
+                mainClassName="flex flex-row overflow-hidden"
+                hasFooter={false}
+              >
+                <RedirectRoomFind />
+              </LayoutMain>
+            }
+          />
+          <Route
+            path="/room/sell"
+            element={
+              <LayoutMain>
+                <PageRoomSellCreate />
+              </LayoutMain>
+            }
+          >
+            <Route index element={<RoomSellNotice />} />
+            <Route path="write" element={<RoomForm type="create" />} />
+            <Route path="verify" element={<VerifyOwner />} />
+            <Route path="success" element={<CreateSuccess />} />
+          </Route>
+          <Route
+            path="/room/update/:roomId"
+            element={
+              <LayoutMain>
+                <PageRoomSellUpdate />
+              </LayoutMain>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <LayoutMain>
+                <PageLogin />
+              </LayoutMain>
+            }
+          />
+          <Route
+            path="/welcome"
+            element={<LayoutMain>회원가입 완료</LayoutMain>}
+          />
+          <Route path="/auth/kakao/callback" element={<PageKakaoRedirect />} />
+          <Route
+            path="/mypage"
+            element={
+              <RedirectIfNotLoggedIn>
+                <LayoutMain>
+                  <PageMy />
                 </LayoutMain>
               }
             />
