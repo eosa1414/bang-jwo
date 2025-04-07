@@ -52,7 +52,7 @@ const variantClasses = {
     linestyle: "text-neutral-black border-neutral-black bg-gold-light",
   },
   gold: {
-    defaultstyle: "text-gold-dark bg-gold-light/20",
+    defaultstyle: "text-gold-dark bg-gold-light/30",
     linestyle: "text-gold-dark border-gold",
   },
   opaque: {
