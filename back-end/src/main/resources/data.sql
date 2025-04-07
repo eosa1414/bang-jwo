@@ -5,8 +5,8 @@ INSERT INTO member (
     created_at, updated_at, deleted_at, is_auth
 )
 SELECT
-    1, 123456789, '홍길동', '1995-07-15', '010-1234-5678',
-    'https://example1.com', '길동이',
+    1, 3904577474, '황인준', '19970514', '01030222851',
+    'https://example1.com', '황황인인준준',
     NOW(), NOW(), NULL, true
     WHERE NOT EXISTS (SELECT 1 FROM member WHERE member_id = 1);
 
