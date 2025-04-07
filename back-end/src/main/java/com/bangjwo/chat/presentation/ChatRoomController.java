@@ -2,8 +2,14 @@ package com.bangjwo.chat.presentation;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.springframework.data.redis.core.RedisTemplate;
+import com.bangjwo.chat.application.dto.ChatMessageResponseDto;
+import com.bangjwo.global.common.error.chat.ChatErrorCode;
+import com.bangjwo.global.common.exception.BusinessException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -46,7 +52,7 @@ public class ChatRoomController {
 	private final RedisChatRoomService redisChatRoomService;
 	private final SimpMessagingTemplate messagingTemplate;
 	private final WebSocketSessionTracker webSocketSessionTracker;
-	private final RedisTemplate<String, String> redisTemplate;
+	private final ObjectMapper objectMapper;
 
 	/*
 	* 채팅방 생성
@@ -84,10 +90,11 @@ public class ChatRoomController {
 		responses = {
 			@ApiResponse(responseCode = "200", description = "채팅 내역 조회 및 읽음 처리 성공"),
 			@ApiResponse(responseCode = "400", description = "요청 데이터 오류")
-		}
+		},
+		security = @SecurityRequirement(name = "JWT")
 	)
 	@GetMapping("/enter/{chatRoomId}")
-	public ResponseEntity<List<ChatMessageDto>> getChatMessages(
+	public ResponseEntity<List<ChatMessageResponseDto>> getChatMessages(
 		@MemberHeader() Long userId,
 		@PathVariable("chatRoomId") Long chatRoomId) {
 
@@ -181,14 +188,24 @@ public class ChatRoomController {
 		responses = {
 			@ApiResponse(responseCode = "200", description = "채팅방 목록 조회 성공"),
 			@ApiResponse(responseCode = "400", description = "요청 데이터 오류")
-		}
+		},
+		security = @SecurityRequirement(name = "JWT")
 	)
 	@GetMapping("/list")
-	public ResponseEntity<Set<ZSetOperations.TypedTuple<String>>> getChatRooms(
-		@MemberHeader() Long userId) {
+	public ResponseEntity<List<ChatRoomSummary>> getChatRooms(@MemberHeader Long userId) {
+		Set<ZSetOperations.TypedTuple<String>> rawRooms = redisChatRoomService.getRoomList(userId);
 
-		return ResponseEntity.ok(redisChatRoomService.getRoomList(userId));
+		List<ChatRoomSummary> summaries = rawRooms.stream().map(tuple -> {
+			try {
+				return objectMapper.readValue(tuple.getValue(), ChatRoomSummary.class);
+			} catch (JsonProcessingException e) {
+				throw new BusinessException(ChatErrorCode.CHAT_REDIS_SERIALIZATION_FAILED);
+			}
+		}).collect(Collectors.toList());
+
+		return ResponseEntity.ok(summaries);
 	}
+
 
 	/*
 	* 채팅방 나가기(web-socket 구독 해제)
