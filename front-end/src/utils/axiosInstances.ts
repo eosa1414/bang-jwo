@@ -6,18 +6,25 @@ import axios, {
 import { StatusCodes } from "../constants/statusCodes";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: "http://localhost:8080",
+  // baseURL: import.meta.env.VITE_API_LOCAL_URL,
   timeout: 10000, //최대 대기 시간(10초)
 });
 
 // 요청시 Bearer 헤더 추가
 const requestHandler = (config: InternalAxiosRequestConfig) => {
   const token = localStorage.getItem("accessToken");
+  const test = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmlja25hbWUiOiLtmansnbjspIAiLCJpYXQiOjE3NDM3Mjk4MTgsImV4cCI6MTc0NjMyMTgxOH0.6ttYk9Bvnh4Zvtw5gBxZl44ztpHn1aMhE1dHfavSrMM";
   const isHeaderSettable =
     config.headers && typeof config.headers.set === "function";
 
-  if (token && isHeaderSettable) {
-    config.headers.set("Authorization", `Bearer ${token}`);
+  // if (token && isHeaderSettable) {
+  //   config.headers.set("Authorization", `Bearer ${token}`);
+  // }
+
+  if (test && isHeaderSettable) {
+    config.headers = config.headers || {};
+    config.headers["Authorization"] = `Bearer ${test}`;
   }
   return config;
 };
@@ -51,5 +58,10 @@ const responseErrorHandler = (err: AxiosError) => {
 
 axiosInstance.interceptors.request.use(requestHandler, requestErrorHandler);
 axiosInstance.interceptors.response.use(responseHandler, responseErrorHandler);
+axiosInstance.interceptors.request.use((config) => {
+  console.log("📦 요청 보냄 →", config.method?.toUpperCase(), config.url);
+  return config;
+});
+
 
 export default axiosInstance;
