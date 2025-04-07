@@ -93,7 +93,11 @@ const ChatPage: React.FC = () => {
     <div className="flex h-screen bg-white px-4 py-6 gap-4">
       {!isCompactView && (
         <div className="w-[320px] bg-white rounded-xl shadow border border-neutral-light200 overflow-hidden">
-          <ChatList/>
+          <ChatList
+            selectedChatId={selectedChatId}
+            onSelectChat={setSelectedChatId}
+            messagesByChat={messagesByChat}
+          />
         </div>
       )}
 

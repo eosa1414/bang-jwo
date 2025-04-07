@@ -7,7 +7,6 @@ interface Props {
   price: string;
   avatarUrl: string;
   isSelected: boolean;
-  roomImage: string;
   onClick: () => void;
 }
 
@@ -19,7 +18,6 @@ const ChatListItem = ({
   price,
   avatarUrl,
   isSelected,
-  roomImage,
   onClick,
 }: Props) => {
   const displayMessage = message || "";
@@ -33,7 +31,7 @@ const ChatListItem = ({
       onClick={onClick}
     >
       <img
-        src={roomImage}
+        src="/assets/images/house.png"
         alt="house"
         className="w-12 h-12 rounded bg-neutral-light200 object-cover"
       />

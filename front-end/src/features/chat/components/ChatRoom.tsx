@@ -5,14 +5,6 @@ import MessageInputBox from "./MessageInputBox";
 import DateBadge from "./DateBadge";
 import SystemMessage from "./SystemMessage";
 import ContractActionButton from "./ContractActionButton";
-import { getChatMessages } from "../../../services/chatService";
-import {
-  connectChatSocket,
-  disconnectChatSocket,
-  sendChatMessage,
-} from "../../../utils/chatSocket"; // 경로에 맞게 조정
-import { ChatMessage } from "../../../types/chatTypes";
-
 
 type MessageType = "sent" | "received" | "system";
 
@@ -75,34 +67,6 @@ const ChatRoom = ({
     }
   }, [chatId, setMessagesByChat]);
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      if (chatId === null) return;
-  
-      try {
-        const res = await getChatMessages(chatId);
-  
-        setMessagesByChat((prev) => ({
-          ...prev,
-          [chatId]: (res ?? []).map((msg) => ({
-            id: msg.chatId,
-            type: msg.senderId === 2 ? "sent" : "received",
-            // type: msg.senderId === myId ? "sent" : "received",
-            text: msg.message,
-            time: msg.sendAt.slice(11, 16),
-            date: msg.sendAt.slice(0, 10),
-            isReadByMe: true,
-          })),
-        }));
-      } catch (err) {
-        console.error("❌ 메시지 불러오기 실패:", err);
-      }
-    };
-  
-    fetchMessages();
-  }, [chatId]);
-  
-
   // ✅ 스크롤 아래로 이동
   useEffect(() => {
     if (scrollRef.current) {
@@ -111,80 +75,26 @@ const ChatRoom = ({
   }, [messages]);
 
   const handleSendMessage = (text: string) => {
-    if (!chatId) return;
-  
+    if (chatId === null) return;
+
     const now = new Date();
-    const sendAt = now.toISOString();
-  
-    const message: ChatMessage = {
-      chatRoomId: chatId,
-      roomId: 0, // roomId 알 수 있으면 넣기
-      chatId: 0, // 채팅 고유 ID는 백에서 처리
-      receiverId: 999, // 상대방 ID (프론트에서 알고 있다면)
-      senderId: 2, // 내 ID
-      senderNickname: "나", // 내 닉네임
-      message: text,
-      sendAt: sendAt,
-      read: false,
+    const time = now.toTimeString().slice(0, 5);
+    const date = now.toISOString().slice(0, 10);
+
+    const newMessage: Message = {
+      id: messages.length + 1,
+      type: "sent",
+      text,
+      time,
+      date,
+      isReadByPartner: false,
     };
-  
-    sendChatMessage(message);
+
+    setMessagesByChat((prev) => ({
+      ...prev,
+      [chatId]: [...(prev[chatId] || []), newMessage],
+    }));
   };
-  
-  
-  // const handleSendMessage = (text: string) => {
-  //   if (chatId === null) return;
-
-  //   const now = new Date();
-  //   const time = now.toTimeString().slice(0, 5);
-  //   const date = now.toISOString().slice(0, 10);
-
-  //   const newMessage: Message = {
-  //     id: messages.length + 1,
-  //     type: "sent",
-  //     text,
-  //     time,
-  //     date,
-  //     isReadByPartner: false,
-  //   };
-
-  //   setMessagesByChat((prev) => ({
-  //     ...prev,
-  //     [chatId]: [...(prev[chatId] || []), newMessage],
-  //   }));
-  // };
-
-  useEffect(() => {
-    if (!chatId) return;
-  
-    // 내 userId, 예: 로그인된 유저 ID (임시로 2 사용 중이라면 아래 수정)
-    const myId = 2;
-  
-    // 연결
-    connectChatSocket(chatId, myId, (msg) => {
-      const time = msg.sendAt.slice(11, 16);
-      const date = msg.sendAt.slice(0, 10);
-  
-      const newMessage: Message = {
-        id: Date.now(), // 고유한 ID로 중복 방지
-        type: msg.senderId === myId ? "sent" : "received",
-        text: msg.message,
-        time,
-        date,
-        isReadByMe: msg.senderId !== myId,
-      };
-  
-      setMessagesByChat((prev) => ({
-        ...prev,
-        [chatId]: [...(prev[chatId] || []), newMessage],
-      }));
-    });
-  
-    return () => {
-      disconnectChatSocket();
-    };
-  }, [chatId]);
-  
 
   if (chatId === null) {
     return (
@@ -201,10 +111,10 @@ const ChatRoom = ({
     const result: React.ReactNode[] = [];
     let lastDate: string | null = null;
 
-    messages.forEach((msg, index) => {
+    messages.forEach((msg) => {
       if (msg.date !== lastDate) {
         result.push(
-          <div key={`date-${index}`} className="flex justify-center my-2">
+          <div key={`date-${msg.date}`} className="flex justify-center my-2">
             <DateBadge date={msg.date} />
           </div>
         );
@@ -212,9 +122,9 @@ const ChatRoom = ({
       }
 
       if (msg.type === "system" && msg.role) {
-        result.push(<SystemMessage key={`system-${index}`} role={msg.role} />);
+        result.push(<SystemMessage key={`system-${msg.id}`} role={msg.role} />);
       } else {
-        result.push(<ChatBubble key={index} {...msg} />);
+        result.push(<ChatBubble key={msg.id} {...msg} />);
       }
     });
 

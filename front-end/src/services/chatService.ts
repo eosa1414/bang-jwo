@@ -9,9 +9,8 @@ import {
   import {
     CreateChatRoomRequest,
     CreateChatRoomResponse,
-    ChatRoomSummary,
+    ChatRoomListResponse,
     ChatMessagesResponse,
-    ChatMessage,
   } from "../types/chatTypes";
   
   // 채팅방 생성
@@ -35,7 +34,7 @@ import {
   };
   
   // 채팅방 목록
-  export const getChatRooms = async (): Promise<ChatRoomSummary[]> => {
+  export const getChatRooms = async (): Promise<ChatRoomListResponse> => {
     try {
       return await fetchChatRooms();
     } catch (err) {
@@ -45,7 +44,7 @@ import {
   };
   
   // 채팅 메시지 조회
-  export const getChatMessages = async (chatRoomId: number): Promise<ChatMessage[]> => {
+  export const getChatMessages = async (chatRoomId: number): Promise<ChatMessagesResponse> => {
     try {
       return await fetchChatMessages(chatRoomId);
     } catch (err) {
