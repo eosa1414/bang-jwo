@@ -6,7 +6,7 @@ import axios, {
 import { StatusCodes } from "../constants/statusCodes";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_LOCAL_URL,
   timeout: 10000, //최대 대기 시간(10초)
 });
 
@@ -19,6 +19,7 @@ const requestHandler = (config: InternalAxiosRequestConfig) => {
   if (token && isHeaderSettable) {
     config.headers.set("Authorization", `Bearer ${token}`);
   }
+
   return config;
 };
 
