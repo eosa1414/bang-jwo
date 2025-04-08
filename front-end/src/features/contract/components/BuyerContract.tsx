@@ -1,4 +1,4 @@
-// SellerContract.tsx (mode 기반 리팩토링)
+// BuyerContract.tsx
 
 import ContractHeader from "./ContractHeader";
 import HouseInfoSection from "./HouseInfoSection";
@@ -8,9 +8,9 @@ import ContractFooterSection from "./ContractFooterSection";
 import SignatureModal from "./SignatureModal";
 import { useState } from "react";
 
-const SellerContract = () => {
-  const [lessorName, setLessorName] = useState("");
-  const [lesseeName] = useState("");
+const BuyerContract = () => {
+  const [lessorName] = useState("");
+  const [lesseeName, setLesseeName] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSignatureType, setActiveSignatureType] = useState<
     "unpaid" | "priority" | "receipt" | null
@@ -60,14 +60,14 @@ const SellerContract = () => {
   return (
     <section className="w-full max-w-[800px] pt-6 pb-4">
       <ContractHeader
-        mode="lessor"
+        mode="lessee"
         lessorName={lessorName}
         lesseeName={lesseeName}
-        onLessorNameChange={setLessorName}
+        onLesseeNameChange={setLesseeName}
       />
 
       <HouseInfoSection
-        mode="lessor"
+        mode="lessee"
         leaseDetail={leaseDetail}
         leaseArea={leaseArea}
         address={address}
@@ -110,18 +110,18 @@ const SellerContract = () => {
       <hr className="mt-10 mb-6 border-t-[2px] border-neutral-light200" />
 
       <ContractBody
-        mode="lessor"
+        mode="lessee"
         receiptSignature={receiptSignature}
         openSignatureModal={openSignatureModal}
       />
 
       <hr className="mt-10 mb-6 border-t-[2px] border-neutral-light200" />
 
-      <SpecialTerms mode="lessor" />
+      <SpecialTerms mode="lessee" />
 
       <hr className="mt-10 mb-6 border-t-[2px] border-neutral-light200" />
 
-      <ContractFooterSection mode="lessor" />
+      <ContractFooterSection mode="lessee" />
 
       <SignatureModal
         isOpen={isModalOpen}
@@ -132,4 +132,4 @@ const SellerContract = () => {
   );
 };
 
-export default SellerContract;
+export default BuyerContract;
