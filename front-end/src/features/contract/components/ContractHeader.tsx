@@ -5,15 +5,19 @@ import NoticeDefault from "../../../components/notices/NoticeDefault";
 import hasBatchim from "../utils/hasBatchim";
 
 interface ContractHeaderProps {
+  mode: "lessor" | "lessee";
   lessorName: string;
   lesseeName: string;
-  onLessorNameChange: (value: string) => void;
+  onLessorNameChange?: (value: string) => void;
+  onLesseeNameChange?: (value: string) => void;
 }
 
 const ContractHeader = ({
+  mode,
   lessorName,
   lesseeName,
   onLessorNameChange,
+  onLesseeNameChange,
 }: ContractHeaderProps) => {
   const waGwa =
     lessorName.length >= 2 ? (hasBatchim(lessorName) ? "과" : "와") : "와";
@@ -35,21 +39,45 @@ const ContractHeader = ({
       </h2>
 
       <div className="mt-4 flex justify-end">
-        <RentTypeSelector />
+        <RentTypeSelector mode={mode} />
       </div>
 
       {/* 계약 문장 */}
       <div className="mt-10 text-base font-medium flex flex-wrap items-center gap-2">
         <span>임대인</span>
-        <EditableInputBox
-          value={lessorName}
-          onChange={onLessorNameChange}
-          placeholder="성명"
-          minLength={2}
-          maxLength={10}
-        />
+        {mode === "lessor" ? (
+          <EditableInputBox
+            value={lessorName}
+            onChange={onLessorNameChange!}
+            placeholder="성명"
+            minLength={2}
+            maxLength={10}
+            customWidth="w-[100px]"
+          />
+        ) : (
+          <DisabledInputBox
+            value={lessorName}
+            placeholder="성명"
+            customWidth="w-[100px]"
+          />
+        )}
         <span>{waGwa} 임차인</span>
-        <DisabledInputBox value={lesseeName} placeholder="성명" />
+        {mode === "lessee" ? (
+          <EditableInputBox
+            value={lesseeName}
+            onChange={onLesseeNameChange!}
+            placeholder="성명"
+            minLength={2}
+            maxLength={10}
+            customWidth="w-[100px]"
+          />
+        ) : (
+          <DisabledInputBox
+            value={lesseeName}
+            placeholder="성명"
+            customWidth="w-[100px]"
+          />
+        )}
         <span>{eunNeun} 아래와 같이 임대차 계약을 체결한다.</span>
       </div>
     </>
