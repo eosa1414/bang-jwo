@@ -1,22 +1,31 @@
-// SellerContract.tsx (mode 기반 리팩토링)
+// Contract.tsx
 
+import { useState } from "react";
 import ContractHeader from "./ContractHeader";
 import HouseInfoSection from "./HouseInfoSection";
 import ContractBody from "./ContractBody";
 import SpecialTerms from "./SpecialTerms";
-import ContractFooterSection from "./ContractFooterSection";
 import SignatureModal from "./SignatureModal";
-import { useState } from "react";
+import ContractFooterSection from "./ContractFooterSection";
 
-const SellerContract = () => {
+interface ContractProps {
+  mode: "lessor" | "lessee";
+}
+
+const Contract = ({ mode }: ContractProps) => {
   const [lessorName, setLessorName] = useState("");
-  const [lesseeName] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeSignatureType, setActiveSignatureType] = useState<
-    "unpaid" | "priority" | "receipt" | null
-  >(null);
+  const [lesseeName, setLesseeName] = useState("");
+
   const [leaseDetail, setLeaseDetail] = useState("");
   const [leaseArea, setLeaseArea] = useState("");
+
+  const [address, setAddress] = useState("");
+  const [detailAddress, setDetailAddress] = useState("");
+  const [landPurpose, setLandPurpose] = useState("");
+  const [landArea, setLandArea] = useState("");
+  const [buildingStructure, setBuildingStructure] = useState("");
+  const [buildingUsage, setBuildingUsage] = useState("");
+  const [buildingArea, setBuildingArea] = useState("");
 
   const [unpaidTaxOption, setUnpaidTaxOption] = useState<string | null>(null);
   const [priorityDateOption, setPriorityDateOption] = useState<string | null>(
@@ -31,13 +40,10 @@ const SellerContract = () => {
   >(null);
   const [receiptSignature, setReceiptSignature] = useState<string | null>(null);
 
-  const [address, setAddress] = useState("");
-  const [detailAddress, setDetailAddress] = useState("");
-  const [landPurpose, setLandPurpose] = useState("");
-  const [landArea, setLandArea] = useState("");
-  const [buildingStructure, setBuildingStructure] = useState("");
-  const [buildingUsage, setBuildingUsage] = useState("");
-  const [buildingArea, setBuildingArea] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeSignatureType, setActiveSignatureType] = useState<
+    "unpaid" | "priority" | "receipt" | null
+  >(null);
 
   const openSignatureModal = (type: "unpaid" | "priority" | "receipt") => {
     setActiveSignatureType(type);
@@ -60,14 +66,15 @@ const SellerContract = () => {
   return (
     <section className="w-full max-w-[800px] pt-6 pb-4">
       <ContractHeader
-        mode="lessor"
+        mode={mode}
         lessorName={lessorName}
         lesseeName={lesseeName}
         onLessorNameChange={setLessorName}
+        onLesseeNameChange={setLesseeName}
       />
 
       <HouseInfoSection
-        mode="lessor"
+        mode={mode}
         leaseDetail={leaseDetail}
         leaseArea={leaseArea}
         address={address}
@@ -82,7 +89,7 @@ const SellerContract = () => {
         unpaidTaxSignature={unpaidTaxSignature}
         priorityDateSignature={priorityDateSignature}
         onChange={(field, value) => {
-          const fieldSetters = {
+          const setterMap = {
             leaseDetail: setLeaseDetail,
             leaseArea: setLeaseArea,
             address: setAddress,
@@ -93,16 +100,16 @@ const SellerContract = () => {
             buildingUsage: setBuildingUsage,
             buildingArea: setBuildingArea,
           };
-          const typedField = field as keyof typeof fieldSetters;
-          fieldSetters[typedField](value);
+          const setter = setterMap[field as keyof typeof setterMap];
+          setter(value);
         }}
         onOptionChange={(field, value) => {
-          const optionSetters = {
+          const setterMap = {
             unpaidTaxOption: setUnpaidTaxOption,
             priorityDateOption: setPriorityDateOption,
           };
-          const typedField = field as keyof typeof optionSetters;
-          optionSetters[typedField](value);
+          const setter = setterMap[field as keyof typeof setterMap];
+          setter(value);
         }}
         openSignatureModal={openSignatureModal}
       />
@@ -110,18 +117,18 @@ const SellerContract = () => {
       <hr className="mt-10 mb-6 border-t-[2px] border-neutral-light200" />
 
       <ContractBody
-        mode="lessor"
+        mode={mode}
         receiptSignature={receiptSignature}
         openSignatureModal={openSignatureModal}
       />
 
       <hr className="mt-10 mb-6 border-t-[2px] border-neutral-light200" />
 
-      <SpecialTerms mode="lessor" />
+      <SpecialTerms mode={mode} />
 
       <hr className="mt-10 mb-6 border-t-[2px] border-neutral-light200" />
 
-      <ContractFooterSection mode="lessor" />
+      <ContractFooterSection mode={mode} />
 
       <SignatureModal
         isOpen={isModalOpen}
@@ -132,4 +139,4 @@ const SellerContract = () => {
   );
 };
 
-export default SellerContract;
+export default Contract;

@@ -6,7 +6,6 @@ import LayoutMain from "./layouts/LayoutMain";
 import PageHome from "./pages/PageHome";
 import PageTest from "./pages/PageTest";
 import PageTestButton from "./pages/PageTestButton";
-import SellerContract from "./features/contract/components/SellerContract";
 import SellerContractPage from "./features/contract/pages/SellerContractPage";
 import "react-datepicker/dist/react-datepicker.css";
 import { AuthProvider } from "./contexts/AuthProvider";
@@ -25,6 +24,7 @@ import CreateSuccess from "./features/room-sell/components/CreateSuccess";
 import RoomSellNotice from "./features/room-sell/components/RoomSellNotice";
 import ChatPageOnly from "./features/chat/pages/ChatPageOnly";
 import PageMyLike from "./features/mypage/like/pages/PageMyLike";
+import BuyerContractPage from "./features/contract/pages/BuyerContractPage";
 
 function App() {
   return (
@@ -100,11 +100,8 @@ function App() {
           </Route>
           <Route path="/test" element={<PageTest />} />
           <Route path="/test/button" element={<PageTestButton />} />
-          <Route path="/seller-contract" element={<SellerContract />} />
-          <Route
-            path="/seller-contract-form"
-            element={<SellerContractPage />}
-          />
+          <Route path="/seller-contract" element={<SellerContractPage />} />
+          <Route path="/buyer-contract" element={<BuyerContractPage />} />
           <Route path="/chat" element={<ChatPageOnly />} />
           {/* 그 외 모든 페이지는 404 not found */}
           <Route
