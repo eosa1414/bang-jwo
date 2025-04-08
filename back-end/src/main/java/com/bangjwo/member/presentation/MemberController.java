@@ -78,6 +78,22 @@ public class MemberController {
 		return ResponseEntity.ok().body(response);
 	}
 
+	@Operation(
+		summary = "계약된 매물 목록 조회",
+		description = "사용자가 계약한 매물(세입자/임대인)을 조회합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
+	@GetMapping("/contract")
+	public ResponseEntity<RoomListResponseDto> getContractedRooms(
+		@MemberHeader Long memberId,
+		@RequestParam(required = false) Integer page,
+		@RequestParam(required = false) Integer size
+	) {
+		var result = roomService.getContractedRooms(memberId, page, size);
+
+		return ResponseEntity.ok(result);
+	}
+
 	@Operation(summary = "좋아요한 매물 목록 조회", description = "로그인된 사용자가 좋아요한 매물 목록을 조회합니다.",
 		security = @SecurityRequirement(name = "JWT"))
 	@ApiResponse(responseCode = "200", description = "정상적으로 좋아요한 매물 목록을 반환했습니다.")
