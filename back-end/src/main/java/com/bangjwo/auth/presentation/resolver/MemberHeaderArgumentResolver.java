@@ -41,6 +41,7 @@ public class MemberHeaderArgumentResolver implements HandlerMethodArgumentResolv
 		}
 		String token = authorizationHeader.substring(7);
 		String memberIdStr = jwtTokenProvider.getClaims(token);
+		System.out.println("memberId : " + memberIdStr);
 
 		try {
 			return Long.valueOf(memberIdStr);

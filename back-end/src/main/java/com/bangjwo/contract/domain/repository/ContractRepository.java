@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import com.bangjwo.contract.domain.entity.Contract;
 
 @Repository
-public interface ContractRepository extends JpaRepository<Contract, Integer> {
+public interface ContractRepository extends JpaRepository<Contract, Long> {
 	Optional<Contract> findByContractId(Long contractId);
 }

@@ -33,9 +33,12 @@ public class MemberConverter {
 	public static MemberResponseDto toMemberDto(Member member) {
 		return MemberResponseDto.builder()
 			.id(member.getMemberId())
+			.name(member.getNickname())
 			.nickName(member.getNickname())
 			.isAuth(member.getIsAuth())
 			.profileUrl(member.getProfileUrl())
+			.birthday(member.getBirthday())
+			.phone(member.getPhone())
 			.build();
 	}
 

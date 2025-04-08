@@ -210,5 +210,9 @@ public class Room extends BaseEntity {
 	public void updateStatus(RoomStatus status) {
 		this.status = status;
 	}
+
+	public void updateVerified() {
+		this.verified = true;
+	}
 }
 

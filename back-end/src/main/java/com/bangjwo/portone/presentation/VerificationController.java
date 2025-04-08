@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bangjwo.auth.resolver.MemberHeader;
-import com.bangjwo.portone.application.dto.VerificationDto;
 import com.bangjwo.portone.application.dto.IdentityDto;
 import com.bangjwo.portone.application.service.VerificationService;
 
@@ -45,22 +43,22 @@ public class VerificationController {
 		return ResponseEntity.ok().body(verificationService.getVerification(dto.identityVerificationId()));
 	}
 
-	@Operation(
-		summary = "계약서 사용자 검증",
-		description = "포트원에서 받은 정보와 실제 회원 간의 정보를 비교합니다.",
-		security = @SecurityRequirement(name = "JWT"),
-		responses = {
-			@ApiResponse(responseCode = "200", description = "사용자 인증 성공"),
-			@ApiResponse(responseCode = "400", description = "요청 데이터 오류", content = @Content),
-			@ApiResponse(responseCode = "404", description = "계약서 또는 사용자 정보 없음", content = @Content)
-		}
-	)
-	@PostMapping("/contract")
-	public ResponseEntity<VerificationDto> certificationContract(
-		@MemberHeader Long userId,
-		@RequestBody VerificationDto dto) {
-
-		return ResponseEntity.ok(verificationService.vertificateContract(userId, dto));
-	}
+	// @Operation(
+	// 	summary = "계약서 사용자 검증",
+	// 	description = "포트원에서 받은 정보와 실제 회원 간의 정보를 비교합니다.",
+	// 	security = @SecurityRequirement(name = "JWT"),
+	// 	responses = {
+	// 		@ApiResponse(responseCode = "200", description = "사용자 인증 성공"),
+	// 		@ApiResponse(responseCode = "400", description = "요청 데이터 오류", content = @Content),
+	// 		@ApiResponse(responseCode = "404", description = "계약서 또는 사용자 정보 없음", content = @Content)
+	// 	}
+	// )
+	// @PostMapping("/contract")
+	// public ResponseEntity<VerificationDto> certificationContract(
+	// 	@MemberHeader Long userId,
+	// 	@RequestBody VerificationDto dto) {
+	//
+	// 	return ResponseEntity.ok(verificationService.vertificateContract(userId, dto));
+	// }
 
 }

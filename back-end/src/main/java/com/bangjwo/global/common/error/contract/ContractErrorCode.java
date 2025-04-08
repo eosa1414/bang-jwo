@@ -26,7 +26,9 @@ public enum ContractErrorCode implements ErrorCode {
 	INVALID_CONTRACT_ACCESS(HttpStatus.FORBIDDEN, "CONTRACT4013", "해당 계약서 통합 정보를 접근할 권한이 없습니다"),
 	INVALID_CONTRACT_STATUS_FOR_LANDLORD_SIGNATURE(HttpStatus.FORBIDDEN, "CONTRACT4014", "현재 상태에서는 임대인 서명이 불가능합니다."),
 	INVALID_CONTRACT_STATUS_FOR_TENANT_SIGNATURE(HttpStatus.FORBIDDEN, "CONTRACT4015", "현재 상태에서는 임차인 서명이 불가능합니다."),
-
+	INVALID_ROLE(HttpStatus.BAD_REQUEST, "CONTRACT4016", "유효하지 않은 계약 역할입니다."),
+	NO_AUTH_TO_ACCESS_LANDLORD(HttpStatus.FORBIDDEN, "CONTRACT4017", "임대인 본인인증 권한이 없습니다."),
+	NO_AUTH_TO_ACCESS_TENANT(HttpStatus.FORBIDDEN, "CONTRACT4018", "임차인 본인인증 권한이 없습니다."),
 	;
 
 	private final HttpStatus httpStatus;
