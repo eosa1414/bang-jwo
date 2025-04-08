@@ -23,6 +23,7 @@ import VerifyOwner from "./features/room-sell/components/VerifyOwner";
 import CreateSuccess from "./features/room-sell/components/CreateSuccess";
 import RoomSellNotice from "./features/room-sell/components/RoomSellNotice";
 import ChatPageOnly from "./features/chat/pages/ChatPageOnly";
+import PageMySell from "./features/mypage/sell/pages/PageMySell";
 import PageMyLike from "./features/mypage/like/pages/PageMyLike";
 import BuyerContractPage from "./features/contract/pages/BuyerContractPage";
 
@@ -95,7 +96,8 @@ function App() {
               </RedirectIfNotLoggedIn>
             }
           >
-            <Route index element={<PageMyAccount />} />
+            <Route index element={<PageAccount />} />
+            <Route path="sell" element={<PageMySell />} />
             <Route path="like" element={<PageMyLike />} />
           </Route>
           <Route path="/test" element={<PageTest />} />
