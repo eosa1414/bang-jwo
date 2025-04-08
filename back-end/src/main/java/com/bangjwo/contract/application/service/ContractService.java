@@ -23,6 +23,7 @@ import com.bangjwo.contract.application.dto.request.LandlordSignatureUpdateReque
 import com.bangjwo.contract.application.dto.request.TenantSignatureUpdateRequestDto;
 import com.bangjwo.contract.application.dto.request.UpdateLandlordInfoDto;
 import com.bangjwo.contract.application.dto.request.UpdateTenantInfoDto;
+import com.bangjwo.contract.application.dto.request.VerifyContractMemberDto;
 import com.bangjwo.contract.application.dto.response.ContractDetailResponseDto;
 import com.bangjwo.contract.application.dto.response.ContractStatusResponseDto;
 import com.bangjwo.contract.application.dto.response.LandlordInfoResponseDto;
@@ -32,6 +33,7 @@ import com.bangjwo.contract.domain.entity.LandlordInfo;
 import com.bangjwo.contract.domain.entity.SpecialClause;
 import com.bangjwo.contract.domain.entity.TenantInfo;
 import com.bangjwo.contract.domain.repository.ContractRepository;
+import com.bangjwo.contract.domain.vo.ContractRole;
 import com.bangjwo.contract.domain.vo.ContractStatus;
 import com.bangjwo.global.common.error.RedisLockErrorCode;
 import com.bangjwo.global.common.error.blockchain.BlockchainErrorCode;
@@ -39,6 +41,11 @@ import com.bangjwo.global.common.error.contract.ContractErrorCode;
 import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.global.common.exception.RoomException;
 import com.bangjwo.global.common.lock.RedisLock;
+import com.bangjwo.global.common.util.VerificationUtil;
+import com.bangjwo.member.application.service.MemberService;
+import com.bangjwo.member.domain.entity.Member;
+import com.bangjwo.portone.application.dto.IdentityDto;
+import com.bangjwo.portone.application.service.VerificationService;
 import com.bangjwo.room.application.service.RoomService;
 import com.bangjwo.room.domain.entity.Room;
 
@@ -50,8 +57,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ContractService {
 	private final RoomService roomService;
+	private final MemberService memberService;
 	private final ContractImageService contractImageService;
 	private final ContractRepository contractRepository;
+	private final VerificationService verificationService;
 	private final AESService aesService;
 	private final RSAService rsaService;
 	private final PinataStorageService pinataStorageService;
@@ -298,4 +307,38 @@ public class ContractService {
 		}
 	}
 
+	@Transactional
+	public void verifyContractMember(VerifyContractMemberDto dto, Long memberId) {
+		Contract contract = findContract(dto.contractId());
+		Member member = memberService.searchMember(memberId);
+		IdentityDto.IdentityResponse identity = verificationService.getVerification(dto.identityVerificationId());
+
+		validateContractRoleAccess(contract, memberId, dto.role());
+		VerificationUtil.compareMemberInfo(member, identity);
+		updateAuthStatus(contract, dto.role());
+	}
+
+	private void validateContractRoleAccess(Contract contract, Long memberId, ContractRole role) {
+		switch (role) {
+			case LANDLORD -> {
+				if (!contract.getLandlordId().equals(memberId)) {
+					throw new BusinessException(ContractErrorCode.NO_AUTH_TO_ACCESS_LANDLORD);
+				}
+			}
+			case TENANT -> {
+				if (!contract.getTenantId().equals(memberId)) {
+					throw new BusinessException(ContractErrorCode.NO_AUTH_TO_ACCESS_TENANT);
+				}
+			}
+			default -> throw new BusinessException(ContractErrorCode.INVALID_ROLE);
+		}
+	}
+
+	private void updateAuthStatus(Contract contract, ContractRole role) {
+		switch (role) {
+			case LANDLORD -> contract.updateLandlordAuth(true);
+			case TENANT -> contract.updateTenantAuth(true);
+			default -> throw new BusinessException(ContractErrorCode.INVALID_ROLE);
+		}
+	}
 }

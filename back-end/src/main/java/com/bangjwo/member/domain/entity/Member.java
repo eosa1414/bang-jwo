@@ -64,15 +64,10 @@ public class Member extends BaseEntity {
 	}
 
 	public void updateForVerify(String name, String birthday, String phone) {
-		if(name != null){
-			this.name = name;
-		}
-		if(birthday != null){
-			this.birthday = birthday;
-		}
-		if(phone != null){
-			this.phone = phone;
-		}
+		this.name = name;
+		this.birthday = birthday;
+		this.phone = phone;
+		this.isAuth = true;
 	}
 }
 
