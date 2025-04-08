@@ -4,7 +4,7 @@ import { Room } from "../../../../types/roomTypes";
 import ListItemRoom from "../../../../components/ListItemRoom";
 import Pagination from "../../../../components/buttons/Pagination";
 
-const PageLikes = () => {
+const PageMyLike = () => {
   const [likedRooms, setLikedRooms] = useState<Room[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -59,4 +59,4 @@ const PageLikes = () => {
   );
 };
 
-export default PageLikes;
+export default PageMyLike;
