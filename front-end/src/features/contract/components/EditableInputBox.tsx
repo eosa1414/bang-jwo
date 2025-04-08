@@ -5,12 +5,14 @@ interface EditableInputBoxProps {
   minLength?: number;
   maxLength?: number;
   customWidth?: string;
+  disabled?: boolean;
 }
 
 const EditableInputBox = ({
   value,
   onChange,
   placeholder,
+  minLength,
   maxLength = 10,
   customWidth = "w-[100px]",
 }: EditableInputBoxProps) => {
@@ -28,6 +30,7 @@ const EditableInputBox = ({
       onChange={handleChange}
       placeholder={placeholder}
       maxLength={maxLength}
+      minLength={minLength}
       className={`px-2 py-1 text-sm font-medium border-3 rounded-sm outline-none transition-colors duration-150
         ${value ? "border-neutral-gray" : "border-green"} 
         ${customWidth} cursor-pointer bg-white`}
