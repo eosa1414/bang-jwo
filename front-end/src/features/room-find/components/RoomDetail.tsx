@@ -11,9 +11,21 @@ import TabContent from "./TabContent";
 import Button from "../../../components/buttons/Button";
 import RoomOptions from "./RoomOptions";
 import BoxHeader from "./BoxHeader";
-import { roomBuildingTypeLabel, roomDirectionTypeLabel, roomOptionLabel, maintenanceIncludeLabel } from "../../../utils/roomMapper";
-import { RoomBuildingType, RoomDirection, RoomOption, MaintenanceIncludeName } from "../../../types/roomTypes";
+import {
+  roomBuildingTypeLabel,
+  roomDirectionTypeLabel,
+  roomOptionLabel,
+  maintenanceIncludeLabel,
+} from "../../../utils/roomMapper";
+import {
+  RoomBuildingType,
+  RoomDirection,
+  RoomOption,
+  MaintenanceIncludeName,
+} from "../../../types/roomTypes";
 import ModalPhoneCheck from "../../modal/pages/ModalPhoneCheck";
+import RoundedImage from "../../../components/RoundedImage";
+import MaterialIcon from "../../../components/MaterialIcon";
 
 interface RoomDetailProps {
   selectedRoomId: number | null;
@@ -57,15 +69,17 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
     "등기부등본 · 위험도",
   ];
   const roomOptions: string[] =
-  room?.options
-    .map((option) =>
-      option in roomOptionLabel
-        ? roomOptionLabel[option as RoomOption]
-        : undefined
-    )
-    .filter((label): label is string => typeof label === "string") || [];
+    room?.options
+      .map((option) =>
+        option in roomOptionLabel
+          ? roomOptionLabel[option as RoomOption]
+          : undefined
+      )
+      .filter((label): label is string => typeof label === "string") || [];
 
-  const allMaintenanceKeys = Object.keys(maintenanceIncludeLabel) as MaintenanceIncludeName[];
+  const allMaintenanceKeys = Object.keys(
+    maintenanceIncludeLabel
+  ) as MaintenanceIncludeName[];
 
   const includedKeys = room?.maintenanceIncludes ?? [];
   const excludedKeys = allMaintenanceKeys.filter(
@@ -141,8 +155,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   // 조건부 렌더링 처리
   if (!selectedRoomId) return null;
   if (isLoading) return <div>불러오는 중...</div>;
-  if (isError || !room)
-    return <div>에러 발생: {(error as Error).message}</div>;
+  if (isError || !room) return <div>에러 발생: {(error as Error).message}</div>;
 
   return (
     <AnimatePresence>
@@ -180,9 +193,15 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                         alt={`room image ${room.images[currentImageIndex].imageId}`}
                         className="absolute w-full h-full object-cover"
                         custom={direction}
-                        initial={{ x: direction === "left" ? -300 : 300, opacity: 0 }}
+                        initial={{
+                          x: direction === "left" ? -300 : 300,
+                          opacity: 0,
+                        }}
                         animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: direction === "left" ? 300 : -300, opacity: 0 }}
+                        exit={{
+                          x: direction === "left" ? 300 : -300,
+                          opacity: 0,
+                        }}
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                       />
                     </AnimatePresence>
@@ -215,7 +234,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                         }}
                         className="absolute top-1/2 right-2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-10"
                       >
-                        <i className="material-symbols-rounded">chevron_right</i>
+                        <MaterialIcon icon="chevron_right" />
                       </button>
                     </>
                   )}
@@ -261,7 +280,9 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                           keyboard_arrow_down
                         </i>
                         <span className="text-neutral-dark100">
-                          {room.discussable ? "가격 조정 가능" : "가격 조정 불가"}
+                          {room.discussable
+                            ? "가격 조정 가능"
+                            : "가격 조정 불가"}
                         </span>
                       </Button>
                     }
@@ -275,17 +296,23 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                     ref={titleRef}
                     className="flex flex-wrap gap-2 items-center"
                   >
-                    <span className="font-semibold text-xl">월세 {room.deposit}/{room.monthlyRent}</span>
+                    <span className="font-semibold text-xl">
+                      월세 {room.deposit}/{room.monthlyRent}
+                    </span>
                     <span className="font-light text-neutral-dark100">
                       {room.buildingType in roomBuildingTypeLabel
-                        ? roomBuildingTypeLabel[room.buildingType as RoomBuildingType]
+                        ? roomBuildingTypeLabel[
+                            room.buildingType as RoomBuildingType
+                          ]
                         : "기타"}
                     </span>
                   </div>
                   {/* review buttom */}
                   <div className="flex flex-wrap gap-1 items-center cursor-pointer">
                     <i className="material-symbols-rounded text-lg">reviews</i>
-                    <span className="font-semibold">리뷰 ${room.reviewCnt}개</span>
+                    <span className="font-semibold">
+                      리뷰 ${room.reviewCnt}개
+                    </span>
                     <i className="material-symbols-rounded text-base">
                       arrow_forward_ios
                     </i>
@@ -294,18 +321,16 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
                 {/* save price */}
                 <div className="p-[.875rem_1rem] font-semibold border rounded-md border-neutral-light100">
-                  직거래로 <span className="text-gold-dark">{room.deposit * 220}원</span>을
-                  아낄 수 있어요!
+                  직거래로{" "}
+                  <span className="text-gold-dark">{room.deposit * 220}원</span>
+                  을 아낄 수 있어요!
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  <div className="w-[2.375rem] h-[2.375rem] bg-neutral-light100 rounded-full overflow-hidden">
-                    <img
-                      className="w-full h-full object-cover rounded-full"
-                      src="https://images.pexels.com/photos/207272/pexels-photo-207272.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                      alt="profile image"
-                    />
-                  </div>
+                  <RoundedImage
+                    src="https://images.pexels.com/photos/207272/pexels-photo-207272.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                    alt="profile image"
+                  />
                   <div className="flex gap-1">
                     <span>작성자</span>
                     <span>·</span>
@@ -359,7 +384,9 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   }}
                   scrollMarginTop={48 + tabMenuHeight}
                 >
-                  <p className="text-xl font-bold">{room.maintenanceCost * 10000}원</p>
+                  <p className="text-xl font-bold">
+                    {room.maintenanceCost * 10000}원
+                  </p>
                   <RoomOptions
                     title="관리비 포함 항목"
                     roomOptions={maintenanceOptions}
@@ -380,9 +407,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   scrollMarginTop={48 + tabMenuHeight}
                 >
                   <div>
-                    <p>
-                      {room.description}
-                    </p>
+                    <p>{room.description}</p>
                   </div>
                 </TabContent>
 
@@ -395,7 +420,10 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   }}
                   scrollMarginTop={48 + tabMenuHeight}
                 >
-                  <ListItemLine title="입주 가능일" content={`${room.availableFrom}`} />
+                  <ListItemLine
+                    title="입주 가능일"
+                    content={`${room.availableFrom}`}
+                  />
                   <div className="flex flex-1 items-center gap-1">
                     <ListItemLine
                       title="면적 (공급/전용)"
@@ -403,28 +431,53 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                     />
                     <button>평</button>
                   </div>
-                  <ListItemLine title="방 수 / 욕실 수" content={`${room.roomCnt}개 / ${room.bathroomCnt}개`} />
-                  <ListItemLine title="위치" content={`${room.floor}층 (총 ${room.maxFloor}층)`} />
-                  <ListItemLine title="방향" content={`${room.direction in roomDirectionTypeLabel 
-                    ? roomDirectionTypeLabel[room.direction as RoomDirection] 
-                    : "비공개"} (거실 기준)`} />
                   <ListItemLine
-                    title="주소"
-                    content={`${room.address}`}
+                    title="방 수 / 욕실 수"
+                    content={`${room.roomCnt}개 / ${room.bathroomCnt}개`}
                   />
-                  <ListItemLine title="사용 승인일" content={`${room.permissionDate}`} />
+                  <ListItemLine
+                    title="위치"
+                    content={`${room.floor}층 (총 ${room.maxFloor}층)`}
+                  />
+                  <ListItemLine
+                    title="방향"
+                    content={`${
+                      room.direction in roomDirectionTypeLabel
+                        ? roomDirectionTypeLabel[
+                            room.direction as RoomDirection
+                          ]
+                        : "비공개"
+                    } (거실 기준)`}
+                  />
+                  <ListItemLine title="주소" content={`${room.address}`} />
+                  <ListItemLine
+                    title="사용 승인일"
+                    content={`${room.permissionDate}`}
+                  />
                   <ListItemLine
                     title="주차대수"
-                    content={`${room.parkingSpaces}대(세대 당 ${room.parkingSpaces / room.totalUnits}대)`}
+                    content={`${room.parkingSpaces}대(세대 당 ${
+                      room.parkingSpaces / room.totalUnits
+                    }대)`}
                   />
                   <ListItemLine
                     title="부동산 고유 번호"
                     content={`${room.realEstateId}`}
                   />
-                  <ListItemLine title="총 세대 수" content={`${room.totalUnits}`} />
-                  <ListItemLine title="유형" content={room.buildingType in roomBuildingTypeLabel
-                        ? roomBuildingTypeLabel[room.buildingType as RoomBuildingType]
-                        : "기타"} />
+                  <ListItemLine
+                    title="총 세대 수"
+                    content={`${room.totalUnits}`}
+                  />
+                  <ListItemLine
+                    title="유형"
+                    content={
+                      room.buildingType in roomBuildingTypeLabel
+                        ? roomBuildingTypeLabel[
+                            room.buildingType as RoomBuildingType
+                          ]
+                        : "기타"
+                    }
+                  />
                 </TabContent>
 
                 <div className="divider" />
@@ -437,9 +490,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   scrollMarginTop={48 + tabMenuHeight}
                 >
                   <div className="w-full h-[160px] bg-neutral-gray"></div>
-                  <div className="font-medium">
-                    {room.address}
-                  </div>
+                  <div className="font-medium">{room.address}</div>
                 </TabContent>
 
                 <div className="divider" />
@@ -463,7 +514,12 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
               {/* box footer */}
               <div className="flex w-full h-[48px] bg-gold-light justify-around items-center bottom-[0px] absolute py-[0.875rem] text-base font-semibold">
                 <div className="flex-grow text-center">
-                  <p className="cursor-pointer" onClick={() => setIsPhoneModalOpen(true)}>전화</p>
+                  <p
+                    className="cursor-pointer"
+                    onClick={() => setIsPhoneModalOpen(true)}
+                  >
+                    전화
+                  </p>
                   <ModalPhoneCheck
                     isOpen={isPhoneModalOpen}
                     closeModal={() => setIsPhoneModalOpen(false)}
