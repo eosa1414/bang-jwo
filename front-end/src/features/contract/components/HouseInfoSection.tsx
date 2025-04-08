@@ -86,21 +86,22 @@ const HouseInfoSection = ({
                 customWidth="w-[340px]"
               />
             )}
-          {isLessee ? (
-            <DisabledInputBox
-              value={detailAddress}
-              placeholder="상세주소"
-              customWidth="w-[300px]"
-            />
-          ) : (
-            <EditableInputBox
-              value={detailAddress}
-              onChange={(val) => onChange("detailAddress", val)}
-              placeholder="상세주소"
-              maxLength={50}
-              customWidth="w-[300px]"
-            />
-          )}
+            {isLessee ? (
+              <DisabledInputBox
+                value={detailAddress}
+                placeholder="상세주소"
+                customWidth="w-[300px]"
+              />
+            ) : (
+              <EditableInputBox
+                value={detailAddress}
+                onChange={(val) => onChange("detailAddress", val)}
+                placeholder="상세주소"
+                maxLength={50}
+                customWidth="w-[300px]"
+              />
+            )}
+          </div>
         </div>
       </div>
 
