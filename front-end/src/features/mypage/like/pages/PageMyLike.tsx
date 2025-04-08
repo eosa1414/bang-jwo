@@ -18,7 +18,7 @@ const PageMyLike = () => {
         setLikedRooms(res.items);
         setTotalPages(res.totalPages);
       } catch (error) {
-        console.error("좋아요 목록 불러오기 실패:", error);
+        console.error("Failed to load likes:", error);
       } finally {
         setLoading(false);
       }
@@ -32,7 +32,7 @@ const PageMyLike = () => {
       {loading ? (
         <p className="text-center text-sm px-2 py-8">Now Loading...</p>
       ) : likedRooms.length === 0 ? (
-        <p className="text-center text-sm px-2 py-8">찜한 매물이 없습니다.</p>
+        <p className="text-center text-sm px-2 py-8">찜한 집이 없습니다.</p>
       ) : (
         <div>
           <ul>
