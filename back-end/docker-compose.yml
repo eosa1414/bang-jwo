@@ -119,6 +119,8 @@ services:
   apm-server:
     image: docker.elastic.co/apm/apm-server:8.17.4
     container_name: apm-server
+    env_file:
+      - .env
     ports:
       - "8200:8200"
     networks:
