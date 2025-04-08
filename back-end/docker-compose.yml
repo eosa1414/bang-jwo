@@ -125,11 +125,13 @@ services:
       - bangjwo-network
       - elk
     environment:
-      - output.elasticsearch.hosts=["http://j12a404.p.ssafy.io:9200"]
-      - setup.kibana.host=http://j12a404.p.ssafy.io:5601
-      - apm-server.host=0.0.0.0:8200
-
-
+      - APM_SERVER_OUTPUT_ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - APM_SERVER_SETUP_KIBANA_HOST=http://kibana:5601
+      - APM_SERVER_HOST=0.0.0.0:8200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - KIBANA_USERNAME=kibana_system
+      - KIBANA_PASSWORD=${KIBANA_SYSTEM_PASSWORD}
 
 volumes:
   db-volume:
