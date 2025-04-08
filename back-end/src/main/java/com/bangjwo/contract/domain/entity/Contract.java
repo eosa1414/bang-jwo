@@ -99,6 +99,14 @@ public class Contract extends BaseEntity {
 		this.contractStatus = status;
 	}
 
+	public void updateLandlordAuth(boolean isVerified) {
+		this.landlordAuth = isVerified;
+	}
+
+	public void updateTenantAuth(boolean isVerified) {
+		this.tenantAuth = isVerified;
+	}
+
 	public void updateIpfsKey(String ipfsKey) {
 		this.ipfsKey = ipfsKey;
 	}
@@ -106,4 +114,5 @@ public class Contract extends BaseEntity {
 	public void updateAesKey(String aesKey) {
 		this.aesKey = aesKey;
 	}
+
 }
