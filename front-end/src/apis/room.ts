@@ -25,3 +25,10 @@ export const postRoom = async (formData: FormData) => {
   });
   return res.data;
 };
+
+export const fetchMyRooms = async (page: number = 0, size: number) => {
+  const res = await axiosInstance.get<RoomResponse>("/api/v1/room/me", {
+    params: { page, size },
+  });
+  return res.data;
+};

@@ -24,6 +24,7 @@ import VerifyOwner from "./features/room-sell/components/VerifyOwner";
 import CreateSuccess from "./features/room-sell/components/CreateSuccess";
 import RoomSellNotice from "./features/room-sell/components/RoomSellNotice";
 import ChatPageOnly from "./features/chat/pages/ChatPageOnly";
+import PageMySell from "./features/mypage/sell/pages/PageMySell";
 
 function App() {
   return (
@@ -95,6 +96,7 @@ function App() {
             }
           >
             <Route index element={<PageAccount />} />
+            <Route path="sell" element={<PageMySell />} />
           </Route>
           <Route path="/test" element={<PageTest />} />
           <Route path="/test/button" element={<PageTestButton />} />
