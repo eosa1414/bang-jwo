@@ -8,6 +8,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bangjwo.contract.domain.entity.Contract;
+import com.bangjwo.contract.domain.repository.ContractRepository;
 import com.bangjwo.global.common.error.room.RoomErrorCode;
 import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.global.common.exception.RoomException;
@@ -47,6 +49,7 @@ public class RoomService {
 	private final ReviewService reviewService;
 	private final MemberService memberService;
 	private final VerificationService verificationService;
+	private final ContractRepository contractRepository;
 
 	@Transactional
 	public void createRoom(CreateRoomRequestDto requestDto, Long memberId) {
@@ -225,6 +228,21 @@ public class RoomService {
 			.toList();
 
 		return new RoomListResponseDto(totalItems, page, size, roomSummaryList);
+	}
+
+	@Transactional(readOnly = true)
+	public RoomListResponseDto getContractedRooms(Long memberId, Integer page, Integer size) {
+		var pageable = PaginationRequest.toPageable(page, size);
+		var contracts = contractRepository.findByLandlordIdOrTenantId(memberId, memberId, pageable);
+
+		var rooms = contracts.getContent().stream()
+			.map(Contract::getRoom)
+			.filter(room -> room.getDeletedAt() == null)
+			.toList();
+
+		int totalItems = (int)contracts.getTotalElements();
+
+		return createRoomListResponseDto(rooms, totalItems, pageable.getPageNumber(), pageable.getPageSize(), memberId);
 	}
 
 	private Specification<Room> buildRoomSearchSpec(Integer price, List<RoomAreaType> areaTypes,
