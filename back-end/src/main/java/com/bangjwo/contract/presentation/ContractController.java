@@ -23,6 +23,7 @@ import com.bangjwo.contract.application.dto.request.LandlordSignatureUpdateReque
 import com.bangjwo.contract.application.dto.request.TenantSignatureUpdateRequestDto;
 import com.bangjwo.contract.application.dto.request.UpdateLandlordInfoDto;
 import com.bangjwo.contract.application.dto.request.UpdateTenantInfoDto;
+import com.bangjwo.contract.application.dto.request.VerifyContractMemberDto;
 import com.bangjwo.contract.application.dto.response.ContractDetailResponseDto;
 import com.bangjwo.contract.application.dto.response.ContractStatusResponseDto;
 import com.bangjwo.contract.application.dto.response.LandlordInfoResponseDto;
@@ -272,6 +273,21 @@ public class ContractController {
 		@MemberHeader Long memberId) {
 		contractService.updateTenantSignature(requestDto, memberId);
 
+		return ResponseEntity.noContent().build();
+	}
+
+	@Operation(
+		summary = "계약 본인 인증",
+		description = "임대인 또는 임차인의 본인 인증을 수행하고, 계약에 인증 여부를 저장합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
+	@PatchMapping("/verify")
+	public ResponseEntity<Void> verifyContractMember(
+		@RequestBody @Valid VerifyContractMemberDto dto,
+		@MemberHeader Long memberId
+	) {
+		contractService.verifyContractMember(dto, memberId);
+		
 		return ResponseEntity.noContent().build();
 	}
 

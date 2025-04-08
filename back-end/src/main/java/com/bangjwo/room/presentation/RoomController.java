@@ -22,6 +22,7 @@ import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomStatusDto;
+import com.bangjwo.room.application.dto.request.VerifyRoomRequestDto;
 import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
 import com.bangjwo.room.application.dto.response.SearchDetailRoomResponseDto;
@@ -208,5 +209,17 @@ public class RoomController {
 		roomService.updateRoomStatus(requestDto);
 
 		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{roomId}/verify")
+	@Operation(summary = "매물 본인 인증", description = "본인인증 성공 시 해당 매물을 verified 처리합니다.",
+		security = @SecurityRequirement(name = "JWT"))
+	public ResponseEntity<Void> verifyRoom(
+		@MemberHeader Long memberId,
+		@RequestBody VerifyRoomRequestDto dto
+	) {
+		roomService.verifyRoom(memberId, dto);
+
+		return ResponseEntity.ok().build();
 	}
 }

@@ -12,7 +12,8 @@ import com.bangjwo.member.application.dto.response.MemberResponseDto;
 import com.bangjwo.member.application.dto.response.ReviewListResponseDto;
 import com.bangjwo.member.domain.entity.Member;
 import com.bangjwo.member.domain.repository.MemberRepository;
-import com.bangjwo.portone.application.dto.VerificationDto;
+import com.bangjwo.portone.application.dto.IdentityDto;
+import com.bangjwo.portone.application.service.VerificationService;
 import com.bangjwo.room.domain.repository.ReviewRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	private final MemberImageService memberImageService;
 	private final ReviewRepository reviewRepository;
+	private final VerificationService verificationService;
 
 	@Transactional(readOnly = true)
 	public MemberResponseDto getMyInfo(Long memberId) {
@@ -62,11 +64,13 @@ public class MemberService {
 	}
 
 	@Transactional
-	public void updateMemberForVerify(Long userId, VerificationDto dto) {
-		Member member = searchMember(userId);
+	public void updateMemberForVerify(Long memberId, IdentityDto.IdentityRequest dto) {
+		IdentityDto.IdentityResponse identity = verificationService.getVerification(dto.identityVerificationId());
+		Member member = searchMember(memberId);
 
-		if(dto.name()!= null && dto.birthDate() != null && dto.phone() != null) {
-			member.updateForVerify(dto.name(), dto.birthDate(), dto.phone());
-		}
+		System.out.println(
+			"name : " + identity.name() + " phone : " + identity.phone() + " birthDate : " + identity.birthDate());
+
+		member.updateForVerify(identity.name(), identity.birthDate(), identity.phone());
 	}
 }
