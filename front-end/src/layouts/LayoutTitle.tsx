@@ -13,7 +13,7 @@ const LayoutTitle = ({
 }: LayoutTitleProps) => {
   return (
     <div
-      className={`w-full m-auto mx-auto max-w-4xl flex flex-col py-[1.125rem] items-center ${wrapperClassName}`}
+      className={`w-full m-auto mx-auto max-w-4xl flex flex-col px-4 pt-[1.125rem] pb-[4.375rem] items-center ${wrapperClassName}`}
     >
       <h1 className="py-[3.25rem]">{title}</h1>
       {children}

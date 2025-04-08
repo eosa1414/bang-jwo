@@ -126,11 +126,17 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--color-gold);
   text-decoration: inherit;
+  transition: color 0.3s;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--color-gold-dark);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-neutral-gray);
 }
 
 body {
@@ -145,9 +151,6 @@ h1 {
   :root {
     color: var(--color-neutral-dark300);
     background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
   }
 }
 

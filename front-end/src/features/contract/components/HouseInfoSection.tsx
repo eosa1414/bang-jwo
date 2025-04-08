@@ -3,6 +3,7 @@ import NoticeGray from "../../../components/notices/NoticeGray";
 import ContractTypeSelector from "./ContractTypeSelector";
 import { useState } from "react";
 import DisabledInputBox from "./DisabledInputBox"; // 비활성화 박스도 import
+import { openAddressSearch } from "../../../utils/openAddressSearch";
 
 interface HouseInfoSectionProps {
   mode: "lessor" | "lessee";
@@ -29,29 +30,6 @@ interface HouseInfoSectionProps {
   openSignatureModal: (type: "unpaid" | "priority" | "receipt") => void;
 }
 
-declare global {
-  interface Window {
-    daum: {
-      Postcode: new (options: {
-        oncomplete: (data: DaumPostcodeData) => void;
-      }) => {
-        open(): void;
-      };
-    };
-  }
-}
-
-interface DaumPostcodeData {
-  roadAddress: string;
-  jibunAddress: string;
-  zonecode: string;
-  address: string;
-  addressType: "R" | "J";
-  buildingName: string;
-  apartment: "Y" | "N";
-  bname: string;
-}
-
 const HouseInfoSection = ({
   mode,
   address,
@@ -76,17 +54,6 @@ const HouseInfoSection = ({
 
   const isLessee = mode === "lessee";
 
-  const openAddressSearch = () => {
-    if (!isLessee) {
-      new window.daum.Postcode({
-        oncomplete: function (data: DaumPostcodeData) {
-          const roadAddress = data.roadAddress;
-          onChange("address", roadAddress);
-        },
-      }).open();
-    }
-  };
-
   return (
     <div className="mt-10">
       <h3 className="text-lg font-extrabold">[임차주택의 표시]</h3>
@@ -96,7 +63,13 @@ const HouseInfoSection = ({
         <div className="flex gap-2">
           <div
             className={isLessee ? "cursor-default" : "cursor-pointer"}
-            onClick={openAddressSearch}
+            onClick={() => {
+              if (!isLessee) {
+                openAddressSearch((data) =>
+                  onChange("address", data.roadAddress)
+                );
+              }
+            }}
           >
             {isLessee ? (
               <DisabledInputBox
@@ -113,7 +86,6 @@ const HouseInfoSection = ({
                 customWidth="w-[340px]"
               />
             )}
-          </div>
           {isLessee ? (
             <DisabledInputBox
               value={detailAddress}

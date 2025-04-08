@@ -16,6 +16,12 @@ import RedirectRoomFind from "./features/room-find/components/RedirectRoomFind";
 import PageNotFound from "./pages/PageNotFound";
 import PageLogin from "./features/auth/pages/PageLogin";
 import PageKakaoRedirect from "./features/auth/pages/PageKakaoRedirect";
+import PageRoomSellCreate from "./features/room-sell/pages/PageRoomSellCreate";
+import PageRoomSellUpdate from "./features/room-sell/pages/PageRoomSellUpdate";
+import RoomForm from "./features/room-sell/components/RoomForm";
+import VerifyOwner from "./features/room-sell/components/VerifyOwner";
+import CreateSuccess from "./features/room-sell/components/CreateSuccess";
+import RoomSellNotice from "./features/room-sell/components/RoomSellNotice";
 import ChatPageOnly from "./features/chat/pages/ChatPageOnly";
 import BuyerContractPage from "./features/contract/pages/BuyerContractPage";
 
@@ -46,7 +52,24 @@ function App() {
           />
           <Route
             path="/room/sell"
-            element={<LayoutMain>집 내놓기 화면</LayoutMain>}
+            element={
+              <LayoutMain>
+                <PageRoomSellCreate />
+              </LayoutMain>
+            }
+          >
+            <Route index element={<RoomSellNotice />} />
+            <Route path="write" element={<RoomForm type="create" />} />
+            <Route path="verify" element={<VerifyOwner />} />
+            <Route path="success" element={<CreateSuccess />} />
+          </Route>
+          <Route
+            path="/room/update/:roomId"
+            element={
+              <LayoutMain>
+                <PageRoomSellUpdate />
+              </LayoutMain>
+            }
           />
           <Route
             path="/login"

@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "../Logo";
 import { useAuth } from "../../contexts/AuthContext";
 import Button from "../buttons/Button";
+import MaterialIcon from "../MaterialIcon";
 
 interface HeaderProps {
   title?: string;
@@ -65,12 +66,16 @@ const Header = ({ title, variant = "light" }: HeaderProps) => {
                 ) : null}
               </ul>
             </nav>
-            {/* 임시 로그인/로그아웃 버튼 */}
-            <i className="material-symbols-rounded" onClick={openChatWindow}>chat</i>
+            {/* 로그인/로그아웃 버튼 */}
             {user ? (
               <>
-                <i className="material-symbols-rounded">chat</i>
-                <i className="material-symbols-rounded">account_circle</i>
+                <div
+                  onClick={openChatWindow}
+                  className="flex justify-center items-center cursor-pointer"
+                >
+                  <MaterialIcon icon="chat" />
+                </div>
+                <MaterialIcon icon="account_circle" />
               </>
             ) : (
               <Button size="small" onClick={() => navigate("/login")}>
