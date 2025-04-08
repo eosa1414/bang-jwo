@@ -119,21 +119,25 @@ services:
   apm-server:
     image: docker.elastic.co/apm/apm-server:8.17.4
     container_name: apm-server
+    env_file:
+      - .env
     ports:
       - "8200:8200"
     networks:
       - bangjwo-network
       - elk
-    dns_search:
-      - docker-elk_elk
+    extra_hosts:
+      - "elasticsearch:192.168.192.2"
     environment:
       - APM_SERVER_OUTPUT_ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - APM_SERVER_SETUP_KIBANA_HOST=http://kibana:5601
       - APM_SERVER_HOST=0.0.0.0:8200
-      - ELASTICSEARCH_USERNAME=elastic
-      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - KIBANA_USERNAME=kibana_system
-      - KIBANA_PASSWORD=${KIBANA_SYSTEM_PASSWORD}
+      - KIBANA_SYSTEM_PASSWORD=${KIBANA_SYSTEM_PASSWORD}
+    restart: unless-stopped
+
 
 volumes:
   db-volume:
