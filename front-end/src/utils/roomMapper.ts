@@ -38,11 +38,11 @@ export const roomBuildingTypeLabel: Record<RoomBuildingType, string> = {
 
 export const roomDirectionTypeLabel: Record<RoomDirection, string> = {
   NORTH: "북향",
-  NORTH_EAST: "북동향",
+  NORTHEAST: "북동향",
   EAST: "동향",
-  SOUTH_EAST: "남동향",
+  SOUTHEAST: "남동향",
   SOUTH: "남향",
-  SOUTH_WEST: "남서향",
+  SOUTHWEST: "남서향",
   WEST: "서향",
-  NORTH_WEST: "북서향",
+  NORTHWEST: "북서향",
 };

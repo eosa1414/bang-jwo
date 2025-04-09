@@ -3,14 +3,15 @@ import Button from "../../../../components/buttons/Button";
 import LineBox from "../../../../components/LineBox";
 import { useAuth } from "../../../../contexts/AuthContext";
 import useModal from "../../../modal/hooks/useModal";
-// import ModalDeleteAccountConfirm from "../../../modal/pages/ModalDeleteAccountConfirm";
+import ModalDeleteAccountConfirm from "../../../modal/pages/ModalDeleteAccountConfirm";
 import ModalUpdateProfile from "../../components/ModalUpdateProfile";
 import { getMyProfile } from "../services/accountService";
 import Toast from "../../../toast/components/Toast";
 import RoundedImage from "../../../../components/RoundedImage";
+import { runIdentityVerification } from "../../../verify/utils/verify";
 
 const PageAccount = () => {
-  const { logout } = useAuth();
+  const { accessToken, logout } = useAuth();
   const { isOpen, openModal, closeModal } = useModal();
 
   const [nickname, setNickname] = useState("");
@@ -72,7 +73,21 @@ const PageAccount = () => {
               </div>
               <Button
                 onClick={() => {
-                  alert("구현 예정");
+                  if (!accessToken) {
+                    setToastMessage("로그인이 필요합니다.");
+                    return;
+                  }
+
+                  runIdentityVerification({
+                    verificationType: "member",
+                    onSuccess: () => {
+                      fetchProfile();
+                      setToastMessage("본인 인증 완료되었습니다.");
+                    },
+                    onFailure: () => {
+                      setToastMessage("본인 인증이 완료되지 않았습니다.");
+                    },
+                  });
                 }}
                 size="small"
               >
@@ -87,7 +102,8 @@ const PageAccount = () => {
           로그아웃하기
         </button>
       </LineBox>
-      {/* <div className="text-right p-[0.375rem_1.5rem] text-sm text-neutral-gray">
+
+      <div className="text-right p-[0.375rem_1.5rem] text-sm text-neutral-gray">
         <button
           onClick={() => openModal("deleteAccount")}
           className="w-fit underline cursor-pointer"
@@ -97,8 +113,9 @@ const PageAccount = () => {
         <ModalDeleteAccountConfirm
           isOpen={isOpen("deleteAccount")}
           closeModal={() => closeModal("deleteAccount")}
+          setToastMessage={setToastMessage}
         />
-      </div> */}
+      </div>
     </div>
   );
 };

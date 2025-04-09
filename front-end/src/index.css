@@ -109,6 +109,11 @@
   @apply font-bold;
 }
 
+/* datepicker로 생기는 여백 임시 처리 */
+.react-datepicker__tab-loop {
+  margin-left: -0.5rem;
+}
+
 :root {
   font-family: Pretendard Variable, system-ui, Avenir, Helvetica, Arial,
     sans-serif;
