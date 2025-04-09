@@ -1,6 +1,5 @@
 package com.bangjwo.portone.presentation;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bangjwo.auth.resolver.MemberHeader;
 import com.bangjwo.portone.application.dto.PaymentDto;
 import com.bangjwo.portone.application.service.PaymentService;
-import com.bangjwo.portone.domain.entity.PaymentStatus;
-import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 
@@ -45,20 +41,20 @@ public class PaymentController {
 		summary = "사전 정보 입력",
 		description = "결제 전 아이엠포트에 사전등록 및 DB에 사용자의 결제 정보를 저장합니다.",
 		security = @SecurityRequirement(name = "JWT"),
-		responses  = {
-				@ApiResponse(responseCode = "200", description = "사전 정보 저장 성공"),
-				@ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content),
-				@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+		responses = {
+			@ApiResponse(responseCode = "200", description = "사전 정보 저장 성공"),
+			@ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content),
+			@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
 		}
 	)
 	@PostMapping("/prepare")
 	public ResponseEntity<Map<String, Object>> prepareOrder(
-			@RequestBody PaymentDto.RequestDto dto) {
+		@RequestBody PaymentDto.RequestDto dto) {    // 매물 + 회원 ID
 		String merchantUid = "ORD" + System.currentTimeMillis();
-		int amount = 1000;
+		int amount = 100;
 
 		paymentService.registerPaymentPrepare(merchantUid, amount);
-		paymentService.prePayment(dto, merchantUid);
+		paymentService.prePayment(dto, merchantUid);    // dto를 받아오는데 저장을 안하고 있음
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("merchant_uid", merchantUid);
@@ -69,10 +65,10 @@ public class PaymentController {
 	}
 
 	/*
-	* 결제 검증
-	* 프론트에서 결제 완료를 하고 나서 나온 UUID와
-	* 포트원에 결제 단건 조회 API 요청해서 나온 응답값 비교
-	* */
+	 * 결제 검증
+	 * 프론트에서 결제 완료를 하고 나서 나온 UUID와
+	 * 포트원에 결제 단건 조회 API 요청해서 나온 응답값 비교
+	 * */
 	@Operation(
 		summary = "결제 검증",
 		description = "포트원에 결제 내역을 검증을 요청하고 결제 내역을 DB에 저장합니다."
@@ -111,8 +107,8 @@ public class PaymentController {
 	}
 
 	/*
-	* 결제 목록 조회
-	* */
+	 * 결제 목록 조회
+	 * */
 	@Operation(
 		summary = "결제 목록 조회",
 		description = "결제 목록을 조회합니다.",

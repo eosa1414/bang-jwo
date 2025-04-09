@@ -19,14 +19,19 @@ CREATE TABLE IF NOT EXISTS `memo` (
 );
 
 CREATE TABLE IF NOT EXISTS `payment` (
-    `payment_id`					BIGINT		    NOT NULL	AUTO_INCREMENT PRIMARY KEY,
-    `imp_uid`                       VARCHAR(255)    NOT NULL,
-    `member_id`						BIGINT		    NOT NULL,
-    `room_id`						BIGINT		    NOT NULL,
-    `payment_status`                ENUM('READY', 'PAID', 'FAILED') NOT NULL DEFAULT 'READY',
-    `created_at`				    TIMESTAMP	    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at`                    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    `payment_id`        BIGINT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `imp_uid`           VARCHAR(255)    NULL,
+    `merchant_uid`      VARCHAR(255)    NOT NULL,
+    `member_id`         BIGINT          NOT NULL,
+    `room_id`           BIGINT          NOT NULL,
+    `payment_status`    ENUM('READY', 'PAID', 'FAILED') NOT NULL DEFAULT 'READY',
+    `pdf_url`           VARCHAR(255)    NULL,
+    `json_url`          VARCHAR(255)    NULL,
+    `created_at`        TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`        TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at`        TIMESTAMP       NULL
 );
+
 
 CREATE TABLE IF NOT EXISTS `landlord_info` (
     `landlord_info_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
