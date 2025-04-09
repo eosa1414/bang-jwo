@@ -13,9 +13,10 @@ import SearchBar from "../../../components/SearchBar";
 import InfoText from "../../../components/InfoText";
 import FilterPannel from "../../../components/FilterPannel";
 import RoomDetail from "../components/RoomDetail";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const PageRoomFind = () => {
+  const { category } = useParams();
   const [params, setParams] = useState<RoomQueryParams>(defaultParams);
   const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
   const navigate = useNavigate();
@@ -33,12 +34,13 @@ const PageRoomFind = () => {
       lat: lat ? parseFloat(lat) : prevParams.lat,
       lng: lng ? parseFloat(lng) : prevParams.lng,
       zoom: zoom ? parseInt(zoom, 10) : prevParams.zoom,
+      buildingType: category ?? "ONEROOM_TWOROOM",
     }));
 
     if (roomId) {
       setSelectedRoomId(parseInt(roomId, 10));
     }
-  }, [location.search]);
+  }, [location.search, category]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);

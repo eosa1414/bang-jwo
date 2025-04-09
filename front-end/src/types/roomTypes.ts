@@ -56,7 +56,7 @@ export interface RoomResponse {
 export interface RoomQueryParams {
   buildingType?: string;
   price?: string;
-  area?: string;
+  areaTypes?: string;
   lat?: number;
   lng?: number;
   zoom?: number;
@@ -64,9 +64,9 @@ export interface RoomQueryParams {
 }
 
 export const defaultParams: RoomQueryParams = {
-  buildingType: "",
+  buildingType: "ONEROOM_TWOROOM",
   price: "",
-  area: "",
+  areaTypes: "",
   lat: 37.5,
   lng: 127.04,
   zoom: 4,
