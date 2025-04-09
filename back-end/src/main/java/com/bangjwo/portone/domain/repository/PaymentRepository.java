@@ -13,5 +13,7 @@ public interface PaymentRepository extends JpaRepository<Payments, Long> {
 
 	Optional<Payments> findByImpUid(String impUid);
 
+	Optional<Payments> findByMerchantUid(String merchantUid);
+
 	List<Payments> findAllByMemberIdOrderByUpdatedAtAsc(Long memberId);
 }

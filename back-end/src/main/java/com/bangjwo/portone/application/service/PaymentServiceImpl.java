@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.siot.IamportRestClient.request.PrepareData;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,11 +12,12 @@ import com.bangjwo.global.common.error.portone.PortoneErrorCode;
 import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.portone.application.convert.PaymentConverter;
 import com.bangjwo.portone.application.dto.PaymentDto;
-import com.bangjwo.portone.domain.entity.Payments;
 import com.bangjwo.portone.domain.entity.PaymentStatus;
+import com.bangjwo.portone.domain.entity.Payments;
 import com.bangjwo.portone.domain.repository.PaymentRepository;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
+import com.siot.IamportRestClient.request.PrepareData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 
@@ -27,6 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
+
+	@Value("${imp.secret.verificate}")
+	private String secret;
 
 	private final PaymentRepository paymentRepository;
 	private final IamportClient iamportClient;
@@ -46,9 +50,8 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional
 	public PaymentDto.ResponseDto prePayment(PaymentDto.RequestDto dto, String merchantUid) {
 		try {
-			Payments result = PaymentConverter.toEntity(dto);
-			result.setImpUid(merchantUid);
-			result.setStatus(PaymentStatus.PAID);
+			Payments result = PaymentConverter.toEntity(dto, merchantUid);
+
 			paymentRepository.save(result);
 
 			return PaymentConverter.toDto(result);
@@ -64,19 +67,29 @@ public class PaymentServiceImpl implements PaymentService {
 		try {
 			IamportResponse<Payment> payment = iamportClient.paymentByImpUid(impUid);
 
-			Payments result = paymentRepository.findByImpUid(impUid)
-					.orElseThrow(() -> new BusinessException(PortoneErrorCode.IMP_UID_NOT_FOUND));
-
 			if (payment == null || payment.getResponse() == null) {
 				throw new BusinessException(PortoneErrorCode.IMP_UID_NOT_FOUND);
 			}
 
-			if(!"paid".equals(payment.getResponse().getStatus())) {
+			String merchantUid = payment.getResponse().getMerchantUid();
+			Payments result = paymentRepository.findByMerchantUid(merchantUid)
+				.orElseThrow(() -> new BusinessException(PortoneErrorCode.IMP_UID_NOT_FOUND));
+
+			if (!"paid".equals(payment.getResponse().getStatus())) {
 				result.changeStatus(PaymentStatus.FAILED);
 				throw new BusinessException(PortoneErrorCode.PAYMENT_FAILED);
 			}
 
+			result.setImpUid(payment.getResponse().getImpUid());
 			result.changeStatus(PaymentStatus.PAID);
+
+			// ✅ 더미 데이터 연결 (roomId 기준)
+			Long roomId = result.getRoomId();
+			String pdfKey = roomId % 2 == 0 ? "registry2.pdf" : "registry.pdf";
+			String jsonKey = roomId % 2 == 0 ? "hyphen2.json" : "hyphen.json";
+
+			result.setPdfUrl(pdfKey);
+			result.setJsonUrl(jsonKey);
 
 			log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}", payment.getResponse().getMerchantUid());
 			return payment;
