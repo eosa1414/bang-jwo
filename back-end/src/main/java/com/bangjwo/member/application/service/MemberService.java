@@ -73,4 +73,10 @@ public class MemberService {
 
 		member.updateForVerify(identity.name(), identity.birthDate(), identity.phone());
 	}
+
+	@Transactional
+	public void withdraw(Long memberId) {
+		var member = searchMember(memberId);
+		member.softDelete();
+	}
 }
