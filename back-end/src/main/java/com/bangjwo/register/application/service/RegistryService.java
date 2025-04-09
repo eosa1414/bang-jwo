@@ -6,11 +6,16 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.bangjwo.auth.resolver.MemberHeader;
+import com.bangjwo.global.common.error.portone.PortoneErrorCode;
 import com.bangjwo.global.common.error.registry.RegistryErrorCode;
 import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.global.common.page.PageResponse;
 import com.bangjwo.global.common.page.PaginationRequest;
+import com.bangjwo.portone.application.dto.PaymentDto;
+import com.bangjwo.portone.application.service.PaymentService;
 import com.bangjwo.register.application.convert.RegistryConverter;
 import com.bangjwo.register.application.dto.RegistryHyphenDto;
 import com.bangjwo.register.application.dto.request.RegistryRequestDto;
@@ -20,6 +25,8 @@ import com.bangjwo.register.application.dto.response.RiskDetailDto;
 import com.bangjwo.register.domain.entity.RegistryDocument;
 import com.bangjwo.register.domain.repository.RegistryDocumentRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -27,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class RegistryService {
 
 	private final HyphenParsingInterface hyphenParsing;
+	private final PaymentService paymentService;
 	private final RegistryDocumentRepository registryRepo;
 
 	// S3 폴더 접두어 (JSON만 필요)
@@ -68,14 +76,13 @@ public class RegistryService {
 		return registry;
 	}
 
-	/**
-	 * 특정 회원(memberId)의 등기부 등록 정보 요약을 페이지네이션 형태로 조회하여 반환합니다.
-	 *
-	 * @param memberId 회원 ID
-	 * @param page     조회할 페이지 번호 (1부터 시작)
-	 * @return PageResponse containing RegistrySummaryDto 리스트
-	 */
-	public PageResponse<RegistrySummaryDto> getRegistrySummariesByMemberId(Long memberId, Integer page) {
+	@Operation(
+		summary = "회원별 등기부 문서 목록 조회",
+		description = "특정 회원의 등기부 등록 문서 목록을 페이지네이션 형태로 조회합니다. 회원 인증이 필요합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
+	public PageResponse<RegistrySummaryDto> getRegistrySummariesByMemberId(@MemberHeader Long memberId,
+		@RequestParam Integer page) {
 		Pageable pageable = PaginationRequest.toPageable(page);
 		Page<RegistryDocument> docs = registryRepo.findByServerDataMemberId(memberId, pageable);
 		List<RegistrySummaryDto> dtos = docs.getContent().stream()
@@ -91,6 +98,22 @@ public class RegistryService {
 		}
 
 		return registry;
+	}
+
+	public AnalysisResultDto analyzeByPaymentId(Long paymentId, Long memberId) {
+		PaymentDto.ResponseDto payment = paymentService.getPaymentResult(paymentId);
+
+		if (!payment.memberId().equals(memberId)) {
+			throw new BusinessException(PortoneErrorCode.UNAUTHORIZED_USER_ACCESS);
+		}
+
+		String jsonPath = payment.jsonUrl();
+		if (!jsonPath.startsWith("hyphen/")) {
+			jsonPath = "hyphen/" + jsonPath;
+		}
+
+		RegistryHyphenDto dto = hyphenParsing.parseHyphenJson(jsonPath);
+		return analyze(dto);
 	}
 
 	public AnalysisResultDto analyze(RegistryHyphenDto dto) {
