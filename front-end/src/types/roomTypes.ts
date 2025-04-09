@@ -63,8 +63,8 @@ export const defaultParams: RoomQueryParams = {
   buildingType: "",
   price: "",
   area: "",
-  lat: 33.450701,
-  lng: 126.570667,
+  lat: 37.5,
+  lng: 127.04,
   zoom: 4,
   page: 1,
 };

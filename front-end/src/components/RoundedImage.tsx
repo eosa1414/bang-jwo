@@ -13,7 +13,8 @@ const RoundedImage = ({
 }: RoundedImageProps) => {
   return (
     <div
-      className={`w-[${size}] h-[${size}] bg-neutral-light100 rounded-full overflow-hidden ${className}`}
+      className={`bg-neutral-light100 rounded-full overflow-hidden ${className}`}
+      style={{ width: size, height: size }}
     >
       {src && (
         <img

@@ -26,6 +26,7 @@ import ChatPageOnly from "./features/chat/pages/ChatPageOnly";
 import PageMySell from "./features/mypage/sell/pages/PageMySell";
 import PageMyLike from "./features/mypage/like/pages/PageMyLike";
 import BuyerContractPage from "./features/contract/pages/BuyerContractPage";
+import PageMyContract from "./features/mypage/contract/pages/PageMyContract";
 
 function App() {
   return (
@@ -96,7 +97,8 @@ function App() {
               </RedirectIfNotLoggedIn>
             }
           >
-            <Route index element={<PageAccount />} />
+            <Route index element={<PageMyAccount />} />
+            <Route path="contract" element={<PageMyContract />} />
             <Route path="sell" element={<PageMySell />} />
             <Route path="like" element={<PageMyLike />} />
           </Route>
