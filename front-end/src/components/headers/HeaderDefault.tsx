@@ -19,7 +19,7 @@ const Header = ({ title, variant = "light" }: HeaderProps) => {
   //   setIsMobileMenuOpen(!isMobileMenuOpen);
   // };
   const openChatWindow = () => {
-    const chatWindow = window.open(
+    window.open(
       "/chat",
       "_blank",
       "width=1000,height=700,menubar=no,toolbar=no,location=no,status=no"
@@ -64,6 +64,20 @@ const Header = ({ title, variant = "light" }: HeaderProps) => {
                     <li className="text-neutral-black">마이페이지</li>
                   </Link>
                 ) : null}
+
+
+                {/* 테스트용 추후 삭제 */}
+                <li>
+                <div
+                  onClick={openChatWindow}
+                  className="flex justify-center items-center cursor-pointer"
+                >
+                  <MaterialIcon icon="chat" />
+                </div>
+                </li>
+                {/* 테스트용 추후 삭제 */}
+
+
               </ul>
             </nav>
             {/* 로그인/로그아웃 버튼 */}

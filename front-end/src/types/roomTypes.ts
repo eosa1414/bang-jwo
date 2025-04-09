@@ -19,6 +19,8 @@ export interface Room {
   simpleDescription: string;
   floor: string;
   imageUrl: string;
+  lat: number;
+  lng: number;
 }
 
 export const defaultRoom: Room = {
@@ -35,6 +37,8 @@ export const defaultRoom: Room = {
   simpleDescription: "",
   floor: "",
   imageUrl: "",
+  lat: 37.5,
+  lng: 127.04,
 };
 
 //RoomListResponseDto
@@ -52,7 +56,7 @@ export interface RoomResponse {
 export interface RoomQueryParams {
   buildingType?: string;
   price?: string;
-  area?: string;
+  areaTypes?: string;
   lat?: number;
   lng?: number;
   zoom?: number;
@@ -60,11 +64,11 @@ export interface RoomQueryParams {
 }
 
 export const defaultParams: RoomQueryParams = {
-  buildingType: "",
+  buildingType: "ONEROOM_TWOROOM",
   price: "",
-  area: "",
-  lat: 33.450701,
-  lng: 126.570667,
+  areaTypes: "",
+  lat: 37.5,
+  lng: 127.04,
   zoom: 4,
   page: 1,
 };
