@@ -192,7 +192,6 @@ public class ChatRoomController {
 	@GetMapping("/list")
 	public ResponseEntity<Set<ZSetOperations.TypedTuple<String>>> getChatRooms(
 		@MemberHeader Long userId) {
-		log.info("userInfo : " + userId);
 
 		return ResponseEntity.ok(redisChatRoomService.getRoomList(userId));
 	}
