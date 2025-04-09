@@ -27,6 +27,7 @@ import PageMySell from "./features/mypage/sell/pages/PageMySell";
 import PageMyLike from "./features/mypage/like/pages/PageMyLike";
 import BuyerContractPage from "./features/contract/pages/BuyerContractPage";
 import PageMyContract from "./features/mypage/contract/pages/PageMyContract";
+import { PaymentPage } from "./features/payment2/pages/PaymentPage"
 
 function App() {
   return (
@@ -120,6 +121,7 @@ function App() {
               </LayoutMain>
             }
           />
+          <Route path="/pay_test" element={<PaymentPage />}></Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
