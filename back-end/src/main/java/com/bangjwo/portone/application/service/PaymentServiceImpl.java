@@ -15,6 +15,8 @@ import com.bangjwo.portone.domain.entity.PaymentStatus;
 import com.bangjwo.portone.domain.entity.Payments;
 import com.bangjwo.portone.domain.repository.PaymentRepository;
 import com.bangjwo.register.application.dto.request.RegistryRequestDto;
+import com.bangjwo.room.application.service.RoomService;
+import com.bangjwo.room.domain.vo.RoomStatus;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.request.PrepareData;
@@ -32,6 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
 	private final PaymentRepository paymentRepository;
 	private final RegistryCommandService registryCommandService;
 	private final IamportClient iamportClient;
+	private final RoomService roomService;
 
 	@Override
 	@Transactional
@@ -98,6 +101,12 @@ public class PaymentServiceImpl implements PaymentService {
 					.build(),
 				result.getMemberId()
 			);
+
+			var room = roomService.findRoom(roomId);
+
+			if (RoomStatus.UNDER_VERIFICATION.equals(room.getStatus())) {
+				room.updateRegistryPaid();
+			}
 
 			log.info("결제 성공 및 등기부 등록 완료 - impUid: {}", result.getImpUid());
 			return payment;

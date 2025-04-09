@@ -222,4 +222,19 @@ public class RoomController {
 
 		return ResponseEntity.ok().build();
 	}
+
+	@Operation(
+		summary = "매물 상태 판매중으로 전환",
+		description = "verified와 registryPaid가 모두 true인 경우, 매물 상태를 판매중(ON_SALE)으로 변경합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
+	@PatchMapping("/{roomId}/status/on-sale")
+	public ResponseEntity<Void> publishRoom(
+		@PathVariable Long roomId,
+		@MemberHeader Long memberId
+	) {
+		roomService.publishRoom(roomId, memberId);
+		
+		return ResponseEntity.ok().build();
+	}
 }
