@@ -55,7 +55,7 @@ public class RoomService {
 	private final ContractRepository contractRepository;
 
 	@Transactional
-	public void createRoom(CreateRoomRequestDto requestDto, Long memberId) {
+	public Long createRoom(CreateRoomRequestDto requestDto, Long memberId) {
 		var savedRoom = roomRepository.save(RoomConverter.convert(requestDto, memberId));
 
 		addressService.createAndSaveAddress(savedRoom, requestDto.getAddress(),
@@ -63,6 +63,8 @@ public class RoomService {
 		optionService.saveOptions(savedRoom, requestDto.getOptions());
 		maintenanceIncludeService.saveMaintenanceIncludes(savedRoom, requestDto.getMaintenanceIncludes());
 		imageService.uploadAndSaveImages(savedRoom, requestDto.getImages());
+
+		return savedRoom.getRoomId();
 	}
 
 	@Transactional

@@ -74,11 +74,11 @@ public class RoomController {
 	)
 	@ApiResponse(responseCode = "201", description = "매물 등록에 성공했습니다.")
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Void> createRoom(@ModelAttribute CreateRoomRequestDto requestDto,
+	public ResponseEntity<Long> createRoom(@ModelAttribute CreateRoomRequestDto requestDto,
 		@MemberHeader Long memberId) {
-		roomService.createRoom(requestDto, memberId);
+		Long roomId = roomService.createRoom(requestDto, memberId);
 
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.CREATED).body(roomId);
 	}
 
 	@Operation(
