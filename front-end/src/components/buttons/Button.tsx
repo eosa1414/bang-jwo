@@ -33,7 +33,7 @@ const sizeClasses = {
 const variantClasses = {
   default: {
     defaultstyle: "text-neutral-black bg-neutral-light100",
-    linestyle: "text-neutral-black border-neutral-gray",
+    linestyle: "text-neutral-black border-neutral-light100",
   },
   dark: {
     defaultstyle: "text-neutral-white bg-neutral-dark200",

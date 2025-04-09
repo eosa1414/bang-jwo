@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import Button from "../../../components/buttons/Button";
 import MaterialIcon from "../../../components/MaterialIcon";
-import ModalPortal from "./ModalProtal";
+import ModalPortal from "./ModalPortal";
 
 type ModalType = "alert" | "confirm" | "dismiss";
 type ModalStyle = "info" | "close" | "default";

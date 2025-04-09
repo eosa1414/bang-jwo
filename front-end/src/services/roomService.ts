@@ -1,4 +1,9 @@
-import { fetchRooms, fetchDetailRoom, postRoom } from "../apis/room";
+import {
+  fetchRooms,
+  fetchDetailRoom,
+  postRoom,
+  fetchMyRooms,
+} from "../apis/room";
 import {
   RoomResponse,
   RoomQueryParams,
@@ -35,5 +40,15 @@ export const createRoom = async (formData: FormData) => {
   } catch (err) {
     console.error("Error posting room:", err);
     throw err;
+  }
+};
+
+export const getMyRooms = async (page: number = 0, size: number = 15) => {
+  try {
+    const data = await fetchMyRooms(page, size);
+    return data;
+  } catch (error) {
+    console.error("Error fetching my rooms:", error);
+    throw error;
   }
 };

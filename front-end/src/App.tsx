@@ -11,7 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { AuthProvider } from "./contexts/AuthProvider";
 import RedirectIfNotLoggedIn from "./features/auth/components/RedirectIfNotLoggedIn";
 import PageMy from "./features/mypage/pages/PageMy";
-import PageAccount from "./features/mypage/account/pages/PageAccount";
+import PageMyAccount from "./features/mypage/account/pages/PageMyAccount";
 import RedirectRoomFind from "./features/room-find/components/RedirectRoomFind";
 import PageNotFound from "./pages/PageNotFound";
 import PageLogin from "./features/auth/pages/PageLogin";
@@ -23,7 +23,10 @@ import VerifyOwner from "./features/room-sell/components/VerifyOwner";
 import CreateSuccess from "./features/room-sell/components/CreateSuccess";
 import RoomSellNotice from "./features/room-sell/components/RoomSellNotice";
 import ChatPageOnly from "./features/chat/pages/ChatPageOnly";
+import PageMySell from "./features/mypage/sell/pages/PageMySell";
+import PageMyLike from "./features/mypage/like/pages/PageMyLike";
 import BuyerContractPage from "./features/contract/pages/BuyerContractPage";
+import PageMyContract from "./features/mypage/contract/pages/PageMyContract";
 
 function App() {
   return (
@@ -94,7 +97,10 @@ function App() {
               </RedirectIfNotLoggedIn>
             }
           >
-            <Route index element={<PageAccount />} />
+            <Route index element={<PageMyAccount />} />
+            <Route path="contract" element={<PageMyContract />} />
+            <Route path="sell" element={<PageMySell />} />
+            <Route path="like" element={<PageMyLike />} />
           </Route>
           <Route path="/test" element={<PageTest />} />
           <Route path="/test/button" element={<PageTestButton />} />

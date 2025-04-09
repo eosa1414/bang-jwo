@@ -1,3 +1,6 @@
+import { MouseEvent, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { handleRoomLike } from "../services/likeService";
 import { Room, defaultRoom } from "../types/roomTypes";
 import Button from "./buttons/Button";
 import MaterialIcon from "./MaterialIcon";
@@ -9,9 +12,28 @@ interface ListItemRoomProps {
 
 const ListItemRoom = ({ room, onSelectRoom }: ListItemRoomProps) => {
   const roomData = room || defaultRoom;
+  const [isLiked, setIsLiked] = useState(roomData.isLiked);
+  const { accessToken } = useAuth();
 
   const handleClick = () => {
     onSelectRoom(roomData.roomId);
+  };
+
+  const handleLikeClick = async (e: MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+
+    if (!accessToken) {
+      alert("로그인을 해야 이용할 수 있습니다.");
+      return;
+    }
+
+    try {
+      await handleRoomLike(roomData.roomId);
+      setIsLiked((prev) => !prev);
+    } catch (error) {
+      console.error("좋아요 처리 중 에러", error);
+      alert("좋아요 처리 중 문제가 발생했습니다.");
+    }
   };
 
   return (
@@ -38,8 +60,11 @@ const ListItemRoom = ({ room, onSelectRoom }: ListItemRoomProps) => {
         <div className="absolute top-0 left-0 bottom-0 right-0 w-full h-full bg-gradient-to-t from-black via-transparent to-transparent opacity-20"></div>
 
         {/* 하트 아이콘 */}
-        <div className="absolute bottom-2 right-2 flex justify-center items-center text-neutral-white">
-          <MaterialIcon icon="favorite" fill={roomData.isLiked} />
+        <div
+          onClick={handleLikeClick}
+          className="cursor-pointer absolute bottom-2 right-2 flex justify-center items-center text-neutral-white"
+        >
+          <MaterialIcon icon="favorite" fill={isLiked} />
         </div>
       </div>
       {/* right side */}

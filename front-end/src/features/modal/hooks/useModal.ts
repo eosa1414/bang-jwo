@@ -1,15 +1,19 @@
 import { useState } from "react";
 
-export default function useModal() {
-  const [isOpen, setIsOpen] = useState(false);
+type ModalId = string;
 
-  const openModal = () => {
-    setIsOpen(true);
+export default function useModalManager() {
+  const [openModals, setOpenModals] = useState<Record<ModalId, boolean>>({});
+
+  const openModal = (id: ModalId) => {
+    setOpenModals((prev) => ({ ...prev, [id]: true }));
   };
 
-  const closeModal = () => {
-    setIsOpen(false);
+  const closeModal = (id: ModalId) => {
+    setOpenModals((prev) => ({ ...prev, [id]: false }));
   };
+
+  const isOpen = (id: ModalId) => !!openModals[id];
 
   return { isOpen, openModal, closeModal };
 }
