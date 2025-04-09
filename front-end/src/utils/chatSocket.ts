@@ -2,15 +2,22 @@ import Stomp from "stompjs";
 import { useEffect, useState } from "react";
 import { ChatMessage, RequestMessage } from "../types/chatTypes";
 import { fetchChatMessages } from "../apis/chat";
+import { useChatStore } from "../store/chatStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 
-const SOCKET_URL = `http://localhost:8080/chat`;
+const SOCKET_URL = `${import.meta.env.VITE_API_BASE_URL}/chat`;
 
 export const connectSocket = (id: number | null, scrollRef: any) => {
   const [stompClient, setStompClient] = useState<Stomp.Client | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-
+  const { chatRoom } = useChatStore();
+  const queryClient = useQueryClient();
+  
   const sendMessage = (message: string) => {
+    const now = new Date();
+    const timezoneOffset = now.getTimezoneOffset() * 60000; // 분 -> 밀리초 변환
+    const localISOTime = new Date(now.getTime() - timezoneOffset).toISOString();
     console.log("sendMessage", message);
     if (stompClient) {
       stompClient.send(
@@ -19,12 +26,12 @@ export const connectSocket = (id: number | null, scrollRef: any) => {
         JSON.stringify({
           type: "sent",
           chatRoomId: id,
-          roomId: 1, // Replace with actual roomId if available
-          receiverId: 2, // Replace with actual receiverId if available
+          roomId: chatRoom?.roomId, // Replace with actual roomId if available
+          receiverId: chatRoom?.otherId, // Replace with actual receiverId if available
           senderId: 1, // Replace with actual senderId
-          senderNickname: "asdf", // Replace with actual nickname if available
+          senderNickname: "asdfasdf", // Replace with actual nickname if available
           message: message,
-          sendAt: new Date().toISOString(),
+          sendAt: localISOTime,
           isReadByMe: false,
         } as RequestMessage)
       );
@@ -68,6 +75,7 @@ export const connectSocket = (id: number | null, scrollRef: any) => {
       const subscription = stomp.subscribe(`/sub/chat/room/${id}`, (message) => {
         console.log(message);
         setMessages((prev) => [...prev, JSON.parse(message.body)]);
+        queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
       });
 
       setStompClient(stomp);

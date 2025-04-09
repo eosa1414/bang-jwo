@@ -19,7 +19,7 @@ const Header = ({ title, variant = "light" }: HeaderProps) => {
   //   setIsMobileMenuOpen(!isMobileMenuOpen);
   // };
   const openChatWindow = () => {
-    const chatWindow = window.open(
+    window.open(
       "/chat",
       "_blank",
       "width=1000,height=700,menubar=no,toolbar=no,location=no,status=no"
