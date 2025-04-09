@@ -3,11 +3,12 @@ import ChatListHeader from "./ChatListHeader";
 import ChatListItem from "./ChatListItem";
 import { useChatStore } from "../../../store/chatStore";
 import { useChatRooms } from "../../../hooks/useChatRooms";
-import { ChatMessage } from "../../../types/chatTypes";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ChatList = () => {
   const { selectedChatId, setSelectedChatId, messagesByChat, setChatRoom } = useChatStore();
   const { data: chatRooms, isLoading, isError } = useChatRooms();
+  const queryClient = useQueryClient();
 
   if (isLoading) return <div>로딩 중...</div>;
   if (isError || !chatRooms) return <div>채팅방 목록 로딩 실패</div>;
@@ -17,13 +18,6 @@ const ChatList = () => {
       <ChatListHeader />
       <div className="flex-1 overflow-y-auto px-4 custom-scroll">
         {chatRooms.map((room) => {
-          const messages: ChatMessage[] = messagesByChat[room.chatRoomId] || [];
-          const filteredMessages = messages.filter((m) => m.type !== "system");
-          const lastMessage = filteredMessages.at(-1);
-
-          const unreadCount = filteredMessages.filter(
-            (m) => m.type === "received" && !m.isReadByMe
-          ).length;
 
           return (
             <ChatListItem
@@ -32,14 +26,15 @@ const ChatList = () => {
               title={room.nickname}
               price={`월세 ${room.deposit}/${room.monthly}`}
               avatarUrl={room.profileImage}
-              time={new Date(lastMessage?.sendAt ?? "").toTimeString().slice(0, 5)}
-              message={lastMessage?.message ?? room.lastMessage}
-              unreadCount={unreadCount || room.unreadCount}
+              time={(room?.sendAt).slice(11, 16)}
+              message={room.lastMessage}
+              unreadCount={room.unreadCount}
               isSelected={room.chatRoomId === selectedChatId}
               roomImage={room.roomImage}
               onClick={() => {
                 setSelectedChatId(room.chatRoomId)
                 setChatRoom(room);
+                queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
               }
               }
             />

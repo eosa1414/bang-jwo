@@ -8,6 +8,7 @@ import SystemMessage from "./SystemMessage";
 import ContractActionButton from "./ContractActionButton";
 import { connectSocket } from "../../../utils/chatSocket";
 import { useChatStore } from "../../../store/chatStore";
+import { redirect } from "react-router-dom";
 
 // ChatRoom은 실시간 메시지와 API로 받아온 메시지를 모두 관리합니다.
 interface ChatRoomProps {
@@ -82,7 +83,11 @@ const ChatRoom = ({
 
   return (
     <div className="w-full h-full flex flex-col border border-neutral-light200 rounded-2xl shadow-xl overflow-hidden">
-      <ChatHeader title={chatTitle} onMenuClick={() => {}} />
+      <ChatHeader title={chatTitle} onMenuClick={() => {
+        // TODO: 메뉴 클릭 시 처리 로직 추가
+        console.log("redirect to room find page")
+        // redirect()
+      }} />
       <div className="flex-1 overflow-y-auto bg-white p-4 custom-scroll">
         {renderMessagesWithDateBadge()}
         <div ref={scrollRef} />
