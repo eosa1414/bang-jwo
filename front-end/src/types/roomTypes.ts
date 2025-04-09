@@ -37,6 +37,8 @@ export const defaultRoom: Room = {
   simpleDescription: "",
   floor: "",
   imageUrl: "",
+  lat: 37.5,
+  lng: 127.04,
 };
 
 //RoomListResponseDto
