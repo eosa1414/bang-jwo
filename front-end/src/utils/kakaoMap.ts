@@ -48,8 +48,6 @@ export const getLatLngFromAddress = (
     const { kakao } = window;
 
     if (!kakao || !kakao.maps || !kakao.maps.services) {
-      console.log(window);
-      console.log("여기에서 걸린다");
       return reject("Kakao map API is not loaded.");
     }
 
