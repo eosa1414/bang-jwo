@@ -1,20 +1,23 @@
 import { create } from "zustand";
-import { ChatRoomSummary, Message } from "../types/chatTypes";
+import { ChatRoomSummary, ChatMessage } from "../types/chatTypes";
 
 interface ChatState {
   selectedChatId: number | null;
   chatRooms: ChatRoomSummary[];
-  messagesByChat: Record<number, Message[]>;
+  chatRoom: ChatRoomSummary | null
+  messagesByChat: Record<number, ChatMessage[]>;
   setSelectedChatId: (id: number) => void;
   setChatRooms: (rooms: ChatRoomSummary[]) => void;
-  setMessagesForRoom: (chatRoomId: number, messages: Message[]) => void;
-  addMessageToRoom: (chatRoomId: number, message: Message) => void;
+  setMessagesForRoom: (chatRoomId: number, messages: ChatMessage[]) => void;
+  addMessageToRoom: (chatRoomId: number, message: ChatMessage) => void;
+  setChatRoom: (room: ChatRoomSummary) => void;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
   selectedChatId: null,
   chatRooms: [],
   messagesByChat: {},
+  chatRoom: null,
 
   setSelectedChatId: (id) => set({ selectedChatId: id }),
 
@@ -35,4 +38,6 @@ export const useChatStore = create<ChatState>((set) => ({
         [chatRoomId]: [...(state.messagesByChat[chatRoomId] || []), message],
       },
     })),
+
+  setChatRoom: (room) => set({ chatRoom: room })
 }));

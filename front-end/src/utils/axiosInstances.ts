@@ -8,16 +8,18 @@ import { StatusCodes } from "../constants/statusCodes";
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000, //최대 대기 시간(10초)
+  withCredentials: true, //쿠키를 포함한 요청을 보낼지 여부
 });
 
 // 요청시 Bearer 헤더 추가
 const requestHandler = (config: InternalAxiosRequestConfig) => {
   const token = localStorage.getItem("accessToken");
+  const test = import.meta.env.VITE_ACCESS_TOKEN;
   const isHeaderSettable =
     config.headers && typeof config.headers.set === "function";
 
-  if (token && isHeaderSettable) {
-    config.headers.set("Authorization", `Bearer ${token}`);
+  if (test && isHeaderSettable) {
+    config.headers.set("Authorization", `Bearer ${test}`);
   }
 
   return config;
