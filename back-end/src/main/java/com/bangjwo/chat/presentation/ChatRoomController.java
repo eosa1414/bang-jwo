@@ -4,12 +4,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.bangjwo.chat.application.dto.ChatMessageResponseDto;
-import com.bangjwo.global.common.error.chat.ChatErrorCode;
-import com.bangjwo.global.common.exception.BusinessException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -24,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.bangjwo.auth.resolver.MemberHeader;
 import com.bangjwo.chat.application.convert.AlertConverter;
 import com.bangjwo.chat.application.dto.ChatMessageDto;
+import com.bangjwo.chat.application.dto.ChatMessageResponseDto;
 import com.bangjwo.chat.application.dto.ChatRoomDto;
 import com.bangjwo.chat.application.dto.ChatRoomSummary;
 import com.bangjwo.chat.application.service.ChatAlertService;
@@ -32,9 +27,14 @@ import com.bangjwo.chat.application.service.ChatRoomService;
 import com.bangjwo.chat.application.service.RedisChatRoomService;
 import com.bangjwo.chat.domain.entity.ChatAlert;
 import com.bangjwo.chat.infrastructure.WebSocketSessionTracker;
+import com.bangjwo.global.common.error.chat.ChatErrorCode;
+import com.bangjwo.global.common.exception.BusinessException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,9 +55,9 @@ public class ChatRoomController {
 	private final ObjectMapper objectMapper;
 
 	/*
-	* 채팅방 생성
-	* 세입자만 채팅방을 생성할 수 있음
-	* */
+	 * 채팅방 생성
+	 * 세입자만 채팅방을 생성할 수 있음
+	 * */
 	@Operation(
 		summary = "채팅방 생성",
 		description = "세입자가 새로운 채팅방을 생성합니다.",
@@ -156,15 +156,15 @@ public class ChatRoomController {
 			"/sub/chat/room/" + chatRoomId, dto);
 
 		/*
-		* 상대방이 구독이 안되어있을 경우 알림 전송
-		* 프론트는 회원이 로그인하자마자 웹소켓 구독을 해줘야함
-		* "/sub/alert/" + userId
-		* */
-		if(!isReceiverOnline) {
+		 * 상대방이 구독이 안되어있을 경우 알림 전송
+		 * 프론트는 회원이 로그인하자마자 웹소켓 구독을 해줘야함
+		 * "/sub/alert/" + userId
+		 * */
+		if (!isReceiverOnline) {
 			ChatAlert alert = AlertConverter.createAlert(dto, receiverId, senderImage);
 
 			boolean isReceiverLogin = webSocketSessionTracker.isUserOnlineInAlert(chatRoomId, receiverId);
-			if(isReceiverLogin) {
+			if (isReceiverLogin) {
 				messagingTemplate.convertAndSend(
 					"/sub/alert/" + receiverId,
 					alert
@@ -179,9 +179,9 @@ public class ChatRoomController {
 	}
 
 	/*
-	* 채팅 리스트 조회 : Redis에 있는 목록 가져오기
-	* JSON 값을 파싱하여 사용
-	* */
+	 * 채팅 리스트 조회 : Redis에 있는 목록 가져오기
+	 * JSON 값을 파싱하여 사용
+	 * */
 	@Operation(
 		summary = "채팅방 목록 조회",
 		description = "Redis에 저장된 채팅방 목록을 조회합니다.",
@@ -206,10 +206,9 @@ public class ChatRoomController {
 		return ResponseEntity.ok(summaries);
 	}
 
-
 	/*
-	* 채팅방 나가기(web-socket 구독 해제)
-	* */
+	 * 채팅방 나가기(web-socket 구독 해제)
+	 * */
 	@Operation(
 		summary = "채팅방 나가기",
 		description = "채팅방에서 나가며 웹소켓 구독을 해제합니다.",
