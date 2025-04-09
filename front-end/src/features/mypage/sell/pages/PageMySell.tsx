@@ -3,8 +3,10 @@ import { Room } from "../../../../types/roomTypes";
 import ListItemRoom from "../../../../components/ListItemRoom";
 import Pagination from "../../../../components/buttons/Pagination";
 import { getMyRooms } from "../../../../services/roomService";
+import { useRoomNavigation } from "../../../../hooks/useRoomNavigation";
 
 const PageMySell = () => {
+  const { goToRoomDetail } = useRoomNavigation();
   const [myRooms, setMyRooms] = useState<Room[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -40,7 +42,7 @@ const PageMySell = () => {
               <li key={item.roomId}>
                 <ListItemRoom
                   onSelectRoom={() => {
-                    console.log(item.roomId);
+                    goToRoomDetail(item.lat, item.lng, item.roomId);
                   }}
                   room={item}
                 />
