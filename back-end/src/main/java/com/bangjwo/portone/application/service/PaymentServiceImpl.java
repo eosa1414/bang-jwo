@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +14,7 @@ import com.bangjwo.portone.application.dto.PaymentDto;
 import com.bangjwo.portone.domain.entity.PaymentStatus;
 import com.bangjwo.portone.domain.entity.Payments;
 import com.bangjwo.portone.domain.repository.PaymentRepository;
+import com.bangjwo.register.application.dto.request.RegistryRequestDto;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.request.PrepareData;
@@ -29,10 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
-	@Value("${imp.secret.verificate}")
-	private String secret;
-
 	private final PaymentRepository paymentRepository;
+	private final RegistryCommandService registryCommandService;
 	private final IamportClient iamportClient;
 
 	@Override
@@ -83,19 +81,28 @@ public class PaymentServiceImpl implements PaymentService {
 			result.setImpUid(payment.getResponse().getImpUid());
 			result.changeStatus(PaymentStatus.PAID);
 
-			// ✅ 더미 데이터 연결 (roomId 기준)
+			// ✅ 더미 PDF/JSON 파일 설정
 			Long roomId = result.getRoomId();
-			String pdfKey = roomId % 2 == 0 ? "registry2.pdf" : "registry.pdf";
-			String jsonKey = roomId % 2 == 0 ? "hyphen2.json" : "hyphen.json";
-
+			String pdfKey = roomId % 2 == 0 ? "registry.pdf" : "registry2.pdf";
+			String jsonKey = roomId % 2 == 0 ? "hyphen.json" : "hyphen2.json";
 			result.setPdfUrl(pdfKey);
 			result.setJsonUrl(jsonKey);
 
-			log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}", payment.getResponse().getMerchantUid());
+			// ✅ 등기부 자동 저장 호출
+			registryCommandService.parseAndSave(
+				RegistryRequestDto.builder()
+					.paymentId(result.getPaymentId().toString())
+					.roomId(result.getRoomId())
+					.jsonUrl(result.getJsonUrl())
+					.pdfUrl(result.getPdfUrl())
+					.build(),
+				result.getMemberId()
+			);
+
+			log.info("결제 성공 및 등기부 등록 완료 - impUid: {}", result.getImpUid());
 			return payment;
 		} catch (IamportResponseException e) {
 			log.error("Iamport 응답 예외", e);
-			e.printStackTrace();
 			throw new BusinessException(PortoneErrorCode.IMP_PAYMENT_VERIFICATION_FAILED);
 		} catch (Exception e) {
 			log.error("결제 검증 중 예외", e);
@@ -116,5 +123,14 @@ public class PaymentServiceImpl implements PaymentService {
 	public List<PaymentDto.ResponseDto> getPaymentResults(Long userId) {
 		List<Payments> list = paymentRepository.findAllByMemberIdOrderByUpdatedAtAsc(userId);
 		return list.stream().map(PaymentConverter::toDto).toList();
+	}
+
+	private RegistryRequestDto toRegistryRequestDto(Payments result) {
+		return RegistryRequestDto.builder()
+			.paymentId(result.getPaymentId().toString())
+			.roomId(result.getRoomId())
+			.jsonUrl(result.getJsonUrl())
+			.pdfUrl(result.getPdfUrl())
+			.build();
 	}
 }
