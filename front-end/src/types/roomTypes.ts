@@ -104,13 +104,13 @@ export type RoomBuildingType =
 
 export type RoomDirection =
   | "NORTH"
-  | "NORTH_EAST"
+  | "NORTHEAST"
   | "EAST"
-  | "SOUTH_EAST"
+  | "SOUTHEAST"
   | "SOUTH"
-  | "SOUTH_WEST"
+  | "SOUTHWEST"
   | "WEST"
-  | "NORTH_WEST";
+  | "NORTHWEST";
 
 export interface RoomDetailResponse {
   roomId: number;
