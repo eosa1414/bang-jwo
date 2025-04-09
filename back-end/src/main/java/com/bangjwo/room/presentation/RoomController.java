@@ -29,6 +29,7 @@ import com.bangjwo.room.application.dto.response.SearchDetailRoomResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
 import com.bangjwo.room.application.service.RoomService;
 import com.bangjwo.room.domain.vo.RoomAreaType;
+import com.bangjwo.room.domain.vo.RoomBuildingType;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -54,12 +55,14 @@ public class RoomController {
 	public ResponseEntity<RoomListResponseDto> searchRooms(
 		@RequestParam(required = false) Integer price,
 		@RequestParam(required = false) List<RoomAreaType> areaTypes,
+		@RequestParam(required = false) RoomBuildingType buildingType,
 		@RequestParam BigDecimal lat,
 		@RequestParam BigDecimal lng,
 		@RequestParam(required = false) Integer zoom,
 		@RequestParam(required = false) Integer page,
 		@MemberHeader(required = false) Long memberId) {
-		RoomListResponseDto response = roomService.searchRooms(price, areaTypes, lat, lng, zoom, page, memberId);
+		RoomListResponseDto response = roomService.searchRooms(price, areaTypes, buildingType, lat, lng, zoom, page,
+			memberId);
 
 		return ResponseEntity.ok(response);
 	}
@@ -234,7 +237,7 @@ public class RoomController {
 		@MemberHeader Long memberId
 	) {
 		roomService.publishRoom(roomId, memberId);
-		
+
 		return ResponseEntity.ok().build();
 	}
 }
