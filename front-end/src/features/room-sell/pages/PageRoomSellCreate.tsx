@@ -5,7 +5,7 @@ import {
   UpdateRoomRequestDto,
 } from "../../../types/roomTypes";
 import StepIndicator from "../../../components/StepIndicator";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 export interface RoomSellCreateContext {
   handleNext: (
@@ -18,34 +18,12 @@ export interface RoomSellCreateContext {
 }
 
 const PageRoomSellCreate = () => {
-  const [formData, setFormData] = useState<CreateRoomRequestDto | null>(null);
-  const [images, setImages] = useState<File[]>([]);
+  const [formData] = useState<CreateRoomRequestDto | null>(null);
+  const [images] = useState<File[]>([]);
   const navigate = useNavigate();
 
-  const handleNext = (data: CreateRoomRequestDto, imageFiles: File[]) => {
-    setFormData(data);
-    setImages(imageFiles);
-    navigate("verify");
-  };
-
-  // 서버로 최종 제출
-  const handleVerificationSuccess = async () => {
-    const submitData = new FormData();
-    Object.entries(formData!).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((v) => submitData.append(key, String(v)));
-      } else {
-        submitData.append(key, String(value));
-      }
-    });
-    images.forEach((img) => submitData.append("images", img));
-
-    try {
-      // await axiosInstance.post("/api/v1/room", submitData);
-      navigate("success");
-    } catch (err) {
-      alert("등록 실패");
-    }
+  const handleNext = (roomId: number) => {
+    navigate(`verify/${roomId}`);
   };
 
   const steps = [
@@ -54,13 +32,14 @@ const PageRoomSellCreate = () => {
     { icon: "check", label: "등록 완료" },
   ];
 
-  const currentStepPath = location.pathname.split("/").pop();
+  const location = useLocation();
+
   const currentStep =
-    currentStepPath === "write"
+    location.pathname === "/room/sell/write"
       ? 0
-      : currentStepPath === "verify"
+      : location.pathname.includes("verify")
       ? 1
-      : currentStepPath === "success"
+      : location.pathname.includes("success")
       ? 2
       : -1;
 

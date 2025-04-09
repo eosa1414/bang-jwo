@@ -22,7 +22,7 @@ export const runIdentityVerification = async ({
 }: VerifyParams) => {
   const storeId = import.meta.env.VITE_PORTONE_STORE_ID;
   const channelKey = import.meta.env.VITE_PORTONE_CHANNEL_KEY;
-  const identityVerificationId = `identity-verification-${crypto.randomUUID()}`;
+  const identityVerificationId = `iv-${crypto.randomUUID().slice(0, 8)}`;
 
   try {
     const response = await PortOne.requestIdentityVerification({
@@ -41,20 +41,27 @@ export const runIdentityVerification = async ({
     const endpoint =
       verificationType === "member"
         ? "/api/v1/member/verify"
-        : verificationType === "contract"
-        ? "/api/v1/contract/verify"
-        : `/api/v1/room/${roomId}/verify`;
+        : verificationType === "room"
+        ? `/api/v1/room/${roomId}/verify`
+        : "/api/v1/contract/verify";
 
     const payload =
       verificationType === "member"
         ? { identityVerificationId }
+        : verificationType === "room"
+        ? { roomId, identityVerificationId }
         : { contractId, identityVerificationId, role };
 
     console.log(payload);
 
     await axiosInstance.request({
       url: endpoint,
-      method: verificationType === "member" ? "PUT" : "PATCH",
+      method:
+        verificationType === "member"
+          ? "PUT"
+          : verificationType === "room"
+          ? "POST"
+          : "PATCH",
       data: payload,
     });
 
