@@ -40,7 +40,7 @@ const RentTypeSelector = ({ mode }: RentTypeSelectorProps) => {
           >
             <input
               type="radio"
-              name="rentType"
+              name="leaseType"
               value={option.value}
               checked={selected === option.value}
               onChange={() => {

@@ -2,11 +2,14 @@ import EditableInputBox from "./EditableInputBox";
 import NoticeGray from "../../../components/notices/NoticeGray";
 import ContractTypeSelector from "./ContractTypeSelector";
 import { useState } from "react";
-import DisabledInputBox from "./DisabledInputBox"; // 비활성화 박스도 import
+import DisabledInputBox from "./DisabledInputBox";
 import { openAddressSearch } from "../../../utils/openAddressSearch";
 
 interface HouseInfoSectionProps {
   mode: "lessor" | "lessee";
+  contractType: string;
+  setContractType: (value: string) => void;
+  rentalPartDetailAddress: string;
 
   address: string;
   detailAddress: string;
@@ -32,6 +35,9 @@ interface HouseInfoSectionProps {
 
 const HouseInfoSection = ({
   mode,
+  contractType,
+  setContractType,
+  rentalPartDetailAddress,
   address,
   detailAddress,
   landPurpose,
@@ -39,7 +45,6 @@ const HouseInfoSection = ({
   buildingStructure,
   buildingUsage,
   buildingArea,
-  leaseDetail,
   leaseArea,
   unpaidTaxOption,
   priorityDateOption,
@@ -61,6 +66,7 @@ const HouseInfoSection = ({
       <div className="mt-4 flex items-center gap-3">
         <span className="text-base font-medium whitespace-nowrap">소재지</span>
         <div className="flex gap-2">
+          {/* 도로명주소 클릭 시에만 주소 검색 팝업 실행 */}
           <div
             className={isLessee ? "cursor-default" : "cursor-pointer"}
             onClick={() => {
@@ -86,22 +92,24 @@ const HouseInfoSection = ({
                 customWidth="w-[340px]"
               />
             )}
-            {isLessee ? (
-              <DisabledInputBox
-                value={detailAddress}
-                placeholder="상세주소"
-                customWidth="w-[300px]"
-              />
-            ) : (
-              <EditableInputBox
-                value={detailAddress}
-                onChange={(val) => onChange("detailAddress", val)}
-                placeholder="상세주소"
-                maxLength={50}
-                customWidth="w-[300px]"
-              />
-            )}
           </div>
+
+          {/* 상세주소는 일반 입력 필드로 별도 분리 */}
+          {isLessee ? (
+            <DisabledInputBox
+              value={detailAddress}
+              placeholder="상세주소"
+              customWidth="w-[300px]"
+            />
+          ) : (
+            <EditableInputBox
+              value={detailAddress}
+              onChange={(val) => onChange("detailAddress", val)}
+              placeholder="상세주소"
+              maxLength={50}
+              customWidth="w-[300px]"
+            />
+          )}
         </div>
       </div>
 
@@ -246,14 +254,14 @@ const HouseInfoSection = ({
         </span>
         {isLessee ? (
           <DisabledInputBox
-            value={leaseDetail}
+            value={rentalPartDetailAddress}
             placeholder="상세주소가 있는 경우 동·층·호를 정확히 기재하세요"
             customWidth="w-[400px]"
           />
         ) : (
           <EditableInputBox
-            value={leaseDetail}
-            onChange={(val) => onChange("leaseDetail", val)}
+            value={rentalPartDetailAddress}
+            onChange={(val) => onChange("rentalPartDetailAddress", val)} // ✅ 올바른 키로 변경
             placeholder="상세주소가 있는 경우 동·층·호를 정확히 기재하세요"
             maxLength={100}
             customWidth="w-[400px]"
@@ -282,7 +290,11 @@ const HouseInfoSection = ({
         <span className="text-base font-medium whitespace-nowrap mt-[6px]">
           계약의종류
         </span>
-        <ContractTypeSelector mode={mode} />
+        <ContractTypeSelector
+          mode={mode}
+          contractType={contractType}
+          setContractType={setContractType}
+        />
       </div>
 
       {/* 미납 국세·지방세 */}

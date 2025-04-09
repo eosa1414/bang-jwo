@@ -8,12 +8,16 @@ interface ContractBodyProps {
   mode: "lessor" | "lessee";
   receiptSignature: string | null;
   openSignatureModal: (type: "receipt") => void;
+  paymentMethod: string;
+  setPaymentMethod: (value: string) => void;
 }
 
 const ContractBody = ({
   mode,
   receiptSignature,
   openSignatureModal,
+  paymentMethod,
+  setPaymentMethod,
 }: ContractBodyProps) => {
   const isEditable = mode === "lessor";
   const isLessee = mode === "lessee";
@@ -25,7 +29,7 @@ const ContractBody = ({
   const [finalPayment, setFinalPayment] = useState("");
   const [monthlyRent, setMonthlyRent] = useState("");
   const [monthlyRentDay, setMonthlyRentDay] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
+
   const [accountNumber, setAccountNumber] = useState("");
   const [fixedMaintenance, setFixedMaintenance] = useState("");
   const [variableMaintenance, setVariableMaintenance] = useState("");
@@ -58,8 +62,6 @@ const ContractBody = ({
     null
   );
   const [unrepairedCustomEtc, setUnrepairedCustomEtc] = useState("");
-
-  // 나머지 렌더링 코드 동일
 
   return (
     <div className="mt-10 text-base leading-relaxed">
