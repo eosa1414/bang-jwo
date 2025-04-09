@@ -15,7 +15,7 @@ const RoomSellNotice = () => {
           <InfoText text="안내드립니다" />
         </div>
         <div className="text-sm">
-          <p>집을 내놓으려면</p>
+          <p>집을 내놓으려면 수수료 700원과</p>
           <p>부동산 고유 번호가 필요합니다.</p>
         </div>
         <Button size="large" variant="point" isLine onClick={goNext}>
