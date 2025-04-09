@@ -1,26 +1,19 @@
-import { useNavigate } from "react-router-dom";
 import Button from "../../../../components/buttons/Button";
 import LineBox from "../../../../components/LineBox";
 import MaterialIcon from "../../../../components/MaterialIcon";
+import { useRoomNavigation } from "../../../../hooks/useRoomNavigation";
 import { Room, RoomBuildingType } from "../../../../types/roomTypes";
 import { roomBuildingTypeLabel } from "../../../../utils/roomMapper";
-import { getLatLngFromAddress } from "../../../../utils/kakaoMap";
 
 interface ListItemContractProps {
   contract: Room;
 }
 
 const ListItemContract = ({ contract }: ListItemContractProps) => {
-  const navigate = useNavigate();
+  const { goToRoomDetail } = useRoomNavigation();
 
-  const handleAddressClick = async () => {
-    try {
-      //   const { lat, lng } = await getLatLngFromAddress(contract.address); //임시 변수명
-      //   navigate(`/room-find?lat=${lat}&lng=${lng}`);
-      navigate(`/room/find?roomId=${contract.roomId}`);
-    } catch (error) {
-      console.error("Failed to search address:", error);
-    }
+  const handleAddressClick = () => {
+    goToRoomDetail(contract.lat, contract.lng, contract.roomId);
   };
 
   return (
@@ -33,7 +26,7 @@ const ListItemContract = ({ contract }: ListItemContractProps) => {
             </Button>
             <div
               onClick={handleAddressClick}
-              className="flex flex-wrap items-center"
+              className="cursor-pointer flex flex-wrap items-center"
             >
               <div className="flex gap-1 text-xl font-semibold">
                 <span>월세</span>

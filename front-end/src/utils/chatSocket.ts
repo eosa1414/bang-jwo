@@ -1,61 +1,102 @@
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import { ChatMessage } from "../types/chatTypes";
+import Stomp from "stompjs";
+import { useEffect, useState } from "react";
+import { ChatMessage, RequestMessage } from "../types/chatTypes";
+import { fetchChatMessages } from "../apis/chat";
+import { useChatStore } from "../store/chatStore";
+import { useQueryClient } from "@tanstack/react-query";
 
-let stompClient: Client | null = null;
 
-export const connectChatSocket = (
-  chatRoomId: number,
-  myId: number,
-  onMessageReceived: (msg: ChatMessage) => void
-) => {
-  stompClient = new Client({
-    webSocketFactory: () =>
-      new SockJS(import.meta.env.VITE_SOCKET_URL + "/ws"),
-    reconnectDelay: 5000, // 자동 재연결
-    debug: (str) => console.log("📡", str),
-  });
+const SOCKET_URL = `${import.meta.env.VITE_API_BASE_URL}/chat`;
 
-  // 연결 성공 시
-  stompClient.onConnect = () => {
-    console.log("✅ WebSocket 연결됨");
-
-    // 채팅 메시지 구독
-    stompClient?.subscribe(`/sub/chat/room/${chatRoomId}`, (message) => {
-      const body: ChatMessage = JSON.parse(message.body);
-      onMessageReceived(body);
-    });
-
-    // 알림 구독
-    stompClient?.subscribe(`/sub/alert/${myId}`, (alert) => {
-      console.log("🔔 알림 수신:", JSON.parse(alert.body));
-    });
+export const connectSocket = (id: number | null, scrollRef: any) => {
+  const [stompClient, setStompClient] = useState<Stomp.Client | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const { chatRoom } = useChatStore();
+  const queryClient = useQueryClient();
+  
+  const sendMessage = (message: string) => {
+    const now = new Date();
+    const timezoneOffset = now.getTimezoneOffset() * 60000; // 분 -> 밀리초 변환
+    const localISOTime = new Date(now.getTime() - timezoneOffset).toISOString();
+    console.log("sendMessage", message);
+    if (stompClient) {
+      stompClient.send(
+        `/pub/message`,
+        {},
+        JSON.stringify({
+          type: "sent",
+          chatRoomId: id,
+          roomId: chatRoom?.roomId, // Replace with actual roomId if available
+          receiverId: chatRoom?.otherId, // Replace with actual receiverId if available
+          senderId: 1, // Replace with actual senderId
+          senderNickname: "asdfasdf", // Replace with actual nickname if available
+          message: message,
+          sendAt: localISOTime,
+          isReadByMe: false,
+        } as RequestMessage)
+      );
+    }
   };
 
-  // 오류 발생 시
-  stompClient.onStompError = (frame) => {
-    console.error("❌ STOMP 오류:", frame.headers["message"]);
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (id ?? 0 !== null) {
+        setMessages(await fetchChatMessages(id ?? 0));
+      }
+    };
+    fetchMessages();
+  }, [id]);
+
+  useEffect(() => {
+    const socket = new WebSocket(SOCKET_URL);
+    const stomp = Stomp.over(socket);
+    console.log("stomp", stomp);
+
+    const headers = {
+      userId: "1",
+      roomId: (id ?? 0).toString(),
+    };
+
+    console.log("headers", headers, "socket", socket);
+
+    socket.onerror = (error) => {
+      console.error('Socket error:', error);
+    };
+    
+    socket.onclose = (event) => {
+      console.log('Socket closed:', event.code, event.reason);
+    };
+
+    stomp.debug = (msg) => console.log("📡", msg);
+
+    stomp.connect(headers, () => {
+      console.log("Connected to STOMP server");
+
+      const subscription = stomp.subscribe(`/sub/chat/room/${id}`, (message) => {
+        console.log(message);
+        setMessages((prev) => [...prev, JSON.parse(message.body)]);
+        queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
+      });
+
+      setStompClient(stomp);
+
+      return () => {
+        subscription.unsubscribe();
+        stomp.disconnect(() => {
+          console.log("Disconnected from STOMP server");
+        });
+      };
+    });
+  return () => {
+    socket.close();
   };
+  }, [id]);
 
-  // 연결 시작
-  stompClient.activate();
-};
+  useEffect(() => {
+    if (scrollRef?.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, scrollRef]);
 
-export const sendChatMessage = (dto: ChatMessage) => {
-  if (!stompClient || !stompClient.connected) {
-    console.warn("⚠️ WebSocket 연결되지 않음");
-    return;
-  }
-
-  stompClient.publish({
-    destination: "/pub/message",
-    body: JSON.stringify(dto),
-  });
-};
-
-export const disconnectChatSocket = () => {
-  if (stompClient) {
-    stompClient.deactivate();
-    console.log("⛔ WebSocket 연결 해제");
-  }
+  return [ messages, sendMessage ];
 };
