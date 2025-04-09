@@ -14,12 +14,11 @@ const axiosInstance = axios.create({
 // 요청시 Bearer 헤더 추가
 const requestHandler = (config: InternalAxiosRequestConfig) => {
   const token = localStorage.getItem("accessToken");
-  const test = import.meta.env.VITE_ACCESS_TOKEN;
   const isHeaderSettable =
     config.headers && typeof config.headers.set === "function";
 
-  if (test && isHeaderSettable) {
-    config.headers.set("Authorization", `Bearer ${test}`);
+  if (token && isHeaderSettable) {
+    config.headers.set("Authorization", `Bearer ${token}`);
   }
 
   return config;
