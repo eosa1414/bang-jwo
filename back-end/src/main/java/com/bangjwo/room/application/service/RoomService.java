@@ -33,6 +33,7 @@ import com.bangjwo.room.domain.entity.Likes;
 import com.bangjwo.room.domain.entity.Room;
 import com.bangjwo.room.domain.repository.RoomRepository;
 import com.bangjwo.room.domain.vo.RoomAreaType;
+import com.bangjwo.room.domain.vo.RoomBuildingType;
 import com.bangjwo.room.domain.vo.RoomStatus;
 
 import lombok.RequiredArgsConstructor;
@@ -193,9 +194,9 @@ public class RoomService {
 	}
 
 	@Transactional(readOnly = true)
-	public RoomListResponseDto searchRooms(Integer price, List<RoomAreaType> areaTypes,
+	public RoomListResponseDto searchRooms(Integer price, List<RoomAreaType> areaTypes, RoomBuildingType buildingType,
 		BigDecimal centerLat, BigDecimal centerLng, Integer zoom, Integer page, Long memberId) {
-		var spec = buildRoomSearchSpec(price, areaTypes, centerLat, centerLng, zoom);
+		var spec = buildRoomSearchSpec(price, areaTypes, buildingType, centerLat, centerLng, zoom);
 		var pageable = PaginationRequest.toPageable(page);
 
 		var roomPages = roomRepository.findAll(spec, pageable);
@@ -253,7 +254,7 @@ public class RoomService {
 	}
 
 	private Specification<Room> buildRoomSearchSpec(Integer price, List<RoomAreaType> areaTypes,
-		BigDecimal centerLat, BigDecimal centerLng, Integer zoom) {
+		RoomBuildingType buildingType, BigDecimal centerLat, BigDecimal centerLng, Integer zoom) {
 		BigDecimal delta = calculateDeltaByZoom(zoom);
 		BigDecimal minLat = centerLat.subtract(delta);
 		BigDecimal maxLat = centerLat.add(delta);
@@ -267,6 +268,11 @@ public class RoomService {
 		}
 
 		spec = spec.and(RoomSpecification.exclusiveAreaIn(areaTypes));
+
+		if (buildingType != null) {
+			spec = spec.and(RoomSpecification.buildingTypeEquals(buildingType));
+		}
+
 		spec = spec.and(RoomSpecification.roomInAddressBounds(minLat, maxLat, minLng, maxLng));
 
 		return spec;
