@@ -27,11 +27,13 @@ import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
 import com.bangjwo.room.application.dto.response.SearchDetailRoomResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
+import com.bangjwo.room.domain.entity.Address;
 import com.bangjwo.room.domain.entity.Image;
 import com.bangjwo.room.domain.entity.Likes;
 import com.bangjwo.room.domain.entity.Room;
 import com.bangjwo.room.domain.repository.RoomRepository;
 import com.bangjwo.room.domain.vo.RoomAreaType;
+import com.bangjwo.room.domain.vo.RoomStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -218,12 +220,17 @@ public class RoomService {
 		var imageMap = images.stream()
 			.collect(Collectors.toMap(i -> i.getRoom().getRoomId(), Image::getImageUrl, (a, b) -> a));
 
+		var addresses = addressService.findByRoomIds(roomIds);
+		var addressMap = addresses.stream()
+			.collect(Collectors.toMap(addr -> addr.getRoom().getRoomId(), addr -> addr));
+
 		var roomSummaryList = rooms.stream()
 			.map(room -> {
 				boolean liked = likeMap.getOrDefault(room.getRoomId(), false);
 				String imageUrl = imageMap.getOrDefault(room.getRoomId(), null);
+				Address address = addressMap.get(room.getRoomId());
 
-				return RoomConverter.convertToRoomSummary(room, liked, imageUrl);
+				return RoomConverter.convertToRoomSummary(room, liked, imageUrl, address);
 			})
 			.toList();
 
@@ -304,6 +311,25 @@ public class RoomService {
 		var member = memberService.searchMember(memberId);
 		VerificationUtil.compareMemberInfo(member, identity);
 		room.updateVerified();
+	}
+
+	@Transactional
+	public void publishRoom(Long roomId, Long memberId) {
+		Room room = findRoom(roomId);
+
+		if (!room.getMemberId().equals(memberId)) {
+			throw new BusinessException(RoomErrorCode.NO_AUTH_TO_UPDATE_ROOM);
+		}
+
+		if (!RoomStatus.UNDER_VERIFICATION.equals(room.getStatus())) {
+			throw new BusinessException(RoomErrorCode.INVALID_ROOM_STATUS);
+		}
+
+		if (Boolean.TRUE.equals(room.getVerified()) && Boolean.TRUE.equals(room.getRegistryPaid())) {
+			room.updateStatus(RoomStatus.ON_SALE);
+		} else {
+			throw new BusinessException(RoomErrorCode.CONDITION_NOT_MET_FOR_ON_SALE);
+		}
 	}
 
 }

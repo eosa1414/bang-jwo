@@ -159,7 +159,8 @@ public class RoomConverter {
 			.build();
 	}
 
-	public static RoomSummaryResponse convertToRoomSummary(Room room, Boolean isLiked, String ImageUrl) {
+	public static RoomSummaryResponse convertToRoomSummary(Room room, Boolean isLiked, String ImageUrl,
+		Address address) {
 		return RoomSummaryResponse.builder()
 			.roomId(room.getRoomId())
 			.memberId(room.getMemberId())
@@ -174,6 +175,8 @@ public class RoomConverter {
 			.floor(room.getFloor())
 			.simpleDescription(room.getSimpleDescription())
 			.imageUrl(ImageUrl)
+			.lat(address.getLat())
+			.lng(address.getLng())
 			.build();
 	}
 }

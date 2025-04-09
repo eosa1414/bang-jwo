@@ -48,6 +48,7 @@ import com.bangjwo.portone.application.dto.IdentityDto;
 import com.bangjwo.portone.application.service.VerificationService;
 import com.bangjwo.room.application.service.RoomService;
 import com.bangjwo.room.domain.entity.Room;
+import com.bangjwo.room.domain.vo.RoomStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -225,6 +226,7 @@ public class ContractService {
 		LandlordInfo landlordInfo = contract.getLandlordInfo();
 		contractImageService.updateLandlordSignatures(landlordInfo, dto);
 		contract.updateContractStatus(ContractStatus.COMPLETED);
+		contract.getRoom().updateStatus(RoomStatus.SOLD_OUT);
 	}
 
 	@Transactional
