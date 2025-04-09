@@ -31,7 +31,7 @@ public enum PortoneErrorCode implements ErrorCode {
 
 	// 기타
 	INVALID_PAYMENT_STATUS(HttpStatus.BAD_REQUEST, "PAYMENT4008", "잘못된 결제 상태 값입니다."),
-	PAYMENT_INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "PAYMENT5000", "결제 처리 중 서버 오류가 발생했습니다.")
+	PAYMENT_INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "PAYMENT5000", "결제 처리 중 서버 오류가 발생했습니다."),
 	;
 
 	private final HttpStatus httpStatus;
