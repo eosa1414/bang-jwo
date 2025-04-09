@@ -76,7 +76,7 @@ const PageRoomFind = () => {
 
           {isLoading ? (
             <div className="flex-1 flex items-center justify-center">
-              <span>Now Loading...</span>
+              {/* <span>Now Loading...</span> */}
             </div>
           ) : isError ? (
             <div className="flex-1 flex items-center justify-center">
@@ -102,6 +102,7 @@ const PageRoomFind = () => {
       <KakaoMap
         lat={params.lat ?? 37.5}
         lng={params.lng ?? 127.04}
+        zoom={params.zoom}
         onCenterChanged={(newLat, newLng) => {
           if (params.lat !== newLat || params.lng !== newLng) {
             setParams((prev) => ({
@@ -119,6 +120,7 @@ const PageRoomFind = () => {
             }));
           }
         }}
+        rooms={data?.items}
       />
     </div>
   );

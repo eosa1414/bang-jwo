@@ -19,6 +19,8 @@ export interface Room {
   simpleDescription: string;
   floor: string;
   imageUrl: string;
+  lat: number;
+  lng: number;
 }
 
 export const defaultRoom: Room = {
