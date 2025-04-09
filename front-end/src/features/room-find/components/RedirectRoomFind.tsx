@@ -9,7 +9,7 @@ const RedirectRoomFind = () => {
 
   useEffect(() => {
     if (!location.search) {
-      navigate("/room/find/onetworoom?lat=37.5&lng=127.04&zoom=4", {
+      navigate("/room/find/ONEROOM_TWOROOM?lat=37.5&lng=127.04&zoom=4", {
         replace: true,
       });
     }

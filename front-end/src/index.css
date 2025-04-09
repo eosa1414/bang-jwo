@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "animate.css";
 
 @theme {
   --color-gold: #f5c400;
@@ -21,7 +22,7 @@
 
   --color-coral-red: #ff5e5e;
   --color-green: #03c75a;
-  --color-forsythia: #FFE57D;
+  --color-forsythia: #ffe57d;
   --color-avocado: #568203;
   --color-pistachio: #84b067;
 

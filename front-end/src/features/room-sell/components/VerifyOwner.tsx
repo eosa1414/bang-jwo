@@ -1,5 +1,4 @@
 import Button from "../../../components/buttons/Button";
-import ContentWithTitle from "../../../components/ContentWithTitle";
 import InfoText from "../../../components/InfoText";
 import TitleBox from "../../../components/TitleBox";
 

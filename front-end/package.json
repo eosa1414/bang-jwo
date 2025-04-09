@@ -13,6 +13,7 @@
     "@stomp/stompjs": "^2.3.3",
     "@tailwindcss/vite": "^4.0.15",
     "@tanstack/react-query": "^5.69.0",
+    "animate.css": "^4.1.1",
     "@tanstack/react-query-devtools": "^5.72.0",
     "axios": "^1.8.4",
     "classnames": "^2.5.1",
