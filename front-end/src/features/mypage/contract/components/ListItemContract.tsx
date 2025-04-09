@@ -1,14 +1,28 @@
+import { useNavigate } from "react-router-dom";
 import Button from "../../../../components/buttons/Button";
 import LineBox from "../../../../components/LineBox";
 import MaterialIcon from "../../../../components/MaterialIcon";
 import { Room, RoomBuildingType } from "../../../../types/roomTypes";
 import { roomBuildingTypeLabel } from "../../../../utils/roomMapper";
+import { getLatLngFromAddress } from "../../../../utils/kakaoMap";
 
 interface ListItemContractProps {
   contract: Room;
 }
 
 const ListItemContract = ({ contract }: ListItemContractProps) => {
+  const navigate = useNavigate();
+
+  const handleAddressClick = async () => {
+    try {
+      //   const { lat, lng } = await getLatLngFromAddress(contract.address); //임시 변수명
+      //   navigate(`/room-find?lat=${lat}&lng=${lng}`);
+      navigate(`/room/find?roomId=${contract.roomId}`);
+    } catch (error) {
+      console.error("Failed to search address:", error);
+    }
+  };
+
   return (
     <>
       <li className="w-full sm:w-1/2 md:w-1/3 p-2">
@@ -17,7 +31,10 @@ const ListItemContract = ({ contract }: ListItemContractProps) => {
             <Button as="div" size="small" isAngular variant="gold">
               내가 계약한 집
             </Button>
-            <div className="flex flex-wrap items-center">
+            <div
+              onClick={handleAddressClick}
+              className="flex flex-wrap items-center"
+            >
               <div className="flex gap-1 text-xl font-semibold">
                 <span>월세</span>
                 <span>
