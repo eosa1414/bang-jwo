@@ -27,6 +27,7 @@ import PageMySell from "./features/mypage/sell/pages/PageMySell";
 import PageMyLike from "./features/mypage/like/pages/PageMyLike";
 import BuyerContractPage from "./features/contract/pages/BuyerContractPage";
 import PageMyContract from "./features/mypage/contract/pages/PageMyContract";
+import RedirectIfNotAuth from "./features/auth/components/RedirectIfNotAuth";
 
 function App() {
   return (
@@ -56,14 +57,18 @@ function App() {
           <Route
             path="/room/sell"
             element={
-              <LayoutMain>
-                <PageRoomSellCreate />
-              </LayoutMain>
+              <RedirectIfNotLoggedIn>
+                <RedirectIfNotAuth>
+                  <LayoutMain>
+                    <PageRoomSellCreate />
+                  </LayoutMain>
+                </RedirectIfNotAuth>
+              </RedirectIfNotLoggedIn>
             }
           >
             <Route index element={<RoomSellNotice />} />
             <Route path="write" element={<RoomForm type="create" />} />
-            <Route path="verify" element={<VerifyOwner />} />
+            <Route path="verify/:roomId" element={<VerifyOwner />} />
             <Route path="success" element={<CreateSuccess />} />
           </Route>
           <Route
