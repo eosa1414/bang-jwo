@@ -2,6 +2,7 @@ package com.bangjwo.member.presentation;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -118,4 +119,18 @@ public class MemberController {
 
 		return ResponseEntity.ok().build();
 	}
+
+	@Operation(
+		summary = "회원 탈퇴",
+		description = "로그인된 사용자가 자신의 계정을 탈퇴(soft delete)합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
+	@ApiResponse(responseCode = "204", description = "정상적으로 탈퇴되었습니다.")
+	@DeleteMapping("/me")
+	public ResponseEntity<Void> withdrawMember(@MemberHeader Long memberId) {
+		memberService.withdraw(memberId);
+		
+		return ResponseEntity.noContent().build();
+	}
+
 }
