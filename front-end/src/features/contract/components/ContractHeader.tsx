@@ -2,13 +2,14 @@ import EditableInputBox from "./EditableInputBox";
 import DisabledInputBox from "./DisabledInputBox";
 import NoticeDefault from "../../../components/notices/NoticeDefault";
 import hasBatchim from "../utils/hasBatchim";
+import RentTypeSelector from "./RentTypeSelector";
 
 interface ContractHeaderProps {
   mode: "lessor" | "lessee";
   lessorName: string;
   lesseeName: string;
-  onLessorNameChange?: (value: string) => void;
-  onLesseeNameChange?: (value: string) => void;
+  onLessorNameChange: (value: string) => void;
+  onLesseeNameChange: (value: string) => void;
   leaseType: "MONTHLY_WITH_DEPOSIT" | "PURE_MONTHLY" | null;
   setLeaseType: React.Dispatch<
     React.SetStateAction<"MONTHLY_WITH_DEPOSIT" | "PURE_MONTHLY" | null>
@@ -43,29 +44,13 @@ const ContractHeader = ({
         주택임대차계약서
       </h2>
 
-      {/* ✅ 임대 유형 선택 라디오 */}
       <div className="mt-6 flex justify-end gap-6 items-center">
         <span className="text-base font-bold whitespace-nowrap">임대 유형</span>
-        <label className="flex items-center gap-2 text-sm font-medium">
-          <input
-            type="radio"
-            name="leaseType"
-            value="MONTHLY_WITH_DEPOSIT"
-            checked={leaseType === "MONTHLY_WITH_DEPOSIT"}
-            onChange={() => setLeaseType("MONTHLY_WITH_DEPOSIT")}
-          />
-          보증금 있는 월세
-        </label>
-        <label className="flex items-center gap-2 text-sm font-medium">
-          <input
-            type="radio"
-            name="leaseType"
-            value="PURE_MONTHLY"
-            checked={leaseType === "PURE_MONTHLY"}
-            onChange={() => setLeaseType("PURE_MONTHLY")}
-          />
-          월세
-        </label>
+        <RentTypeSelector
+          mode="lessor" // 또는 "lessee"
+          value={leaseType}
+          onChange={setLeaseType}
+        />
       </div>
 
       <div className="mt-10 text-base font-medium flex flex-wrap items-center gap-2">
@@ -73,7 +58,7 @@ const ContractHeader = ({
         {mode === "lessor" ? (
           <EditableInputBox
             value={lessorName}
-            onChange={onLessorNameChange!}
+            onChange={onLessorNameChange}
             placeholder="성명"
             minLength={2}
             maxLength={10}
@@ -90,7 +75,7 @@ const ContractHeader = ({
         {mode === "lessee" ? (
           <EditableInputBox
             value={lesseeName}
-            onChange={onLesseeNameChange!}
+            onChange={onLesseeNameChange}
             placeholder="성명"
             minLength={2}
             maxLength={10}

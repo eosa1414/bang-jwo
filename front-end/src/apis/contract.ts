@@ -1,6 +1,5 @@
 import { useQuery, useMutation } from '@tanstack/react-query'
 import axiosInstance from '../utils/axiosInstances'
-import { ContractFormData } from '../features/contract/components/Contract';
 import { UpdateLandlordInfoDto } from '../features/contract/data/contract.dto';
 
 interface FinalizeContractResponse {
@@ -48,12 +47,15 @@ export function useUploadTenantSignature() {
   })
 }
 
+export type UpdateTenantInfoDto = UpdateLandlordInfoDto;
+
 export function useFinalizeTenantContract() {
-  return useMutation({
+  return useMutation<unknown, unknown, UpdateTenantInfoDto>({
     mutationFn: (data) =>
       axiosInstance.patch('/api/v1/contract/tenant/final', data).then(res => res.data),
-  })
+  });
 }
+
 
 export function useGetLandlordInfo() {
   return useQuery({
@@ -64,7 +66,7 @@ export function useGetLandlordInfo() {
 }
 
 export function useSaveLandlordInfo() {
-    return useMutation<unknown, unknown, ContractFormData>({
+    return useMutation<unknown, unknown, UpdateLandlordInfoDto>({
       mutationFn: (data) =>
         axiosInstance.patch('/api/v1/contract/landlord', data).then(res => res.data),
     });

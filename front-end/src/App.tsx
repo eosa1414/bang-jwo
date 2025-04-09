@@ -6,7 +6,7 @@ import LayoutMain from "./layouts/LayoutMain";
 import PageHome from "./pages/PageHome";
 import PageTest from "./pages/PageTest";
 import PageTestButton from "./pages/PageTestButton";
-// import SellerContractPage from "./features/contract/pages/SellerContractPage";
+import SellerContractPage from "./features/contract/pages/SellerContractPage";
 import "react-datepicker/dist/react-datepicker.css";
 import { AuthProvider } from "./contexts/AuthProvider";
 import RedirectIfNotLoggedIn from "./features/auth/components/RedirectIfNotLoggedIn";
@@ -25,7 +25,7 @@ import RoomSellNotice from "./features/room-sell/components/RoomSellNotice";
 import ChatPageOnly from "./features/chat/pages/ChatPageOnly";
 import PageMySell from "./features/mypage/sell/pages/PageMySell";
 import PageMyLike from "./features/mypage/like/pages/PageMyLike";
-// import BuyerContractPage from "./features/contract/pages/BuyerContractPage";
+import BuyerContractPage from "./features/contract/pages/BuyerContractPage";
 import PageMyContract from "./features/mypage/contract/pages/PageMyContract";
 import ChatbotNoticePage from "./features/chatbot/pages/ChatbotNoticePage";
 import ChatbotPage from "./features/chatbot/pages/ChatBotPage";
@@ -106,8 +106,8 @@ function App() {
           </Route>
           <Route path="/test" element={<PageTest />} />
           <Route path="/test/button" element={<PageTestButton />} />
-          {/* <Route path="/seller-contract" element={<SellerContractPage />} /> */}
-          {/* <Route path="/buyer-contract" element={<BuyerContractPage />} /> */}
+          <Route path="/seller-contract" element={<SellerContractPage />} />
+          <Route path="/buyer-contract" element={<BuyerContractPage />} />
           <Route path="/chat" element={<ChatPageOnly />} />
           <Route path="/chatbot-notice" element={<ChatbotNoticePage />} />
           <Route path="/chatbot" element={<ChatbotPage />} />
