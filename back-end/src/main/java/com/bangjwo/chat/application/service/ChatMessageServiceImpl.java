@@ -2,6 +2,7 @@ package com.bangjwo.chat.application.service;
 
 import java.util.List;
 
+import com.bangjwo.chat.application.dto.ChatMessageResponseDto;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -67,7 +68,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 	}
 
 	@Override
-	public List<ChatMessageDto> getChatMessages(Long chatRoomId) {
+	public List<ChatMessageResponseDto> getChatMessages(Long chatRoomId) {
 		try {
 			return chatMongoRepository.findByChatRoomIdOrderBySendAtAsc(chatRoomId);
 		} catch (Exception e) {

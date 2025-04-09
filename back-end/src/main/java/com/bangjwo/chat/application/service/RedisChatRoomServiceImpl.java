@@ -3,6 +3,14 @@ package com.bangjwo.chat.application.service;
 import java.time.Instant;
 import java.util.Set;
 
+import com.bangjwo.chat.domain.entity.ChatMessage;
+import com.bangjwo.chat.domain.repository.ChatMongoRepository;
+import com.bangjwo.global.common.error.room.RoomErrorCode;
+import com.bangjwo.member.application.service.MemberService;
+import com.bangjwo.member.domain.entity.Member;
+import com.bangjwo.room.application.service.RoomImageService;
+import com.bangjwo.room.domain.entity.Room;
+import com.bangjwo.room.domain.repository.RoomRepository;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -27,6 +35,11 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 
 	private final RedisTemplate<String, String> redisTemplate;
 	private final ObjectMapper objectMapper;
+	private final RoomRepository roomRepository;
+	private final MemberService memberService;
+	private final RoomImageService roomImageService;
+	private final ChatMongoRepository chatMongoRepository;
+
 
 	private String getKey(Long userId) {
 		return "chat:room:list:" + userId;
@@ -46,21 +59,36 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 		String senderKey = getKey(senderId);
 		String receiverKey = getKey(receiverId);
 
+		Member sender = memberService.searchMember(senderId);
+		Member receiver = memberService.searchMember(receiverId);
+
 		// 채팅방 아이디, 유저 닉네임, 각각 사진
 		///////// 추후 수정 ////////////////
-		String senderImage = "senderImage";
-		String receiverImage = "receiverImage";
-		String senderNickname = "senderNickname";
-		String receiverNickname = "receiverNickname";
+		String senderImage = sender.getProfileUrl();
+		String receiverImage = receiver.getProfileUrl();
+		String senderNickname = sender.getNickname();
+		String receiverNickname = receiver.getNickname();
 		String message = "채팅방이 생성되었습니다.";
 		String sendAt = Instant.now().toString();
+		// 추가사항
+		Room room = roomRepository.findById(roomId)
+				.orElseThrow(() -> new BusinessException(RoomErrorCode.ROOM_NOT_FOUND));
+		int deposit = room.getDeposit();
+		int monthly = room.getMonthlyRent();
+		String senderRole = "임차인";
+		String receiverRole = "임대인";
+		String roomImage = roomImageService.findByRoom(room).get(0).getImageUrl();
 		/// ////////////////////////////////
 
 		ChatRoomSummary senderSummary = ChatCoverter.createSenderSummary(
-			chatRoomId, roomId, message, receiverId, receiverImage, receiverNickname, sendAt);
+				chatRoomId, roomId, message, receiverId, receiverImage, receiverNickname, sendAt,
+				deposit, monthly, senderRole, roomImage
+		);
 
 		ChatRoomSummary receiverSummary = ChatCoverter.createReceiverSummary(
-			chatRoomId, roomId, message, senderId, senderImage, senderNickname, sendAt);
+				chatRoomId, roomId, message, senderId, senderImage, senderNickname, sendAt,
+				deposit, monthly, receiverRole, roomImage
+		);
 
 
 		try {
@@ -78,6 +106,27 @@ public class RedisChatRoomServiceImpl implements RedisChatRoomService {
 			log.error("Redis 직렬화 실패", e);
 			throw new BusinessException(ChatErrorCode.CHAT_REDIS_SERIALIZATION_FAILED);
 		}
+
+		// --- 채팅방 생성 메시지를 MongoDB에도 저장 ---
+		ChatMessageDto initialMessageDto = ChatMessageDto.builder()
+				.chatRoomId(chatRoomId)
+				.senderId(senderId)
+				.message(message)
+				.sendAt(sendAt)
+				.build();
+
+// Redis에서 가져온 Summary 기반으로 Message entity 생성
+		ChatMessage initialMessage = ChatCoverter.create(initialMessageDto, senderSummary, false);
+
+// MongoDB에 저장
+		try {
+			chatMongoRepository.save(initialMessage);
+			log.info("✅ MongoDB에 채팅방 생성 메시지 저장 완료");
+		} catch (Exception e) {
+			log.error("❌ MongoDB 저장 실패", e);
+			throw new BusinessException(ChatErrorCode.CHAT_MESSAGE_SAVE_FAILED);
+		}
+
 	}
 
 	@Override

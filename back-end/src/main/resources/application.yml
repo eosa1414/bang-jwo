@@ -7,7 +7,7 @@ spring:
     name: bangjwo
 
   datasource:
-    url: jdbc:mysql://mysql-db:3306/bangjwo?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:13306/bangjwo?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: ${MYSQL_ROOT_PASSWORD}
     hikari:
@@ -38,8 +38,8 @@ spring:
       port: ${SPRING_DATA_REDIS_PORT}
 
     mongodb:
-      uri: mongodb://bangjwo:1234@mongo:27017/admin      #docker용
-  #      uri: mongodb://bangjwo:1234@localhost:27017/admin #local용
+      #      uri: mongodb://bangjwo:1234@mongo:27017/admin      #docker용
+      uri: mongodb://bangjwo:1234@localhost:27017/admin #local용
 
   main:
     allow-bean-definition-overriding: true
