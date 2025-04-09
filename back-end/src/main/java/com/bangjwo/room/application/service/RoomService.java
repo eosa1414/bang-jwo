@@ -2,35 +2,39 @@ package com.bangjwo.room.application.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bangjwo.contract.domain.entity.Contract;
+import com.bangjwo.contract.domain.repository.ContractRepository;
 import com.bangjwo.global.common.error.room.RoomErrorCode;
 import com.bangjwo.global.common.exception.BusinessException;
 import com.bangjwo.global.common.exception.RoomException;
 import com.bangjwo.global.common.page.PaginationRequest;
+import com.bangjwo.global.common.util.VerificationUtil;
 import com.bangjwo.member.application.service.MemberService;
+import com.bangjwo.portone.application.service.VerificationService;
 import com.bangjwo.room.application.convert.RoomConverter;
 import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomStatusDto;
+import com.bangjwo.room.application.dto.request.VerifyRoomRequestDto;
 import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
-import com.bangjwo.room.application.dto.response.RoomSummaryResponse;
 import com.bangjwo.room.application.dto.response.SearchDetailRoomResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
+import com.bangjwo.room.domain.entity.Address;
 import com.bangjwo.room.domain.entity.Image;
 import com.bangjwo.room.domain.entity.Likes;
 import com.bangjwo.room.domain.entity.Room;
 import com.bangjwo.room.domain.repository.RoomRepository;
 import com.bangjwo.room.domain.vo.RoomAreaType;
+import com.bangjwo.room.domain.vo.RoomBuildingType;
+import com.bangjwo.room.domain.vo.RoomStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,6 +51,8 @@ public class RoomService {
 	private final MemoService memoService;
 	private final ReviewService reviewService;
 	private final MemberService memberService;
+	private final VerificationService verificationService;
+	private final ContractRepository contractRepository;
 
 	@Transactional
 	public void createRoom(CreateRoomRequestDto requestDto, Long memberId) {
@@ -62,10 +68,7 @@ public class RoomService {
 	@Transactional
 	public void updateRoom(Long roomId, UpdateRoomRequestDto requestDto, Long memberId) {
 		var searchRoom = findRoom(roomId);
-
-		if (!searchRoom.getMemberId().equals(memberId)) {
-			throw new BusinessException(RoomErrorCode.NO_AUTH_TO_UPDATE_ROOM);
-		}
+		validateRoomOwner(searchRoom, memberId, RoomErrorCode.NO_AUTH_TO_UPDATE_ROOM);
 
 		searchRoom.updateRoom(requestDto);
 		optionService.updateOptions(searchRoom, requestDto.getOptions());
@@ -76,9 +79,7 @@ public class RoomService {
 	@Transactional
 	public void deleteRoom(Long roomId, Long memberId) {
 		var searchRoom = findRoom(roomId);
-		if (!searchRoom.getMemberId().equals(memberId)) {
-			throw new BusinessException(RoomErrorCode.NO_AUTH_TO_DELETE_ROOM);
-		}
+		validateRoomOwner(searchRoom, memberId, RoomErrorCode.NO_AUTH_TO_DELETE_ROOM);
 
 		searchRoom.softDelete();
 	}
@@ -90,17 +91,29 @@ public class RoomService {
 	}
 
 	@Transactional(readOnly = true)
+	public void validateRoomOwner(Room room, Long memberId, RoomErrorCode errorCode) {
+		if (!room.getMemberId().equals(memberId)) {
+			throw new BusinessException(errorCode);
+		}
+	}
+
+	@Transactional(readOnly = true)
 	public SearchDetailRoomResponseDto searchRoomDetail(Long roomId, Long memberId) {
 		var room = findRoom(roomId);
 		var address = addressService.findByRoom(room);
 		var options = optionService.findByRoom(room);
 		var maintenanceIncludes = maintenanceIncludeService.findByRoom(room);
 		var images = imageService.findByRoom(room);
-		var isLiked = likeService.getLike(room, memberId)
-			.map(Likes::getFlag)
-			.orElse(false);
+		var isLiked = false;
+		if (memberId != null) {
+			isLiked = likeService.getLike(room, memberId)
+				.map(Likes::getFlag)
+				.orElse(false);
+		}
+
 		int reviewCnt = reviewService.getReviews(room.getRealEstateId(), address.getAddressDetail()).size();
-		var member = memberService.searchMember(memberId);
+		var member = memberService.searchMember(room.getMemberId());
+
 		return RoomConverter.convert(room, isLiked, address, member, reviewCnt, options, maintenanceIncludes, images);
 	}
 
@@ -172,23 +185,23 @@ public class RoomService {
 		var likePages = likeService.getAllLikes(memberId, pageable);
 		int totalItems = (int)likePages.getTotalElements();
 
-		List<Long> roomIds = likePages.getContent().stream()
+		var roomIds = likePages.getContent().stream()
 			.map(like -> like.getRoom().getRoomId())
 			.toList();
-		List<Room> rooms = roomRepository.findByRoomIdIn(roomIds);
+		var rooms = roomRepository.findByRoomIdIn(roomIds);
 
 		return createRoomListResponseDto(rooms, totalItems, pageable.getPageNumber(), pageable.getPageSize(), memberId);
 	}
 
 	@Transactional(readOnly = true)
-	public RoomListResponseDto searchRooms(Integer price, List<RoomAreaType> areaTypes,
+	public RoomListResponseDto searchRooms(Integer price, List<RoomAreaType> areaTypes, RoomBuildingType buildingType,
 		BigDecimal centerLat, BigDecimal centerLng, Integer zoom, Integer page, Long memberId) {
-		Specification<Room> spec = buildRoomSearchSpec(price, areaTypes, centerLat, centerLng, zoom);
-		Pageable pageable = PaginationRequest.toPageable(page);
+		var spec = buildRoomSearchSpec(price, areaTypes, buildingType, centerLat, centerLng, zoom);
+		var pageable = PaginationRequest.toPageable(page);
 
-		Page<Room> roomPages = roomRepository.findAll(spec, pageable);
-		List<Room> rooms = roomPages.getContent();
-		var total = (int)roomPages.getTotalElements();
+		var roomPages = roomRepository.findAll(spec, pageable);
+		var rooms = roomPages.getContent();
+		int total = (int)roomPages.getTotalElements();
 
 		return createRoomListResponseDto(rooms, total, pageable.getPageNumber(), pageable.getPageSize(), memberId);
 	}
@@ -196,32 +209,52 @@ public class RoomService {
 	@Transactional(readOnly = true)
 	public RoomListResponseDto createRoomListResponseDto(
 		List<Room> rooms, int totalItems, int page, int size, Long memberId) {
-		List<Long> roomIds = rooms.stream()
+		var roomIds = rooms.stream()
 			.map(Room::getRoomId)
 			.toList();
 
-		List<Likes> likes = likeService.getLikeRooms(rooms, memberId);
-		Map<Long, Boolean> likeMap = likes.stream()
+		var likes = likeService.getLikeRooms(rooms, memberId);
+		var likeMap = likes.stream()
 			.collect(Collectors.toMap(l -> l.getRoom().getRoomId(), Likes::getFlag, (a, b) -> a));
 
-		List<Image> images = imageService.getMainImages(roomIds);
-		Map<Long, String> imageMap = images.stream()
+		var images = imageService.getMainImages(roomIds);
+		var imageMap = images.stream()
 			.collect(Collectors.toMap(i -> i.getRoom().getRoomId(), Image::getImageUrl, (a, b) -> a));
 
-		List<RoomSummaryResponse> roomSummaryList = rooms.stream()
+		var addresses = addressService.findByRoomIds(roomIds);
+		var addressMap = addresses.stream()
+			.collect(Collectors.toMap(addr -> addr.getRoom().getRoomId(), addr -> addr));
+
+		var roomSummaryList = rooms.stream()
 			.map(room -> {
 				boolean liked = likeMap.getOrDefault(room.getRoomId(), false);
 				String imageUrl = imageMap.getOrDefault(room.getRoomId(), null);
+				Address address = addressMap.get(room.getRoomId());
 
-				return RoomConverter.convertToRoomSummary(room, liked, imageUrl);
+				return RoomConverter.convertToRoomSummary(room, liked, imageUrl, address);
 			})
 			.toList();
 
 		return new RoomListResponseDto(totalItems, page, size, roomSummaryList);
 	}
 
+	@Transactional(readOnly = true)
+	public RoomListResponseDto getContractedRooms(Long memberId, Integer page, Integer size) {
+		var pageable = PaginationRequest.toPageable(page, size);
+		var contracts = contractRepository.findByLandlordIdOrTenantId(memberId, memberId, pageable);
+
+		var rooms = contracts.getContent().stream()
+			.map(Contract::getRoom)
+			.filter(room -> room.getDeletedAt() == null)
+			.toList();
+
+		int totalItems = (int)contracts.getTotalElements();
+
+		return createRoomListResponseDto(rooms, totalItems, pageable.getPageNumber(), pageable.getPageSize(), memberId);
+	}
+
 	private Specification<Room> buildRoomSearchSpec(Integer price, List<RoomAreaType> areaTypes,
-		BigDecimal centerLat, BigDecimal centerLng, Integer zoom) {
+		RoomBuildingType buildingType, BigDecimal centerLat, BigDecimal centerLng, Integer zoom) {
 		BigDecimal delta = calculateDeltaByZoom(zoom);
 		BigDecimal minLat = centerLat.subtract(delta);
 		BigDecimal maxLat = centerLat.add(delta);
@@ -235,6 +268,11 @@ public class RoomService {
 		}
 
 		spec = spec.and(RoomSpecification.exclusiveAreaIn(areaTypes));
+
+		if (buildingType != null) {
+			spec = spec.and(RoomSpecification.buildingTypeEquals(buildingType));
+		}
+
 		spec = spec.and(RoomSpecification.roomInAddressBounds(minLat, maxLat, minLng, maxLng));
 
 		return spec;
@@ -269,4 +307,35 @@ public class RoomService {
 		var room = findRoom(dto.getRoomId());
 		room.updateStatus(dto.getStatus());
 	}
+
+	@Transactional
+	public void verifyRoom(Long memberId, VerifyRoomRequestDto dto) {
+		var room = findRoom(dto.getRoomId());
+		validateRoomOwner(room, memberId, RoomErrorCode.NO_AUTH_TO_UPDATE_ROOM);
+
+		var identity = verificationService.getVerification(dto.getIdentityVerificationId());
+		var member = memberService.searchMember(memberId);
+		VerificationUtil.compareMemberInfo(member, identity);
+		room.updateVerified();
+	}
+
+	@Transactional
+	public void publishRoom(Long roomId, Long memberId) {
+		Room room = findRoom(roomId);
+
+		if (!room.getMemberId().equals(memberId)) {
+			throw new BusinessException(RoomErrorCode.NO_AUTH_TO_UPDATE_ROOM);
+		}
+
+		if (!RoomStatus.UNDER_VERIFICATION.equals(room.getStatus())) {
+			throw new BusinessException(RoomErrorCode.INVALID_ROOM_STATUS);
+		}
+
+		if (Boolean.TRUE.equals(room.getVerified()) && Boolean.TRUE.equals(room.getRegistryPaid())) {
+			room.updateStatus(RoomStatus.ON_SALE);
+		} else {
+			throw new BusinessException(RoomErrorCode.CONDITION_NOT_MET_FOR_ON_SALE);
+		}
+	}
+
 }

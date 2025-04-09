@@ -22,12 +22,14 @@ import com.bangjwo.room.application.dto.request.CreateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomRequestDto;
 import com.bangjwo.room.application.dto.request.UpdateRoomStatusDto;
+import com.bangjwo.room.application.dto.request.VerifyRoomRequestDto;
 import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
 import com.bangjwo.room.application.dto.response.SearchDetailRoomResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
 import com.bangjwo.room.application.service.RoomService;
 import com.bangjwo.room.domain.vo.RoomAreaType;
+import com.bangjwo.room.domain.vo.RoomBuildingType;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -53,12 +55,14 @@ public class RoomController {
 	public ResponseEntity<RoomListResponseDto> searchRooms(
 		@RequestParam(required = false) Integer price,
 		@RequestParam(required = false) List<RoomAreaType> areaTypes,
+		@RequestParam(required = false) RoomBuildingType buildingType,
 		@RequestParam BigDecimal lat,
 		@RequestParam BigDecimal lng,
 		@RequestParam(required = false) Integer zoom,
 		@RequestParam(required = false) Integer page,
 		@MemberHeader(required = false) Long memberId) {
-		RoomListResponseDto response = roomService.searchRooms(price, areaTypes, lat, lng, zoom, page, memberId);
+		RoomListResponseDto response = roomService.searchRooms(price, areaTypes, buildingType, lat, lng, zoom, page,
+			memberId);
 
 		return ResponseEntity.ok(response);
 	}
@@ -208,5 +212,32 @@ public class RoomController {
 		roomService.updateRoomStatus(requestDto);
 
 		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{roomId}/verify")
+	@Operation(summary = "매물 본인 인증", description = "본인인증 성공 시 해당 매물을 verified 처리합니다.",
+		security = @SecurityRequirement(name = "JWT"))
+	public ResponseEntity<Void> verifyRoom(
+		@MemberHeader Long memberId,
+		@RequestBody VerifyRoomRequestDto dto
+	) {
+		roomService.verifyRoom(memberId, dto);
+
+		return ResponseEntity.ok().build();
+	}
+
+	@Operation(
+		summary = "매물 상태 판매중으로 전환",
+		description = "verified와 registryPaid가 모두 true인 경우, 매물 상태를 판매중(ON_SALE)으로 변경합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
+	@PatchMapping("/{roomId}/status/on-sale")
+	public ResponseEntity<Void> publishRoom(
+		@PathVariable Long roomId,
+		@MemberHeader Long memberId
+	) {
+		roomService.publishRoom(roomId, memberId);
+
+		return ResponseEntity.ok().build();
 	}
 }

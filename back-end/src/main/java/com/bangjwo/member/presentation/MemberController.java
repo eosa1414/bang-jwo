@@ -2,10 +2,12 @@ package com.bangjwo.member.presentation;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +17,7 @@ import com.bangjwo.member.application.dto.request.UpdateMemberRequestDto;
 import com.bangjwo.member.application.dto.response.MemberResponseDto;
 import com.bangjwo.member.application.dto.response.ReviewListResponseDto;
 import com.bangjwo.member.application.service.MemberService;
-import com.bangjwo.portone.application.dto.VerificationDto;
+import com.bangjwo.portone.application.dto.IdentityDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
 import com.bangjwo.room.application.service.RoomService;
 
@@ -77,6 +79,22 @@ public class MemberController {
 		return ResponseEntity.ok().body(response);
 	}
 
+	@Operation(
+		summary = "계약된 매물 목록 조회",
+		description = "사용자가 계약한 매물(세입자/임대인)을 조회합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
+	@GetMapping("/contract")
+	public ResponseEntity<RoomListResponseDto> getContractedRooms(
+		@MemberHeader Long memberId,
+		@RequestParam(required = false) Integer page,
+		@RequestParam(required = false) Integer size
+	) {
+		var result = roomService.getContractedRooms(memberId, page, size);
+
+		return ResponseEntity.ok(result);
+	}
+
 	@Operation(summary = "좋아요한 매물 목록 조회", description = "로그인된 사용자가 좋아요한 매물 목록을 조회합니다.",
 		security = @SecurityRequirement(name = "JWT"))
 	@ApiResponse(responseCode = "200", description = "정상적으로 좋아요한 매물 목록을 반환했습니다.")
@@ -90,15 +108,29 @@ public class MemberController {
 		return ResponseEntity.ok(result);
 	}
 
-	@Operation(summary = "본인인증 정보 저장", description = "본인인증의 response 값인 이름, 생년월일, 전화번호를 사용자 정보에 저장합니다.",
+	@Operation(summary = "본인인증 정보 저장", description = "본인인증 ID를 입력으로 받고, 포트원 서버 조회를 통해 response 값인 이름, 생년월일, 전화번호를 사용자 정보에 저장합니다.",
 		security = @SecurityRequirement(name = "JWT"))
 	@ApiResponse(responseCode = "200", description = "정상적으로 사용자 정보에 등록되었습니다.")
 	@PutMapping("/verify")
 	public ResponseEntity<Void> setVerificationInformation(
 		@MemberHeader Long userId,
-		VerificationDto dto) {
+		@RequestBody IdentityDto.IdentityRequest dto) {
 		memberService.updateMemberForVerify(userId, dto);
 
 		return ResponseEntity.ok().build();
 	}
+
+	@Operation(
+		summary = "회원 탈퇴",
+		description = "로그인된 사용자가 자신의 계정을 탈퇴(soft delete)합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
+	@ApiResponse(responseCode = "204", description = "정상적으로 탈퇴되었습니다.")
+	@DeleteMapping("/me")
+	public ResponseEntity<Void> withdrawMember(@MemberHeader Long memberId) {
+		memberService.withdraw(memberId);
+		
+		return ResponseEntity.noContent().build();
+	}
+
 }
