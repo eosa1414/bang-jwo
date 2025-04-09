@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import com.bangjwo.room.domain.entity.Address;
 import com.bangjwo.room.domain.entity.Room;
 import com.bangjwo.room.domain.vo.RoomAreaType;
+import com.bangjwo.room.domain.vo.RoomBuildingType;
 
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Subquery;
@@ -60,5 +61,9 @@ public class RoomSpecification {
 
 			return root.get("roomId").in(subquery);
 		};
+	}
+
+	public static Specification<Room> buildingTypeEquals(RoomBuildingType buildingType) {
+		return (root, query, cb) -> cb.equal(root.get("buildingType"), buildingType);
 	}
 }
