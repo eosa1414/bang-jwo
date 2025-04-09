@@ -214,5 +214,9 @@ public class Room extends BaseEntity {
 	public void updateVerified() {
 		this.verified = true;
 	}
+
+	public void updateRegistryPaid() {
+		this.registryPaid = true;
+	}
 }
 

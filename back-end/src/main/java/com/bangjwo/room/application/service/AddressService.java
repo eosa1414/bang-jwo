@@ -1,5 +1,7 @@
 package com.bangjwo.room.application.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,4 +50,9 @@ public class AddressService {
 		return addressRepository.findByRoom(room)
 			.orElseThrow(() -> new BusinessException(RoomErrorCode.NOT_FOUND_SEARCH_ROOM_ADDRESS));
 	}
+
+	public List<Address> findByRoomIds(List<Long> roomIds) {
+		return addressRepository.findByRoomRoomIdIn(roomIds);
+	}
+
 }

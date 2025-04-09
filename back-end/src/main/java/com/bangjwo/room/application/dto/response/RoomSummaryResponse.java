@@ -62,4 +62,10 @@ public class RoomSummaryResponse {
 
 	@Schema(description = "대표 이미지 URL", example = "https://example.com/images/1.jpg")
 	private String imageUrl;
+
+	@Schema(description = "위도", example = "37.5665")
+	private BigDecimal lat;
+
+	@Schema(description = "경도", example = "126.9780")
+	private BigDecimal lng;
 }
