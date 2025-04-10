@@ -22,6 +22,7 @@ public class PaymentConverter {
 
 	public static PaymentDto.ResponseDto toDto(Payments entity) {
 		return new PaymentDto.ResponseDto(
+			entity.getPaymentId(),
 			entity.getImpUid(),
 			entity.getMerchantUid(),
 			entity.getMemberId(),

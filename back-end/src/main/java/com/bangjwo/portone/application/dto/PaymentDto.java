@@ -20,6 +20,9 @@ public record PaymentDto() {
 
 	@Schema(description = "사전 정보 입력 반환 DTO")
 	public record ResponseDto(
+		@Schema(description = "방줘 결제 ID", example = "1")
+		Long paymentId,
+
 		@Schema(description = "포트원 imp_uid", example = "imp_342dea79")
 		String impUid,
 
