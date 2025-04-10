@@ -25,16 +25,12 @@ interface Message {
   timestamp: string;
 }
 
-const Chatbot = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      sender: "chatbot",
-      text: "무엇을 물어보시겠어요?",
-      timestamp: new Date().toTimeString().slice(0, 5),
-    },
-  ]);
+interface ChatbotProps {
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+}
 
+const Chatbot = ({ messages, setMessages }: ChatbotProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // useMutation에 옵션 객체로 mutationFn을 설정합니다.
@@ -47,7 +43,7 @@ const Chatbot = () => {
       );
       if (chatbotMsg) {
         const botMessage: Message = {
-          id: Date.now(),
+          id: messages.length+1,
           sender: "chatbot",
           text: chatbotMsg.message,
           timestamp: new Date(chatbotMsg.timestamp)
