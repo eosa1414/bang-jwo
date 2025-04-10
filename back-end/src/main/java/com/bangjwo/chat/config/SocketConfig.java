@@ -19,7 +19,8 @@ public class SocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/chat")
 			.setAllowedOriginPatterns("*")
-			.withSockJS();
+		// .withSockJS()
+		;
 	}
 
 	// configureMessageBroker는 메모리 기반의 Simple Message Broker를 활성화 한다.
@@ -33,7 +34,9 @@ public class SocketConfig implements WebSocketMessageBrokerConfigurer {
 		// /sub가 api에 prefix로 붙은 경우, messageBroker가 해당 경로를 가로채 처리
 		// 해당 경로 /sub으로 SimpleBroker를 등록한다.
 		// SimpleBroker는 해당하는 경로로 구독하는 client에게 메시지를 전달하는 간단한 작업을 수행한다.
-		registry.enableSimpleBroker("/sub").setTaskScheduler(heartBeatScheduler()).setHeartbeatValue(new long[]{10000, 10000});;
+		registry.enableSimpleBroker("/sub")
+			.setTaskScheduler(heartBeatScheduler())
+			.setHeartbeatValue(new long[] {10000, 10000});
 
 		// 메시지를 보낼 때, 관련 경로를 설정해주는 함수
 		// client에서 SEND 요청을 처리
