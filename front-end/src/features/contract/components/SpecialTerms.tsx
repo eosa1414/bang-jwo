@@ -38,16 +38,16 @@ const SpecialTerms = ({
 }: SpecialTermsProps) => {
   const isEditable = mode === "lessor";
 
-  const [moveInDate, setMoveInDate] = useState<Date | null>(null);
-  const [taxAmount, setTaxAmount] = useState("");
+  const [moveInDate, setMoveInDate] = useState<Date | null>(new Date(Date.now()));
+  const [taxAmount, setTaxAmount] = useState("50000000");
   const [disputeConsent, setDisputeConsent] = useState<
     "agree" | "disagree" | null
-  >(null);
-  const [rebuildPlan, setRebuildPlan] = useState<"none" | "exist" | null>(null);
+  >("agree");
+  const [rebuildPlan, setRebuildPlan] = useState<"none" | "exist" | null>("none");
   const [constructionPeriod, setConstructionPeriod] = useState("");
   const [constructionDuration, setConstructionDuration] = useState("");
   const [ownerConsent, setOwnerConsent] = useState<"agree" | "disagree" | null>(
-    null
+    "agree"
   );
 
   const [customTerms, setCustomTerms] = useState<string[]>([]);

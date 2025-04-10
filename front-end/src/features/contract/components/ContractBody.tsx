@@ -101,45 +101,52 @@ const ContractBody = ({
 }: ContractBodyProps) => {
   const isEditable = mode === "lessor";
 
-  if (!isEditable) {
+  
+
+  if (!isEditable || isEditable) {
     setDeposit(100000000);
     setContractFee(50000000);
     setMiddleFee(30000000);
     setMonthlyRent(2000000);
     setFinalPayment(20000000);
+    setMonthlyRentAccountNumber("1436534123446")
+    setMonthlyRentAccountBank("신한은행")
+    setFixedManagementFee(100000);
+    setUnfixedManagementFee("전기세, 수도세, 가스비 등")
+    setMonthlyRentPaymentDate("15")
   }
 
   // 하위 컴포넌트 내부에서만 사용하는 상태들
-  const [monthlyRentDay, setMonthlyRentDay] = useState("");
+  const [monthlyRentDay, setMonthlyRentDay] = useState("15");
   // const [monthlyRentAccountNumber, setMonthlyRentAccountNumber] = useState("");
   // const [fixedManagementFee, setFixedManagementFee] = useState(0);
   // const [variableMaintenance, setVariableMaintenance] = useState("");
 
   const [repairFacility, setRepairFacility] = useState<
     "none" | "needed" | null
-  >(null);
-  const [repairDetail, setRepairDetail] = useState("");
+  >("none");
+  const [repairDetail, setRepairDetail] = useState("특별히 없음");
   const [completionOption, setCompletionOption] = useState<
     "balance-day" | "custom" | null
-  >(null);
+  >("custom");
   const [repairCompletionDate, setRepairCompletionDate] = useState<Date | null>(
-    null
+    new Date(Date.now())
   );
   const [repairCustomEtc, setRepairCustomEtc] = useState("");
   const [unrepairedOption, setUnrepairedOption] = useState<
     "balance-day" | "custom" | null
-  >(null);
+  >("balance-day");
   const [unrepairedDeadline, setUnrepairedDeadline] = useState<Date | null>(
-    null
+    new Date(Date.now())
   );
-  const [unrepairedCustomEtc, setUnrepairedCustomEtc] = useState("");
+  const [unrepairedCustomEtc, setUnrepairedCustomEtc] = useState("배상한다.");
 
-  const [lessorDuty, setLessorDuty] = useState("");
-  const [lesseeDuty, setLesseeDuty] = useState("");
+  const [lessorDuty, setLessorDuty] = useState("난방 및 상하수도");
+  const [lesseeDuty, setLesseeDuty] = useState("생활하며 파손되는 부분");
   const [showLessorNotice, setShowLessorNotice] = useState(false);
   const [showLesseeNotice, setShowLesseeNotice] = useState(false);
 
-  const [payType, setPayType] = useState("");
+  const [payType, setPayType] = useState("선불");
 
   const handleMonthlyRentDay = (value: string) => {
     setMonthlyRentDay(value);

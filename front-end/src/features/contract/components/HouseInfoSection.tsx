@@ -57,6 +57,23 @@ const HouseInfoSection = ({
   const [showLandNotice, setShowLandNotice] = useState(false);
   const [showBuildingNotice, setShowBuildingNotice] = useState(false);
   const isLessee = mode === "lessee";
+  address = address || "테헤란로 212 멀티캠퍼스";
+  contractType = contractType || "NEW";
+  detailAddress = detailAddress || "1202호";
+  landPurpose = landPurpose || "대";
+  landArea = landArea || "1200";
+  buildingStructure = buildingStructure || "철근콘크리트";
+  buildingUsage = buildingUsage || "사무실";
+  buildingArea = buildingArea || "1100";
+  leaseArea = leaseArea || "550";
+  rentalPartDetailAddress = rentalPartDetailAddress || "1202호";
+
+  unpaidTaxOption = unpaidTaxOption || false;
+  priorityDateOption = priorityDateOption || null;
+  unpaidTaxSignature = unpaidTaxSignature || null;
+  priorityDateSignature = priorityDateSignature || null;
+
+  
 
   return (
     <div className="mt-10">
@@ -86,7 +103,7 @@ const HouseInfoSection = ({
               <EditableInputBox
                 value={address}
                 onChange={(val) => onChange("address", val)}
-                placeholder="도로명주소"
+                placeholder="테헤란로 212 멀티캠퍼스"
                 maxLength={50}
                 customWidth="w-[340px]"
               />
@@ -104,7 +121,7 @@ const HouseInfoSection = ({
             <EditableInputBox
               value={detailAddress}
               onChange={(val) => onChange("detailAddress", val)}
-              placeholder="상세주소"
+              placeholder="1202호"
               maxLength={50}
               customWidth="w-[300px]"
             />
@@ -144,7 +161,7 @@ const HouseInfoSection = ({
             <EditableInputBox
               value={landPurpose}
               onChange={(val) => onChange("landPurpose", val)}
-              placeholder="예) 대"
+              placeholder="대"
               customWidth="w-[160px]"
             />
           )}
@@ -159,7 +176,7 @@ const HouseInfoSection = ({
             <EditableInputBox
               value={landArea}
               onChange={(val) => onChange("landArea", val)}
-              placeholder="0"
+              placeholder="1200"
               customWidth="w-[160px]"
             />
           )}
@@ -204,7 +221,7 @@ const HouseInfoSection = ({
             <EditableInputBox
               value={buildingStructure}
               onChange={(val) => onChange("buildingStructure", val)}
-              placeholder="예) 철근콘크리트"
+              placeholder="철근콘크리트"
               customWidth="w-[160px]"
             />
           )}
@@ -219,7 +236,7 @@ const HouseInfoSection = ({
             <EditableInputBox
               value={buildingUsage}
               onChange={(val) => onChange("buildingUsage", val)}
-              placeholder="예) 공동주택"
+              placeholder="사무실"
               customWidth="w-[160px]"
             />
           )}
@@ -234,7 +251,7 @@ const HouseInfoSection = ({
             <EditableInputBox
               value={buildingArea}
               onChange={(val) => onChange("buildingArea", val)}
-              placeholder="0"
+              placeholder="1100"
               customWidth="w-[160px]"
             />
           )}
@@ -261,7 +278,7 @@ const HouseInfoSection = ({
           <EditableInputBox
             value={rentalPartDetailAddress}
             onChange={(val) => onChange("rentalPartDetailAddress", val)}
-            placeholder="상세주소가 있는 경우 동·층·호를 정확히 기재하세요"
+            placeholder="1202호"
             maxLength={100}
             customWidth="w-[400px]"
           />
@@ -277,7 +294,7 @@ const HouseInfoSection = ({
           <EditableInputBox
             value={leaseArea}
             onChange={(val) => onChange("leaseArea", val)}
-            placeholder="0"
+            placeholder="550"
             customWidth="w-[160px]"
           />
         )}

@@ -49,12 +49,12 @@ CustomInput.displayName = "CustomInput";
 const DatePickerInput = ({
   selectedDate,
   onChange,
-  placeholder = "2025.04.18",
+  placeholder = "YYYY.MM.DD",
   disabled = false,
 }: DatePickerInputProps) => {
   return (
     <DatePicker
-      selected={selectedDate}
+      selected={new Date(Date.now())}
       onChange={onChange}
       disabled={disabled}
       dateFormat="yyyy.MM.dd"
