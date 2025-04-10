@@ -17,6 +17,7 @@ import {
   MaintenanceIncludeName,
   RoomBuildingType,
   RoomDirection,
+  RoomImage,
   RoomOption,
   RoomRequestBaseDto,
   UpdateRoomRequestDto,
@@ -24,10 +25,15 @@ import {
 import { openAddressSearch } from "../../../utils/openAddressSearch";
 import InputButton from "../../../components/InputButton";
 import { RoomSellCreateContext } from "../pages/PageRoomSellCreate";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import Textarea from "../../../components/TextArea";
-import { createRoom } from "../../../services/roomService";
+import {
+  createRoom,
+  getRoomDetail,
+  updateRoom,
+} from "../../../services/roomService";
 import InputDate from "../../../components/InputDate";
+import Toast from "../../toast/components/Toast";
 
 type RoomFormType = "create" | "update";
 
@@ -39,7 +45,8 @@ interface RoomFormProps {
   onSubmit?: (
     form: CreateRoomRequestDto | UpdateRoomRequestDto,
     images: File[],
-    deleteImageIds?: number[]
+    deleteImageIds?: number[],
+    latLng?: { lat: number; lng: number }
   ) => void;
 }
 
@@ -47,6 +54,17 @@ const FORM_KEY = "roomFormData";
 const EXTRA_KEY = "roomExtraFields";
 
 const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
+  const navigate = useNavigate();
+  const params = useParams();
+  const roomId = params.roomId ? parseInt(params.roomId) : null;
+  const [roomLatLng, setRoomLatLng] = useState<{ lat: number; lng: number }>({
+    lat: 37.5,
+    lng: 127.04,
+  });
+  const [toastMessage, setToastMessage] = useState("");
+  const [undergroundInput, setUndergroundInput] = useState("");
+  const [isUndergroundMode, setIsUndergroundMode] = useState(false);
+
   const outletContext = useOutletContext<RoomSellCreateContext | null>();
   const handleSubmitExternal =
     onSubmit ?? outletContext?.handleNext ?? (() => {});
@@ -114,8 +132,11 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
   });
 
   const [newImages, setNewImages] = useState<File[]>([]);
-  const [existingImages, setExistingImages] = useState<string[]>(
-    initialData?.images ?? []
+  const [existingImages, setExistingImages] = useState<RoomImage[]>(
+    initialData?.images?.map((url, idx) => ({
+      imageId: idx,
+      imageUrl: url,
+    })) ?? []
   );
 
   // 보안을 위해 페이지 이탈 시 sessionStorage 제거
@@ -132,13 +153,110 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
   //   };
   // }, []);
 
+  const handleDeleteImage = (imageId: number) => {
+    setExtraFieldsUpdate((prev) => ({
+      ...prev,
+      deleteImageIds: [...prev.deleteImageIds, imageId],
+    }));
+
+    setExistingImages((prev) => prev.filter((img) => img.imageId !== imageId));
+  };
+
+  const pyeongToSqm = (pyeong: number) => +(pyeong * 3.3058).toFixed(2);
+  const sqmToPyeong = (sqm: number) => +Math.round(sqm / 3.3058);
+
+  const handlePyeongChange =
+    (key: "supplyArea" | "exclusiveArea") =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const pyeong = parseFloat(e.target.value);
+      if (isNaN(pyeong)) return;
+
+      const sqm = pyeongToSqm(pyeong);
+      setFormData((prev) => ({
+        ...prev,
+        [key]: sqm,
+      }));
+    };
+
   useEffect(() => {
+    if (type === "update") return;
     sessionStorage.setItem(FORM_KEY, JSON.stringify(formData));
   }, [formData]);
 
   useEffect(() => {
     sessionStorage.setItem(EXTRA_KEY, JSON.stringify(extraFieldsCreate));
   }, [extraFieldsCreate]);
+
+  useEffect(() => {
+    if (type === "update" && roomId !== null) {
+      (async () => {
+        try {
+          const roomData = await getRoomDetail(roomId);
+          const {
+            deposit,
+            monthlyRent,
+            exclusiveArea,
+            supplyArea,
+            totalUnits,
+            floor,
+            maxFloor,
+            parkingSpaces,
+            availableFrom,
+            permissionDate,
+            simpleDescription,
+            description,
+            maintenanceCost,
+            roomCnt,
+            bathroomCnt,
+            direction,
+            discussable,
+            discussDetail,
+            reviewable,
+            isPhonePublic,
+            maintenanceIncludes,
+            options,
+            images,
+          } = roomData;
+
+          setFormData({
+            deposit,
+            monthlyRent,
+            exclusiveArea,
+            supplyArea,
+            totalUnits,
+            floor,
+            maxFloor,
+            parkingSpaces,
+            availableFrom,
+            permissionDate,
+            simpleDescription,
+            description,
+            maintenanceCost,
+            roomCnt,
+            bathroomCnt,
+            direction,
+            discussable,
+            discussDetail,
+            reviewable,
+            isPhonePublic,
+            maintenanceIncludes,
+            options,
+            images: images.map((img) => img.imageUrl),
+          });
+
+          console.log(roomData);
+          setExistingImages(images);
+
+          setRoomLatLng({ lat: roomData.lat, lng: roomData.lng });
+        } catch (err) {
+          alert("해당하는 방이 없습니다."); //임시 처리
+          navigate("/room/sell");
+          return null;
+          console.error("방 정보 불러오기 실패:", err);
+        }
+      })();
+    }
+  }, [type, roomId]);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -157,15 +275,25 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
     if (createKeys.includes(name)) {
       setExtraFieldsCreate((prev) => ({ ...prev, [name]: parsedValue }));
     } else {
-      setFormData((prev) => ({ ...prev, [name]: parsedValue }));
+      // 일반 층 입력 시 underground 모드 해제
+      if (name === "floor") {
+        setIsUndergroundMode(false);
+
+        const num = Number(value);
+        const text = !isNaN(num) && num > 0 ? `${num}층` : "";
+
+        setFormData((prev) => ({
+          ...prev,
+          floor: text,
+        }));
+      } else {
+        setFormData((prev) => ({ ...prev, [name]: value }));
+      }
     }
   };
 
   const handleSubmit = async () => {
-    const finalImageCount =
-      existingImages.length -
-      extraFieldsUpdate.deleteImageIds.length +
-      newImages.length;
+    const finalImageCount = existingImages.length + newImages.length;
     if (
       (type === "create" && newImages.length < 3) ||
       (type === "update" && finalImageCount < 3)
@@ -192,6 +320,7 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
       const form = new FormData();
 
       Object.entries(finalData).forEach(([key, value]) => {
+        if (key === "images") return; //initialData의 문자열 데이터 받지 않음
         if (Array.isArray(value)) {
           value.forEach((v) => form.append(`${key}`, v));
         } else {
@@ -203,26 +332,25 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
         form.append("images", image);
       });
 
-      if (type !== "create" && deleteImageIds.length > 0) {
+      if (type === "update" && deleteImageIds.length > 0) {
         deleteImageIds.forEach((id) => {
           form.append("deleteImageIds", id.toString());
         });
       }
 
-      //dev용 콘솔
-      for (const [key, value] of form.entries()) {
-        console.log(key, value);
-      }
-
       const result =
         type === "create"
           ? await createRoom(form)
-          : console.log("수정 구현 예정");
+          : await updateRoom(roomId!, form);
 
-      console.log("등록 결과:", result);
-      handleSubmitExternal(result, newImages, deleteImageIds);
+      if (type === "create") {
+        sessionStorage.removeItem(FORM_KEY);
+        sessionStorage.removeItem(EXTRA_KEY);
+      }
+
+      handleSubmitExternal(result, newImages, deleteImageIds, roomLatLng);
     } catch (err) {
-      alert("방 등록 실패");
+      setToastMessage(`방 ${type === "create" ? "등록" : "수정"} 실패`);
       console.error(err);
     }
   };
@@ -254,6 +382,7 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
                 value={extraFieldsCreate.postalCode}
                 onChange={handleInputChange}
                 placeholder="우편 번호"
+                required
               />
               <Button
                 onClick={() =>
@@ -275,6 +404,7 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
                 value={extraFieldsCreate.address}
                 onChange={handleInputChange}
                 placeholder="도로명 주소"
+                required
               />
             </ContentWithTitle>
             <ContentWithTitle title="상세 주소">
@@ -283,6 +413,7 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
                 value={extraFieldsCreate.addressDetail}
                 onChange={handleInputChange}
                 placeholder="상세 주소"
+                size="large"
               />
             </ContentWithTitle>
           </TitleBox>
@@ -301,6 +432,9 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
                 deposit: Number(e.target.value),
               }))
             }
+            text="만원"
+            size="small"
+            required
           />
         </ContentWithTitle>
         <ContentWithTitle title="월세">
@@ -314,6 +448,9 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
                 monthlyRent: Number(e.target.value),
               }))
             }
+            text="만원"
+            size="small"
+            required
           />
         </ContentWithTitle>
         <ContentWithTitle title={`가격 조정\n가능 여부`}>
@@ -365,6 +502,9 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
                   maintenanceCost: Number(e.target.value),
                 }))
               }
+              text="원"
+              size="small"
+              required
             />
             <InputCheckbox
               label="없음"
@@ -407,7 +547,13 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
 
       <TitleBox title="집 사진 등록" detail="(3장 이상)" required>
         <InfoText text="집의 내부를 파악할 수 있는 사진을 올려주세요. 매물과 관계 없는 사진을 포함할 시 제재될 수 있습니다." />
-        <ImageUploader images={newImages} setImages={setNewImages} />
+        <ImageUploader
+          existingImages={existingImages}
+          setExistingImages={setExistingImages}
+          newImages={newImages}
+          setNewImages={setNewImages}
+          onDeleteImage={handleDeleteImage}
+        />
       </TitleBox>
 
       <TitleBox title="옵션" required>
@@ -483,34 +629,53 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
         </ContentWithTitle>
 
         <ContentWithTitle title="면적">
-          공급 면적
-          <InputBasic
-            type="number"
-            name="supplyArea"
-            value={formData.supplyArea}
-            onChange={handleInputChange}
-          />
-          =
-          <InputBasic
-            type="number"
-            name="supplyArea"
-            value={formData.supplyArea}
-            onChange={handleInputChange}
-          />
-          전용 면적
-          <InputBasic
-            type="number"
-            name="exclusiveArea"
-            value={formData.exclusiveArea}
-            onChange={handleInputChange}
-          />
-          =
-          <InputBasic
-            type="number"
-            name="exclusiveArea"
-            value={formData.exclusiveArea}
-            onChange={handleInputChange}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm">공급 면적</span>
+            <InputBasic
+              type="number"
+              name="supplyArea_pyeong"
+              value={sqmToPyeong(formData.supplyArea)}
+              onChange={handlePyeongChange("supplyArea")}
+              text="평"
+              size="small"
+              placeholder="공급 면적(㎡)"
+            />
+            <span className="text-sm">=</span>
+            <InputBasic
+              type="number"
+              name="supplyArea"
+              value={formData.supplyArea}
+              onChange={handleInputChange}
+              text="㎡"
+              size="small"
+              placeholder="공급 면적(㎡)"
+              required
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm">전용 면적</span>
+            <InputBasic
+              type="number"
+              name="exclusiveArea_pyeong"
+              value={sqmToPyeong(formData.exclusiveArea)}
+              onChange={handlePyeongChange("exclusiveArea")}
+              text="평"
+              size="small"
+              placeholder="전용용 면적(평)"
+            />
+            <span className="text-sm">=</span>
+
+            <InputBasic
+              type="number"
+              name="exclusiveArea"
+              value={formData.exclusiveArea}
+              onChange={handleInputChange}
+              text="㎡"
+              size="small"
+              placeholder="전용 면적(㎡)"
+              required
+            />
+          </div>
         </ContentWithTitle>
         <ContentWithTitle title="방 수">
           <InputBasic
@@ -518,6 +683,10 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
             name="roomCnt"
             value={formData.roomCnt}
             onChange={handleInputChange}
+            text="개"
+            size="small"
+            placeholder="방 수"
+            required
           />
         </ContentWithTitle>
         <ContentWithTitle title="욕실 수">
@@ -526,6 +695,10 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
             name="bathroomCnt"
             value={formData.bathroomCnt}
             onChange={handleInputChange}
+            text="개"
+            size="small"
+            placeholder="욕실 수"
+            required
           />
         </ContentWithTitle>
         <ContentWithTitle title="건물 전체 층">
@@ -534,57 +707,95 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
             name="maxFloor"
             value={formData.maxFloor}
             onChange={handleInputChange}
+            text="층"
+            size="small"
+            placeholder="건물 전체"
+            required
           />
         </ContentWithTitle>
+
         <ContentWithTitle title="해당 층">
           <div className="flex gap-2 items-center">
+            {/* 일반 층 입력 */}
             <InputBasic
               type="number"
               name="floor"
-              value={Number(formData.floor) > 0 ? formData.floor : ""}
+              value={
+                formData.floor !== "반지하" &&
+                !isUndergroundMode &&
+                Number(formData.floor) > 0
+                  ? formData.floor
+                  : ""
+              }
               onChange={handleInputChange}
+              text="층"
+              size="small"
+              placeholder="해당"
+              required
             />
+
+            {/* 반지하 버튼 */}
             <InputButton
               label="반지하"
-              onClick={() =>
+              onClick={() => {
+                setIsUndergroundMode(false);
                 setFormData((prev) => ({
                   ...prev,
                   floor: "반지하",
-                }))
-              }
+                }));
+              }}
               checked={formData.floor === "반지하"}
             />
+
+            {/* 지하 버튼 */}
             <InputButton
               label="지하"
-              onClick={() =>
+              onClick={() => {
+                setIsUndergroundMode(true);
+                setUndergroundInput("");
                 setFormData((prev) => ({
                   ...prev,
                   floor: "-1",
-                }))
-              }
-              checked={Number(formData.floor) < 0}
+                }));
+              }}
+              checked={isUndergroundMode}
             />
-            {Number(formData.floor) < 0 && formData.floor !== "반지하" && (
+
+            {/* 지하 층수 입력 필드 (지하 버튼 눌렸을 때만 나타남) */}
+            {isUndergroundMode && (
               <InputBasic
                 type="number"
-                value={Number(formData.floor) < 0 ? formData.floor : ""}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    floor: e.target.value,
-                  }))
-                }
+                value={undergroundInput}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  setUndergroundInput(inputValue);
+                  const numeric = Number(inputValue);
+
+                  if (!isNaN(numeric) && numeric > 0) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      floor: `지하 ${numeric}층`,
+                    }));
+                  } else {
+                    setFormData((prev) => ({
+                      ...prev,
+                      floor: "",
+                    }));
+                  }
+                }}
                 placeholder="지하 층"
               />
             )}
           </div>
         </ContentWithTitle>
+
         <ContentWithTitle title="사용 승인일">
-          <InputBasic
+          <InputDate
             name="permissionDate"
             value={formData.permissionDate}
             onChange={handleInputChange}
             placeholder="사용 승인일"
+            size="small"
           />
         </ContentWithTitle>
         <ContentWithTitle title="주차대수">
@@ -593,6 +804,10 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
             name="parkingSpaces"
             value={formData.parkingSpaces}
             onChange={handleInputChange}
+            placeholder="주차대수"
+            size="small"
+            text="대"
+            required
           />
         </ContentWithTitle>
         {type === "create" && (
@@ -602,6 +817,8 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
               value={extraFieldsCreate.realEstateId}
               onChange={handleInputChange}
               placeholder="부동산 고유 번호"
+              size="small"
+              required
             />
           </ContentWithTitle>
         )}
@@ -611,6 +828,10 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
             name="totalUnits"
             value={formData.totalUnits}
             onChange={handleInputChange}
+            placeholder="총 세대 수"
+            size="small"
+            text="세대"
+            required
           />
         </ContentWithTitle>
       </TitleBox>
@@ -622,6 +843,7 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
           value={formData.simpleDescription}
           onChange={handleInputChange}
           placeholder="한줄 소개"
+          required
         />
         <InfoText text="매물의 특징을 상세하게 적어주세요. (예. 반려동물 가능합니다. 주차 공간은 따로 없어요 등)" />
         <Textarea
@@ -684,6 +906,10 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
           정보 입력 완료
         </Button>
       </div>
+
+      {toastMessage && (
+        <Toast message={toastMessage} onClose={() => setToastMessage("")} />
+      )}
     </div>
   );
 };
