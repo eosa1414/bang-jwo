@@ -31,6 +31,7 @@ import ChatbotNoticePage from "./features/chatbot/pages/ChatbotNoticePage";
 import RedirectIfNotAuth from "./features/auth/components/RedirectIfNotAuth";
 import ChatbotPage from "./features/chatbot/pages/ChatbotPage";
 import PaymentTest from "./features/payment2/pages/PaymentTest";
+import PageWelcome from "./features/auth/pages/PageWelcome";
 
 function App() {
   return (
@@ -92,7 +93,11 @@ function App() {
           />
           <Route
             path="/welcome"
-            element={<LayoutMain>회원가입 완료</LayoutMain>}
+            element={
+              <LayoutMain>
+                <PageWelcome />
+              </LayoutMain>
+            }
           />
           <Route path="/auth/kakao/callback" element={<PageKakaoRedirect />} />
           <Route
