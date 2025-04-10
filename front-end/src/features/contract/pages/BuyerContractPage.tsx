@@ -1,11 +1,40 @@
-// BuyerContractPage.tsx
-
+import { useRef } from "react";
 import Button from "../../../components/buttons/Button";
 import HeaderContract from "../../../components/headers/HeaderContract";
 import NoticeDefault from "../../../components/notices/NoticeDefault";
-import Contract from "../components/Contract";
+import Contract, { ContractRefType } from "../components/Contract";
+import { useFinalizeTenantContract } from "../../../apis/contract";
+import { UpdateLandlordInfoDto } from "../data/contract.dto";
 
 const BuyerContractPage = () => {
+  const contractRef = useRef<ContractRefType>(null);
+
+  const { mutate: finalizeContract, isPending: isFinalizing } =
+    useFinalizeTenantContract();
+
+  const handleFinalize = () => {
+    const data = contractRef.current?.getFormData() as UpdateLandlordInfoDto;
+
+    if (!data) {
+      alert("제출할 데이터가 없습니다.");
+      return;
+    }
+
+    const dataWithId = {
+      ...data,
+      contractId: 9,
+    };
+
+    finalizeContract(dataWithId, {
+      onSuccess: () => {
+        alert("계약서가 임대인에게 전송되었습니다!");
+      },
+      onError: () => {
+        alert("전송에 실패했습니다. 다시 시도해주세요.");
+      },
+    });
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <HeaderContract title="임차인 - 주택임대차계약서 확인" />
@@ -32,11 +61,16 @@ const BuyerContractPage = () => {
           </NoticeDefault>
         </div>
 
-        <Contract mode="lessee" />
+        <Contract mode="lessee" ref={contractRef} />
 
         <div className="flex justify-center gap-6 pt-8 pb-16">
-          <Button size="medium" variant="point">
-            등록완료
+          <Button
+            size="medium"
+            variant="point"
+            onClick={handleFinalize}
+            disabled={isFinalizing}
+          >
+            {isFinalizing ? "전송 중..." : "등록완료"}
           </Button>
         </div>
       </main>
