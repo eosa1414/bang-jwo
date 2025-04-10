@@ -9,6 +9,7 @@ const ChatPage: React.FC = () => {
   const [messagesByChat, setMessagesByChat] = useState<
     Record<number, ChatMessage[]>
   >({});
+  console.log(setMessagesByChat); //임시 타입스크립트 해결용 콘솔
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   // ✅ 창 너비 감지 (resize event)
@@ -28,9 +29,7 @@ const ChatPage: React.FC = () => {
           const last = messages[messages.length - 1];
           return {
             id: Number(id),
-            timestamp: last
-              ? new Date(last.sendAt).getTime()
-              : 0,
+            timestamp: last ? new Date(last.sendAt).getTime() : 0,
           };
         })
         .filter((chat) => chat.timestamp > 0)
@@ -48,16 +47,12 @@ const ChatPage: React.FC = () => {
     <div className="flex h-screen bg-white px-4 py-6 gap-4">
       {!isCompactView && (
         <div className="w-[320px] bg-white rounded-xl shadow border border-neutral-light200 overflow-hidden">
-          <ChatList/>
+          <ChatList />
         </div>
       )}
 
       <div className="flex-1">
-        {selectedChatId !== null && (
-          <ChatRoom
-            chatId={selectedChatId}
-          />
-        )}
+        {selectedChatId !== null && <ChatRoom chatId={selectedChatId} />}
       </div>
     </div>
   );

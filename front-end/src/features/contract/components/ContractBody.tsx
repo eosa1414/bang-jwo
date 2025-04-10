@@ -101,7 +101,7 @@ const ContractBody = ({
 }: ContractBodyProps) => {
   const isEditable = mode === "lessor";
 
-  
+  console.log(tenantBurden); //임시 타입스크립트 오류 해결용
 
   if (!isEditable || isEditable) {
     setDeposit(100000000);
@@ -109,11 +109,11 @@ const ContractBody = ({
     setMiddleFee(30000000);
     setMonthlyRent(2000000);
     setFinalPayment(20000000);
-    setMonthlyRentAccountNumber("1436534123446")
-    setMonthlyRentAccountBank("신한은행")
+    setMonthlyRentAccountNumber("1436534123446");
+    setMonthlyRentAccountBank("신한은행");
     setFixedManagementFee(100000);
-    setUnfixedManagementFee("전기세, 수도세, 가스비 등")
-    setMonthlyRentPaymentDate("15")
+    setUnfixedManagementFee("전기세, 수도세, 가스비 등");
+    setMonthlyRentPaymentDate("15");
   }
 
   // 하위 컴포넌트 내부에서만 사용하는 상태들

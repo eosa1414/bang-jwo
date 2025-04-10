@@ -63,7 +63,6 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-
   const allCloseMobile = () => {
     if (isMobileMenuOpen) {
       setIsMobileMenuOpen(false);
@@ -83,16 +82,14 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   };
 
   const handleAsk = () => {
-    fetchCreateChatRoom(
-      {
-        "landlordId": room.memberId,
-        "roomId": room.roomId, 
-        "tenantId": Number(user.sub),
-      }
-    )
+    if (!room || !user) return; //임시 타입 해결
+    fetchCreateChatRoom({
+      landlordId: room.memberId,
+      roomId: room.roomId,
+      tenantId: Number(user.sub),
+    });
     openChatWindow();
-  }
-
+  };
 
   // 그 다음 useQuery 훅 호출
   const {

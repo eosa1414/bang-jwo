@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
-import * as THREE from 'three';
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
 // import { gsap } from 'gsap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const ThreeJSScene: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -10,8 +10,9 @@ const ThreeJSScene: React.FC = () => {
   useEffect(() => {
     // 10초 후 리다이렉트 (예시: "/another-page"로 이동)
     const timer = setTimeout(() => {
-      navigate('/mypage/contract');
+      navigate("/mypage/contract");
     }, 7000);
+    console.log(timer); //임시 타입 해결
 
     // Three.js 기본 설정
     const scene = new THREE.Scene();
@@ -23,7 +24,7 @@ const ThreeJSScene: React.FC = () => {
     );
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    
+
     // mountRef div에 canvas 추가
     if (mountRef.current) {
       mountRef.current.appendChild(renderer.domElement);
@@ -49,7 +50,7 @@ const ThreeJSScene: React.FC = () => {
       positions[i] = (Math.random() - 0.5) * 10;
     }
     particleGeometry.setAttribute(
-      'position',
+      "position",
       new THREE.BufferAttribute(positions, 3)
     );
     const particleMaterial = new THREE.PointsMaterial({
@@ -87,18 +88,18 @@ const ThreeJSScene: React.FC = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
     };
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Clean-up: 컴포넌트 언마운트시 이벤트 리스너 제거 및 renderer 제거
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
       if (mountRef.current) {
         mountRef.current.removeChild(renderer.domElement);
       }
     };
   }, []);
 
-  return <div ref={mountRef} style={{ width: '100%', height: '100vh' }} />;
+  return <div ref={mountRef} style={{ width: "100%", height: "100vh" }} />;
 };
 
 export default ThreeJSScene;

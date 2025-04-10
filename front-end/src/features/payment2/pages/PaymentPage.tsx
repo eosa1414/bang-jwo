@@ -1,5 +1,5 @@
 // App.tsx
-import React, { useEffect, useState, FormEvent, JSX } from "react";
+import { useEffect, useState, FormEvent, JSX } from "react";
 import PortOne from "@portone/browser-sdk/v2";
 
 // 아이템 인터페이스
@@ -75,7 +75,7 @@ export function PaymentPage(): JSX.Element {
     let payment: PaymentResponse;
     try {
       const payment2 = await PortOne.requestPayment({
-        storeId: import.meta.env.VITE_PORTONE_STORE_ID, 
+        storeId: import.meta.env.VITE_PORTONE_STORE_ID,
         channelKey: import.meta.env.VITE_PORTONE_CHANNEL_KEY,
         paymentId,
         orderName: item.name,
@@ -199,10 +199,6 @@ export function PaymentPage(): JSX.Element {
     </>
   );
 }
-
-
-
-
 
 // import PortOne from "@portone/browser-sdk/v2"
 // import { useEffect, useState } from "react"
