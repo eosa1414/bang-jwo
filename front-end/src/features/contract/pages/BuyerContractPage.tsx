@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 const BuyerContractPage = () => {
   const contractRef = useRef<ContractRefType>(null);
   const navigate = useNavigate();
+  const [agreed, setAgreed] = useState(false);
 
   const { mutate: finalizeContract, isPending: isFinalizing } =
     useFinalizeTenantContract();
