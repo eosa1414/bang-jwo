@@ -8,6 +8,7 @@ type InputDateProps = {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   disabled?: boolean;
+  size?: "small" | "medium" | "large";
 };
 
 const InputDate = ({
@@ -16,6 +17,7 @@ const InputDate = ({
   onChange,
   placeholder = "날짜 선택",
   disabled = false,
+  size = "medium",
 }: InputDateProps) => {
   return (
     <DatePicker
@@ -36,7 +38,13 @@ const InputDate = ({
           value={value ?? ""}
           onChange={onChange}
           placeholder={placeholder}
-          className="border border-neutral-light100 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gold-light"
+          className={`border border-neutral-light100 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gold-light ${
+            size === "large"
+              ? "flex-grow w-full"
+              : size === "small"
+              ? "w-[8.75rem]"
+              : ""
+          }`}
         />
       }
     />

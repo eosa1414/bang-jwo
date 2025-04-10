@@ -15,7 +15,9 @@ const ContentWithTitle = ({ title, children }: ContentWithTitleProps) => {
           {title}
         </p>
       )}
-      <div className="flex flex-wrap gap-2 items-center">{children}</div>
+      <div className="flex flex-wrap gap-2 items-center flex-grow">
+        {children}
+      </div>
     </div>
   );
 };
