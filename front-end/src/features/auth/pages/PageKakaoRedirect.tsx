@@ -7,12 +7,19 @@ const PageKakaoRedirect = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { login } = useAuth();
+
   const code = searchParams.get("code");
 
   useEffect(() => {
     if (code) {
       loginWithKakao(code, login)
-        .then(() => navigate("/"))
+        .then((data) => {
+          if (data.type === "SIGNUP") {
+            navigate("/welcome");
+          } else {
+            navigate("/");
+          }
+        })
         .catch(() => console.error("로그인 처리 중 오류 발생"));
     }
   }, [code, navigate]);

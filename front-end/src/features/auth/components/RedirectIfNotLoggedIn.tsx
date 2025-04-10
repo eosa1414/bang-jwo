@@ -7,16 +7,20 @@ type RedirectIfNotLoggedInProps = {
 };
 
 const RedirectIfNotLoggedIn = ({ children }: RedirectIfNotLoggedInProps) => {
-  const { user } = useAuth();
+  const { status } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
+    if (status === "unauthenticated") {
       navigate("/login");
     }
-  }, [user, navigate]);
+  }, [status, navigate]);
 
-  return user ? children : null;
+  if (status === "loading") {
+    return <div className="m-auto">로그인 확인 중...</div>;
+  }
+
+  return status === "authenticated" ? children : null;
 };
 
 export default RedirectIfNotLoggedIn;

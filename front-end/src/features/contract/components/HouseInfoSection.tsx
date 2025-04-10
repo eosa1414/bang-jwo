@@ -2,8 +2,15 @@ import EditableInputBox from "./EditableInputBox";
 import NoticeGray from "../../../components/notices/NoticeGray";
 import ContractTypeSelector from "./ContractTypeSelector";
 import { useState } from "react";
+import DisabledInputBox from "./DisabledInputBox";
+import { openAddressSearch } from "../../../utils/openAddressSearch";
 
 interface HouseInfoSectionProps {
+  mode: "lessor" | "lessee";
+  contractType: string;
+  setContractType: (value: string) => void;
+  rentalPartDetailAddress: string;
+
   address: string;
   detailAddress: string;
   landPurpose: string;
@@ -11,10 +18,10 @@ interface HouseInfoSectionProps {
   buildingStructure: string;
   buildingUsage: string;
   buildingArea: string;
-  leaseDetail: string;
   leaseArea: string;
+  leaseDetail: string;
 
-  unpaidTaxOption: string | null;
+  unpaidTaxOption: boolean;
   priorityDateOption: string | null;
 
   unpaidTaxSignature: string | null;
@@ -26,30 +33,11 @@ interface HouseInfoSectionProps {
   openSignatureModal: (type: "unpaid" | "priority" | "receipt") => void;
 }
 
-declare global {
-  interface Window {
-    daum: {
-      Postcode: new (options: {
-        oncomplete: (data: DaumPostcodeData) => void;
-      }) => {
-        open(): void;
-      };
-    };
-  }
-}
-
-interface DaumPostcodeData {
-  roadAddress: string;
-  jibunAddress: string;
-  zonecode: string;
-  address: string;
-  addressType: "R" | "J";
-  buildingName: string;
-  apartment: "Y" | "N";
-  bname: string;
-}
-
 const HouseInfoSection = ({
+  mode,
+  contractType,
+  setContractType,
+  rentalPartDetailAddress,
   address,
   detailAddress,
   landPurpose,
@@ -57,7 +45,6 @@ const HouseInfoSection = ({
   buildingStructure,
   buildingUsage,
   buildingArea,
-  leaseDetail,
   leaseArea,
   unpaidTaxOption,
   priorityDateOption,
@@ -69,40 +56,76 @@ const HouseInfoSection = ({
 }: HouseInfoSectionProps) => {
   const [showLandNotice, setShowLandNotice] = useState(false);
   const [showBuildingNotice, setShowBuildingNotice] = useState(false);
+  const isLessee = mode === "lessee";
+  address = address || "테헤란로 212 멀티캠퍼스";
+  contractType = contractType || "NEW";
+  detailAddress = detailAddress || "1202호";
+  landPurpose = landPurpose || "대";
+  landArea = landArea || "1200";
+  buildingStructure = buildingStructure || "철근콘크리트";
+  buildingUsage = buildingUsage || "사무실";
+  buildingArea = buildingArea || "1100";
+  leaseArea = leaseArea || "550";
+  rentalPartDetailAddress = rentalPartDetailAddress || "1202호";
 
-  const openAddressSearch = () => {
-    new window.daum.Postcode({
-      oncomplete: function (data: DaumPostcodeData) {
-        const roadAddress = data.roadAddress;
-        onChange("address", roadAddress);
-      },
-    }).open();
-  };
+  unpaidTaxOption = unpaidTaxOption || false;
+  priorityDateOption = priorityDateOption || null;
+  unpaidTaxSignature = unpaidTaxSignature || null;
+  priorityDateSignature = priorityDateSignature || null;
+
+  
 
   return (
     <div className="mt-10">
       <h3 className="text-lg font-extrabold">[임차주택의 표시]</h3>
 
-      {/* ✅ 소재지 입력창 */}
       <div className="mt-4 flex items-center gap-3">
         <span className="text-base font-medium whitespace-nowrap">소재지</span>
         <div className="flex gap-2">
-          <div className="cursor-pointer" onClick={openAddressSearch}>
-            <EditableInputBox
-              value={address}
-              onChange={(val) => onChange("address", val)}
-              placeholder="도로명주소"
-              maxLength={50}
-              customWidth="w-[340px]"
-            />
+          {/* 도로명주소 클릭 시 주소 검색 팝업 실행 */}
+          <div
+            className={isLessee ? "cursor-default" : "cursor-pointer"}
+            onClick={() => {
+              if (!isLessee) {
+                openAddressSearch((data) =>
+                  onChange("address", data.roadAddress)
+                );
+              }
+            }}
+          >
+            {isLessee ? (
+              <DisabledInputBox
+                value={address}
+                placeholder="테헤란로 212 멀티캠퍼스"
+                customWidth="w-[340px]"
+              />
+            ) : (
+              <EditableInputBox
+                value={address}
+                onChange={(val) => onChange("address", val)}
+                placeholder="테헤란로 212 멀티캠퍼스"
+                maxLength={50}
+                customWidth="w-[340px]"
+              />
+            )}
           </div>
-          <EditableInputBox
-            value={detailAddress}
-            onChange={(val) => onChange("detailAddress", val)}
-            placeholder="상세주소"
-            maxLength={50}
-            customWidth="w-[300px]"
-          />
+
+          {/* 상세주소는 별도 입력 */}
+          {isLessee ? (
+            <DisabledInputBox
+              value={detailAddress}
+              placeholder="1202호"
+              customWidth="w-[300px]"
+            />
+          ) : (
+            <EditableInputBox
+              value={detailAddress}
+              onChange={(val) => onChange("detailAddress", val)}
+              placeholder="1202호"
+              maxLength={50}
+              customWidth="w-[300px]"
+            />
+          )}
         </div>
       </div>
 
@@ -128,19 +151,35 @@ const HouseInfoSection = ({
             </span>
           </button>
           <span className="text-base font-medium">지목</span>
-          <EditableInputBox
-            value={landPurpose}
-            onChange={(val) => onChange("landPurpose", val)}
-            placeholder="예) 대"
-            customWidth="w-[140px]"
-          />
+          {isLessee ? (
+            <DisabledInputBox
+              value={landPurpose}
+              placeholder="대"
+              customWidth="w-[160px]"
+            />
+          ) : (
+            <EditableInputBox
+              value={landPurpose}
+              onChange={(val) => onChange("landPurpose", val)}
+              placeholder="대"
+              customWidth="w-[160px]"
+            />
+          )}
           <span className="text-base font-medium ml-4">면적</span>
-          <EditableInputBox
-            value={landArea}
-            onChange={(val) => onChange("landArea", val)}
-            placeholder="0"
-            customWidth="w-[140px]"
-          />
+          {isLessee ? (
+            <DisabledInputBox
+              value={landArea}
+              placeholder="1200"
+              customWidth="w-[160px]"
+            />
+          ) : (
+            <EditableInputBox
+              value={landArea}
+              onChange={(val) => onChange("landArea", val)}
+              placeholder="1200"
+              customWidth="w-[160px]"
+            />
+          )}
           <span className="text-sm font-medium">m²</span>
         </div>
         {showLandNotice && (
@@ -172,26 +211,50 @@ const HouseInfoSection = ({
             </span>
           </button>
           <span className="text-base font-medium">구조</span>
-          <EditableInputBox
-            value={buildingStructure}
-            onChange={(val) => onChange("buildingStructure", val)}
-            placeholder="예) 철근콘크리트"
-            customWidth="w-[140px]"
-          />
+          {isLessee ? (
+            <DisabledInputBox
+              value={buildingStructure}
+              placeholder="철근콘크리트"
+              customWidth="w-[160px]"
+            />
+          ) : (
+            <EditableInputBox
+              value={buildingStructure}
+              onChange={(val) => onChange("buildingStructure", val)}
+              placeholder="철근콘크리트"
+              customWidth="w-[160px]"
+            />
+          )}
           <span className="text-base font-medium ml-4">용도</span>
-          <EditableInputBox
-            value={buildingUsage}
-            onChange={(val) => onChange("buildingUsage", val)}
-            placeholder="예) 공동주택"
-            customWidth="w-[140px]"
-          />
+          {isLessee ? (
+            <DisabledInputBox
+              value={buildingUsage}
+              placeholder="사무실"
+              customWidth="w-[160px]"
+            />
+          ) : (
+            <EditableInputBox
+              value={buildingUsage}
+              onChange={(val) => onChange("buildingUsage", val)}
+              placeholder="사무실"
+              customWidth="w-[160px]"
+            />
+          )}
           <span className="text-base font-medium ml-4">면적</span>
-          <EditableInputBox
-            value={buildingArea}
-            onChange={(val) => onChange("buildingArea", val)}
-            placeholder="0"
-            customWidth="w-[140px]"
-          />
+          {isLessee ? (
+            <DisabledInputBox
+              value={buildingArea}
+              placeholder="1100"
+              customWidth="w-[160px]"
+            />
+          ) : (
+            <EditableInputBox
+              value={buildingArea}
+              onChange={(val) => onChange("buildingArea", val)}
+              placeholder="1100"
+              customWidth="w-[160px]"
+            />
+          )}
           <span className="text-sm font-medium">m²</span>
         </div>
         {showBuildingNotice && (
@@ -205,54 +268,86 @@ const HouseInfoSection = ({
         <span className="text-base font-medium whitespace-nowrap">
           임차할부분
         </span>
-        <EditableInputBox
-          value={leaseDetail}
-          onChange={(val) => onChange("leaseDetail", val)}
-          placeholder="상세주소가 있는 경우 동·층·호를 정확히 기재하세요"
-          maxLength={100}
-          customWidth="w-[400px]"
-        />
+        {isLessee ? (
+          <DisabledInputBox
+            value={rentalPartDetailAddress}
+            placeholder="1202호"
+            customWidth="w-[400px]"
+          />
+        ) : (
+          <EditableInputBox
+            value={rentalPartDetailAddress}
+            onChange={(val) => onChange("rentalPartDetailAddress", val)}
+            placeholder="1202호"
+            maxLength={100}
+            customWidth="w-[400px]"
+          />
+        )}
         <span className="text-base font-medium ml-4">면적</span>
-        <EditableInputBox
-          value={leaseArea}
-          onChange={(val) => onChange("leaseArea", val)}
-          placeholder="0"
-          customWidth="w-[140px]"
-        />
+        {isLessee ? (
+          <DisabledInputBox
+            value={leaseArea}
+            placeholder="550"
+            customWidth="w-[160px]"
+          />
+        ) : (
+          <EditableInputBox
+            value={leaseArea}
+            onChange={(val) => onChange("leaseArea", val)}
+            placeholder="550"
+            customWidth="w-[160px]"
+          />
+        )}
         <span className="text-sm font-medium">m²</span>
       </div>
 
-      {/* 계약의 종류 */}
       <div className="mt-6 flex items-start gap-4">
         <span className="text-base font-medium whitespace-nowrap mt-[6px]">
           계약의종류
         </span>
-        <ContractTypeSelector />
+        <ContractTypeSelector
+          mode={mode}
+          contractType={contractType}
+          setContractType={setContractType}
+        />
       </div>
 
-      {/* 미납 국세·지방세 */}
       <div className="mt-6 flex items-start gap-4">
         <span className="text-base font-medium whitespace-nowrap mt-[6px]">
           미납 국세·지방세
         </span>
         <div
-          className={`border-3 rounded-sm p-4 flex flex-col gap-3 bg-white w-fit ${
-            unpaidTaxOption === null ? "border-green" : "border-neutral-gray"
+          className={`border-3 rounded-sm p-4 flex flex-col gap-3 w-fit ${
+            isLessee
+              ? "bg-neutral-light200 border-neutral-light100"
+              : "bg-white " +
+                (unpaidTaxOption === null
+                  ? "border-green"
+                  : "border-neutral-gray")
           }`}
         >
-          <label className="flex items-center gap-2 text-sm font-bold cursor-pointer">
+          <label
+            className={`flex items-center gap-2 text-sm font-bold ${
+              isLessee ? "cursor-not-allowed" : "cursor-pointer"
+            }`}
+          >
             <input
               type="radio"
               name="unpaidTax"
               value="none"
-              checked={unpaidTaxOption === "none"}
-              onChange={() => onOptionChange("unpaidTaxOption", "none")}
-              className="w-[16px] h-[16px] border-2 border-neutral-dark200 bg-white appearance-none cursor-pointer rounded-none checked:bg-neutral-dark200 transition-colors"
+              checked={!unpaidTaxOption}
+              onChange={() =>
+                !isLessee && onOptionChange("unpaidTaxOption", "none")
+              }
+              disabled={isLessee}
+              className="w-[16px] h-[16px] border-2 border-neutral-dark200 bg-white appearance-none rounded-none checked:bg-neutral-dark200 transition-colors disabled:cursor-not-allowed"
             />
             없음 ( 임대인 서명
             <div
-              onClick={() => openSignatureModal("unpaid")}
-              className="w-[100px] h-[32px] border-2 border-neutral-light100 bg-neutral-light200 cursor-pointer"
+              onClick={() => !isLessee && openSignatureModal("unpaid")}
+              className={`w-[100px] h-[32px] border-2 border-neutral-light100 bg-neutral-light200 ${
+                isLessee ? "cursor-not-allowed" : "cursor-pointer"
+              }`}
             >
               {unpaidTaxSignature ? (
                 <img src={unpaidTaxSignature} alt="서명" />
@@ -260,44 +355,63 @@ const HouseInfoSection = ({
             </div>
             (인) )
           </label>
-
-          <label className="flex items-center gap-2 text-sm font-bold cursor-pointer">
+          <label
+            className={`flex items-center gap-2 text-sm font-bold ${
+              isLessee ? "cursor-not-allowed" : "cursor-pointer"
+            }`}
+          >
             <input
               type="radio"
               name="unpaidTax"
               value="exist"
-              checked={unpaidTaxOption === "exist"}
-              onChange={() => onOptionChange("unpaidTaxOption", "exist")}
-              className="w-[16px] h-[16px] border-2 border-neutral-dark200 bg-white appearance-none cursor-pointer rounded-none checked:bg-neutral-dark200 transition-colors"
+              checked={unpaidTaxOption}
+              onChange={() =>
+                !isLessee && onOptionChange("unpaidTaxOption", "exist")
+              }
+              disabled={isLessee}
+              className="w-[16px] h-[16px] border-2 border-neutral-dark200 bg-white appearance-none rounded-none checked:bg-neutral-dark200 transition-colors disabled:cursor-not-allowed"
             />
             있음
           </label>
         </div>
       </div>
 
-      {/* 선순위 확정일자 현황 */}
       <div className="mt-6 flex items-start gap-4">
         <span className="text-base font-medium whitespace-nowrap mt-[6px]">
           선순위 확정일자 현황
         </span>
         <div
-          className={`border-3 rounded-sm p-4 flex flex-col gap-3 bg-white w-fit ${
-            priorityDateOption === null ? "border-green" : "border-neutral-gray"
+          className={`border-3 rounded-sm p-4 flex flex-col gap-3 w-fit ${
+            isLessee
+              ? "bg-neutral-light200 border-neutral-light100"
+              : "bg-white " +
+                (priorityDateOption === null
+                  ? "border-green"
+                  : "border-neutral-gray")
           }`}
         >
-          <label className="flex items-center gap-2 text-sm font-bold cursor-pointer">
+          <label
+            className={`flex items-center gap-2 text-sm font-bold ${
+              isLessee ? "cursor-not-allowed" : "cursor-pointer"
+            }`}
+          >
             <input
               type="radio"
               name="priorityDate"
               value="none"
               checked={priorityDateOption === "none"}
-              onChange={() => onOptionChange("priorityDateOption", "none")}
-              className="w-[16px] h-[16px] border-2 border-neutral-dark200 bg-white appearance-none cursor-pointer rounded-none checked:bg-neutral-dark200 transition-colors"
+              onChange={() =>
+                !isLessee && onOptionChange("priorityDateOption", "none")
+              }
+              disabled={isLessee}
+              className="w-[16px] h-[16px] border-2 border-neutral-dark200 bg-white appearance-none rounded-none checked:bg-neutral-dark200 transition-colors disabled:cursor-not-allowed"
             />
             해당 없음 ( 임대인 서명
             <div
-              onClick={() => openSignatureModal("priority")}
-              className="w-[100px] h-[32px] border-2 border-neutral-light100 bg-neutral-light200 cursor-pointer"
+              onClick={() => !isLessee && openSignatureModal("priority")}
+              className={`w-[100px] h-[32px] border-2 border-neutral-light100 bg-neutral-light200 ${
+                isLessee ? "cursor-not-allowed" : "cursor-pointer"
+              }`}
             >
               {priorityDateSignature ? (
                 <img src={priorityDateSignature} alt="서명" />
@@ -305,15 +419,21 @@ const HouseInfoSection = ({
             </div>
             (인) )
           </label>
-
-          <label className="flex items-center gap-2 text-sm font-bold cursor-pointer">
+          <label
+            className={`flex items-center gap-2 text-sm font-bold ${
+              isLessee ? "cursor-not-allowed" : "cursor-pointer"
+            }`}
+          >
             <input
               type="radio"
               name="priorityDate"
               value="exist"
               checked={priorityDateOption === "exist"}
-              onChange={() => onOptionChange("priorityDateOption", "exist")}
-              className="w-[16px] h-[16px] border-2 border-neutral-dark200 bg-white appearance-none cursor-pointer rounded-none checked:bg-neutral-dark200 transition-colors"
+              onChange={() =>
+                !isLessee && onOptionChange("priorityDateOption", "exist")
+              }
+              disabled={isLessee}
+              className="w-[16px] h-[16px] border-2 border-neutral-dark200 bg-white appearance-none rounded-none checked:bg-neutral-dark200 transition-colors disabled:cursor-not-allowed"
             />
             해당 있음
           </label>

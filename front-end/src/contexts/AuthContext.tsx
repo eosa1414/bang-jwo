@@ -1,8 +1,12 @@
 import { createContext, useContext } from "react";
+import { DecodedJwtPayload } from "../utils/jwt";
+import { AuthStatus } from "../types/authTypes";
 
 interface AuthContextType {
-  user: string | null;
-  login: (username: string) => void;
+  status: AuthStatus;
+  accessToken: string | null;
+  user: DecodedJwtPayload | null;
+  login: (accessToken: string) => void;
   logout: () => void;
 }
 

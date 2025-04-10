@@ -33,7 +33,7 @@ const sizeClasses = {
 const variantClasses = {
   default: {
     defaultstyle: "text-neutral-black bg-neutral-light100",
-    linestyle: "text-neutral-black border-neutral-gray",
+    linestyle: "text-neutral-black border-neutral-light100",
   },
   dark: {
     defaultstyle: "text-neutral-white bg-neutral-dark200",
@@ -52,7 +52,7 @@ const variantClasses = {
     linestyle: "text-neutral-black border-neutral-black bg-gold-light",
   },
   gold: {
-    defaultstyle: "text-gold-dark bg-gold-light/20",
+    defaultstyle: "text-gold-dark bg-gold-light/30",
     linestyle: "text-gold-dark border-gold",
   },
   opaque: {
@@ -78,7 +78,7 @@ const Button = ({
   return (
     <Component
       className={classNames(
-        "font-semibold inline-flex items-center justify-center whitespace-nowrap",
+        "font-semibold inline-flex items-center justify-center text-center",
         disabled
           ? "cursor-not-allowed"
           : as === "div"

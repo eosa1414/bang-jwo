@@ -1,5 +1,7 @@
+import { AreaType } from "../types/roomTypes";
+
 interface FilterBarProps {
-  selectedFilters?: string[];
+  selectedFilters?: AreaType[] | string[];
   onClick: () => void;
 }
 

@@ -1,5 +1,3 @@
-import React from "react";
-
 interface NoticeDefaultProps {
   children: React.ReactNode;
 }

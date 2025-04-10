@@ -7,6 +7,7 @@ import Button from "../components/buttons/Button";
 import ScrollToTop from "../components/ScrollToTop";
 import { useNavigate } from "react-router-dom";
 import MotionArrow from "../components/MotionArrow";
+import { RoomBuildingType } from "../types/roomTypes";
 
 const PageHome = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -14,6 +15,8 @@ const PageHome = () => {
   const [visibleSections, setVisibleSections] = useState<{
     [key: number]: boolean;
   }>({});
+  const [selectedCategory, setSelectedCategory] =
+    useState<RoomBuildingType>("ONEROOM_TWOROOM");
 
   const navigate = useNavigate();
 
@@ -54,6 +57,13 @@ const PageHome = () => {
     };
   }, []);
 
+  const radioOptions: { value: RoomBuildingType; label: string }[] = [
+    { value: "ONEROOM_TWOROOM", label: "원룸 · 투룸" },
+    { value: "APARTMENT", label: "아파트" },
+    { value: "VILLA_HOUSE", label: "빌라 · 주택" },
+    { value: "OFFICETEL", label: "오피스텔" },
+  ];
+
   return (
     <>
       {/* first */}
@@ -71,12 +81,23 @@ const PageHome = () => {
           <div className="w-full flex flex-col gap-4 items-center">
             {/* category */}
             <div className="flex justify-around bg-neutral-black rounded-xl text-neutral-white w-full max-w-md px-2 py-1">
-              <span>오피스텔</span>
-              <span>아파트</span>
-              <span>원룸투룸</span>
-              <span>빌라주택</span>
+              {radioOptions.map(({ value, label }) => (
+                <p
+                  key={value}
+                  onClick={() => {
+                    setSelectedCategory(value);
+                  }}
+                  className={`cursor-pointer px-2 rounded-lg transition-all duration-300 ${
+                    selectedCategory === value
+                      ? "bg-gold-light text-neutral-dark300"
+                      : ""
+                  }`}
+                >
+                  {label}
+                </p>
+              ))}
             </div>
-            <SearchBar />
+            <SearchBar category={selectedCategory} />
           </div>
         </div>
         <img src={MainImage} alt="뭐지" className="w-full mt-[-2rem]" />

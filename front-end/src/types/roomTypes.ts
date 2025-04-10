@@ -19,6 +19,8 @@ export interface Room {
   simpleDescription: string;
   floor: string;
   imageUrl: string;
+  lat: number;
+  lng: number;
 }
 
 export const defaultRoom: Room = {
@@ -35,8 +37,11 @@ export const defaultRoom: Room = {
   simpleDescription: "",
   floor: "",
   imageUrl: "",
+  lat: 37.5,
+  lng: 127.04,
 };
 
+//RoomListResponseDto
 export interface RoomResponse {
   totalItems: number;
   totalPages: number;
@@ -50,8 +55,8 @@ export interface RoomResponse {
 // 쿼리
 export interface RoomQueryParams {
   buildingType?: string;
-  price?: string;
-  area?: string;
+  price?: number | null;
+  areaTypes?: AreaType | null;
   lat?: number;
   lng?: number;
   zoom?: number;
@@ -59,14 +64,24 @@ export interface RoomQueryParams {
 }
 
 export const defaultParams: RoomQueryParams = {
-  buildingType: "",
-  price: "",
-  area: "",
-  lat: 33.450701,
-  lng: 126.570667,
+  buildingType: "ONEROOM_TWOROOM",
+  price: null,
+  areaTypes: null,
+  lat: 37.5,
+  lng: 127.04,
   zoom: 4,
   page: 1,
 };
+
+export type AreaType =
+  | "ALL"
+  | "UNDER_TEN"
+  | "TEN_RANGE"
+  | "TWENTY_RANGE"
+  | "THIRTY_RANGE"
+  | "FORTY_RANGE"
+  | "OVER_FIFTY"
+  | null;
 
 export interface RoomImage {
   imageId: number;
@@ -95,21 +110,21 @@ export type RoomOption =
   | "INDUCTION"
   | "BED";
 
-  export type RoomBuildingType =
+export type RoomBuildingType =
   | "ONEROOM_TWOROOM"
   | "APARTMENT"
   | "VILLA_HOUSE"
   | "OFFICETEL";
 
-  export type RoomDirection = 
+export type RoomDirection =
   | "NORTH"
-  | "NORTH_EAST"
+  | "NORTHEAST"
   | "EAST"
-  | "SOUTH_EAST"
+  | "SOUTHEAST"
   | "SOUTH"
-  | "SOUTH_WEST"
+  | "SOUTHWEST"
   | "WEST"
-  | "NORTH_WEST"
+  | "NORTHWEST";
 
 export interface RoomDetailResponse {
   roomId: number;
@@ -143,7 +158,50 @@ export interface RoomDetailResponse {
   discussDetail: string;
   reviewable: boolean;
   isPhonePublic: boolean;
+  reviewCnt: number;
+  nickname: string;
+  phoneNumber: string;
+  createDate: string;
+  updateDate: string;
   maintenanceIncludes: MaintenanceIncludeName[];
   options: RoomOption[];
   images: RoomImage[];
+}
+
+export interface RoomRequestBaseDto {
+  deposit: number;
+  monthlyRent: number;
+  exclusiveArea: number;
+  supplyArea: number;
+  totalUnits: number;
+  floor: string;
+  maxFloor: number;
+  parkingSpaces: number;
+  availableFrom: string;
+  permissionDate: string;
+  simpleDescription: string;
+  description: string;
+  maintenanceCost: number;
+  roomCnt: number;
+  bathroomCnt: number;
+  direction: string;
+  discussable: boolean;
+  discussDetail: string;
+  reviewable: boolean;
+  isPhonePublic: boolean;
+  maintenanceIncludes: MaintenanceIncludeName[];
+  options: RoomOption[];
+  images: string[];
+}
+
+export interface CreateRoomRequestDto extends RoomRequestBaseDto {
+  buildingType: RoomBuildingType;
+  realEstateId: string;
+  postalCode: string;
+  address: string;
+  addressDetail: string;
+}
+
+export interface UpdateRoomRequestDto extends RoomRequestBaseDto {
+  deleteImageIds: number[];
 }
