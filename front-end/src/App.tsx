@@ -28,7 +28,7 @@ import PageMyLike from "./features/mypage/like/pages/PageMyLike";
 // import BuyerContractPage from "./features/contract/pages/BuyerContractPage";
 import PageMyContract from "./features/mypage/contract/pages/PageMyContract";
 import ChatbotNoticePage from "./features/chatbot/pages/ChatbotNoticePage";
-import ChatbotPage from "./features/chatbot/pages/ChatBotPage";
+import ChatbotPage from "./features/chatbot/pages/ChatbotPage";
 
 function App() {
   return (
