@@ -79,4 +79,9 @@ public class MemberService {
 		var member = searchMember(memberId);
 		member.softDelete();
 	}
+
+	@Transactional(readOnly = true)
+	public boolean isVerified(Long memberId) {
+		return searchMember(memberId).getIsAuth();
+	}
 }

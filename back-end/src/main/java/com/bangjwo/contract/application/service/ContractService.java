@@ -26,6 +26,7 @@ import com.bangjwo.contract.application.dto.request.UpdateTenantInfoDto;
 import com.bangjwo.contract.application.dto.request.VerifyContractMemberDto;
 import com.bangjwo.contract.application.dto.response.ContractDetailResponseDto;
 import com.bangjwo.contract.application.dto.response.ContractStatusResponseDto;
+import com.bangjwo.contract.application.dto.response.ContractVerificationStatusDto;
 import com.bangjwo.contract.application.dto.response.LandlordInfoResponseDto;
 import com.bangjwo.contract.application.dto.response.TenantInfoResponseDto;
 import com.bangjwo.contract.domain.entity.Contract;
@@ -336,11 +337,23 @@ public class ContractService {
 		}
 	}
 
-	private void updateAuthStatus(Contract contract, ContractRole role) {
+	@Transactional
+	public void updateAuthStatus(Contract contract, ContractRole role) {
 		switch (role) {
 			case LANDLORD -> contract.updateLandlordAuth(true);
 			case TENANT -> contract.updateTenantAuth(true);
 			default -> throw new BusinessException(ContractErrorCode.INVALID_ROLE);
 		}
+	}
+
+	@Transactional(readOnly = true)
+	public ContractVerificationStatusDto getVerificationStatus(Long contractId, Long memberId) {
+		var contract = findContract(contractId);
+
+		if (!contract.getTenantId().equals(memberId) && !contract.getTenantId().equals(memberId)) {
+			throw new BusinessException(ContractErrorCode.INVALID_CONTRACT_ACCESS);
+		}
+
+		return ContractConverter.convertContractVerify(contract);
 	}
 }

@@ -129,8 +129,20 @@ public class MemberController {
 	@DeleteMapping("/me")
 	public ResponseEntity<Void> withdrawMember(@MemberHeader Long memberId) {
 		memberService.withdraw(memberId);
-		
+
 		return ResponseEntity.noContent().build();
 	}
 
+	@Operation(
+		summary = "회원 본인 인증 여부 조회",
+		description = "로그인된 사용자의 본인 인증 여부를 조회합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
+	@ApiResponse(responseCode = "200", description = "유저의 본인 인증 여부를 반환합니다.")
+	@GetMapping("/verify")
+	public ResponseEntity<Boolean> checkMemberVerification(@MemberHeader Long memberId) {
+		boolean isVerified = memberService.isVerified(memberId);
+
+		return ResponseEntity.ok(isVerified);
+	}
 }
