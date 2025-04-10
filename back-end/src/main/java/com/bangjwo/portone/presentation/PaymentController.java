@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bangjwo.auth.resolver.MemberHeader;
 import com.bangjwo.portone.application.dto.PaymentDto;
 import com.bangjwo.portone.application.service.PaymentService;
-import com.siot.IamportRestClient.response.IamportResponse;
-import com.siot.IamportRestClient.response.Payment;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -63,11 +61,10 @@ public class PaymentController {
 
 		return ResponseEntity.ok(response);
 	}
-	
+
 	@Operation(
 		summary = "결제 검증",
-		description = "포트원에 결제 내역을 검증을 요청하고 결제 내역을 DB에 저장합니다."
-			+ "실제 결제 내역이 포트원 서버에 저장되는 것이 아니기 때문에 사용할 수 없습니다.",
+		description = "포트원에 결제 내역을 검증을 요청하고 결제 내역을 DB에 저장합니다. 이후, ",
 		security = @SecurityRequirement(name = "JWT"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "결제 검증 성공"),
@@ -76,10 +73,11 @@ public class PaymentController {
 		}
 	)
 	@PostMapping("/validation/{impUid}")
-	public IamportResponse<Payment> validateIamport(
+	public ResponseEntity<Long> validateIamport(
 		@PathVariable String impUid) {
+		var paymentId = paymentService.validateIamport(impUid);
 
-		return paymentService.validateIamport(impUid);
+		return ResponseEntity.ok(paymentId);
 	}
 
 	@Operation(

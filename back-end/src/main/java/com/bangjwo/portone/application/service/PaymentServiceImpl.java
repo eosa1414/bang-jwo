@@ -64,7 +64,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public IamportResponse<Payment> validateIamport(String impUid) {
+	public Long validateIamport(String impUid) {
 		try {
 			IamportResponse<Payment> payment = iamportClient.paymentByImpUid(impUid);
 
@@ -109,7 +109,7 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 
 			log.info("결제 성공 및 등기부 등록 완료 - impUid: {}", result.getImpUid());
-			return payment;
+			return result.getPaymentId();
 		} catch (IamportResponseException e) {
 			log.error("Iamport 응답 예외", e);
 			throw new BusinessException(PortoneErrorCode.IMP_PAYMENT_VERIFICATION_FAILED);
