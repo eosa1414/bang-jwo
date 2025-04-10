@@ -29,8 +29,10 @@ const SellerContractPage = () => {
 
     const dataWithId = {
       ...data,
-      contractId: 13,
+      contractId: 1,
     };
+
+    console.log(dataWithId)
 
     saveLandlordInfo(dataWithId, {
       onSuccess: () => {
@@ -51,6 +53,13 @@ const SellerContractPage = () => {
       return;
     }
 
+    console.log(data.contractWrittenDate)
+    console.log(data.leaseStartDate)
+    console.log(data.leaseEndDate)
+    console.log(data.moveInRegistrationDate)
+    console.log(data.contractType)
+    console.log(data.monthlyRentType)
+
     if (
       !data.contractWrittenDate ||
       !data.leaseStartDate ||
@@ -69,7 +78,7 @@ const SellerContractPage = () => {
 
     const dataWithId = {
       ...data,
-      contractId: 13,
+      contractId: 1,
     };
 
     finalizeContract(dataWithId, {

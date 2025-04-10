@@ -3,6 +3,7 @@ import EditableInputBox from "./EditableInputBox";
 import DisabledInputBox from "./DisabledInputBox";
 import NoticeGray from "../../../components/notices/NoticeGray";
 import DatePickerInput from "./DatePickerInput";
+import {MonthlyRentType} from "../data/contract.dto";
 
 interface ContractBodyProps {
   mode: "lessor" | "lessee";
@@ -14,8 +15,8 @@ interface ContractBodyProps {
   setMonthlyRent: (value: number) => void;
   receiptSignature: string | null;
   openSignatureModal: (type: "receipt") => void;
-  paymentMethod: string;
-  setPaymentMethod: (value: string) => void;
+  monthlyRentType: MonthlyRentType | null;
+  setPaymentMethod: (value: MonthlyRentType) => void;
   middleFee: number;
   setMiddleFee: (value: number) => void;
   finalPayment: number;
@@ -24,8 +25,8 @@ interface ContractBodyProps {
   setMiddlePaymentDate: (date: Date | null) => void;
   balancePaymentDate: Date | null;
   setBalancePaymentDate: (date: Date | null) => void;
-  monthlyRentPaymentDate: Date | null;
-  setMonthlyRentPaymentDate: (date: Date | null) => void;
+  monthlyRentPaymentDate: String | null;
+  setMonthlyRentPaymentDate: (date: String | null) => void;
   monthlyRentAccountBank: string;
   setMonthlyRentAccountBank: (value: string) => void;
   monthlyRentAccountNumber: string;
@@ -66,7 +67,7 @@ const ContractBody = ({
   setMonthlyRent,
   receiptSignature,
   openSignatureModal,
-  paymentMethod,
+  monthlyRentType,
   setPaymentMethod,
   middleFee,
   setMiddleFee,
@@ -76,13 +77,43 @@ const ContractBody = ({
   setMiddlePaymentDate,
   balancePaymentDate,
   setBalancePaymentDate,
+  monthlyRentPaymentDate,
+  setMonthlyRentPaymentDate,
+  monthlyRentAccountBank,
+  setMonthlyRentAccountBank,
+  monthlyRentAccountNumber,
+  setMonthlyRentAccountNumber,
+  fixedManagementFee,
+  setFixedManagementFee,
+  unfixedManagementFee,
+  setUnfixedManagementFee,
+  leaseStartDate,
+  setLeaseStartDate,
+  leaseEndDate,
+  setLeaseEndDate,
+  facilitiesRepairStatus,
+  setFacilitiesRepairStatus,
+  facilitiesRepairContent,
+  setFacilitiesRepairContent,
+  repairCompletionByBalanceDate,
+  setRepairCompletionByBalanceDate,
+  repairCompletionEtc,
+  setRepairCompletionEtc,
+  notRepairedByBalanceDate,
+  setNotRepairedByBalanceDate,
+  notRepairedEtc,
+  setNotRepairedEtc,
+  landlordBurden,
+  setLandlordBurden,
+  tenantBurden,
+  setTenantBurden
 }: ContractBodyProps) => {
   const isEditable = mode === "lessor";
 
   // 하위 컴포넌트 내부에서만 사용하는 상태들
   const [monthlyRentDay, setMonthlyRentDay] = useState("");
-  const [monthlyRentAccountNumber, setMonthlyRentAccountNumber] = useState("");
-  const [fixedManagementFee, setFixedManagementFee] = useState(0);
+  // const [monthlyRentAccountNumber, setMonthlyRentAccountNumber] = useState("");
+  // const [fixedManagementFee, setFixedManagementFee] = useState(0);
   const [variableMaintenance, setVariableMaintenance] = useState("");
 
   const [repairFacility, setRepairFacility] = useState<
@@ -109,9 +140,64 @@ const ContractBody = ({
   const [showLessorNotice, setShowLessorNotice] = useState(false);
   const [showLesseeNotice, setShowLesseeNotice] = useState(false);
 
+  const [payType, setPayType] = useState("");
+
+  const handleMonthlyRentDay = (value: string) => {    
+      setMonthlyRentDay(value);
+      setMonthlyRentPaymentDate(value);
+  }
+
+  const handleFixThings = (value: string) => {
+    setFacilitiesRepairContent(value);
+    setRepairDetail(value);
+  }
+
+  const handleRepairDate = (value: Date | null) => {
+    setRepairCompletionDate(value);
+    setRepairCompletionByBalanceDate(value);
+  }
+
+  const handleRepairEtc = (value: string) => {
+    setRepairCustomEtc(value);
+    setRepairCompletionEtc(value);
+  }
+
+  const handleUnrepairedDate = (value: Date | null) => {
+    setUnrepairedDeadline(value);
+    setNotRepairedByBalanceDate(value);
+  }
+
+  const handleUnrepairedEtc = (value: string) => {
+    setUnrepairedCustomEtc(value);
+    setNotRepairedEtc(value);
+  }
+
+  const handleLessorBurden = (value: string) => {
+    setLandlordBurden(value);
+    setLessorDuty(value);
+  }
+
+  const handleLesseeBurden = (value: string) => {
+    setTenantBurden(value);
+    setLesseeDuty(value);
+  }
+
+  const handlePayMethod = (value: string) => {
+    setPaymentMethod(value == "선불" ? "PREPAID" : "POSTPAID");
+    setPayType(value);
+  }
+
   return (
     <div className="mt-10 text-base leading-relaxed">
       <h3 className="text-lg font-extrabold">[계약내용]</h3>
+
+      <p className="mt-4 text-base font-bold">
+        제1조(보증금과 차임 및 관리비){" "}
+        <span className="font-normal">
+          위 부동산의 임대차에 관하여 임대인과 임차인은 합의에 의하여 보증금과
+          차임 및 관리비를 아래와 같이 지불하기로 한다.
+        </span>
+      </p>
 
       {/* Section 1: 기본 계약금 관련 */}
       <div className="mt-6 flex flex-col gap-3">
@@ -253,7 +339,7 @@ const ContractBody = ({
         {isEditable ? (
           <EditableInputBox
             value={monthlyRentDay}
-            onChange={setMonthlyRentDay}
+            onChange={handleMonthlyRentDay}
             placeholder="일"
             customWidth="w-[40px]"
           />
@@ -267,14 +353,14 @@ const ContractBody = ({
         <span className="text-sm font-medium">일</span>
         {isEditable ? (
           <EditableInputBox
-            value={paymentMethod}
-            onChange={setPaymentMethod}
+            value={payType}
+            onChange={handlePayMethod}
             placeholder="선불/후불"
             customWidth="w-[100px]"
           />
         ) : (
           <DisabledInputBox
-            value={paymentMethod}
+            value={payType}
             placeholder="선불/후불"
             customWidth="w-[100px]"
           />
@@ -301,6 +387,26 @@ const ContractBody = ({
         )}
       </div>
 
+
+      {/* Section 4: 입금은행 */}
+      <div className="flex items-center gap-2 mt-6 ml-24">
+        <span className="w-24 text-base font-medium">입금은행</span>
+        {isEditable ? (
+          <EditableInputBox
+            value={monthlyRentAccountBank}
+            onChange={setMonthlyRentAccountBank}
+            placeholder="은행명을 입력해주세요"
+            customWidth="w-[400px]"
+          />
+        ) : (
+          <DisabledInputBox
+            value={monthlyRentAccountBank}
+            placeholder="은행명을 입력해주세요"
+            customWidth="w-[400px]"
+          />
+        )}
+      </div>
+
       {/* Section 5: 관리비 */}
       <div className="flex items-center gap-2 mt-6">
         <span className="w-22 text-base font-medium">관리비</span>
@@ -321,23 +427,51 @@ const ContractBody = ({
         )}
         <span className="text-sm font-medium">원</span>
       </div>
-      <div className="flex items-center gap-2 mt-2 ml-24">
+
+
+      <div className="flex items-center gap-2 mt-6">
+        <span className="w-22 text-base font-medium">관리비</span>
         <span className="w-32 text-base font-medium">정액이 아닌 경우</span>
         {isEditable ? (
           <EditableInputBox
-            value={variableMaintenance}
-            onChange={setVariableMaintenance}
+            value={unfixedManagementFee}
+            onChange={setUnfixedManagementFee}
             placeholder="관리비의 항목 및 산정방식을 기재해주세요"
             customWidth="w-[600px]"
           />
         ) : (
           <DisabledInputBox
-            value={variableMaintenance}
-            placeholder="관리비의 항목 및 산정방식을 기재해주세요"
-            customWidth="w-[600px]"
+            value={unfixedManagementFee}
+            placeholder="0"
+            customWidth="w-[160px]"
           />
         )}
+        <span className="text-sm font-medium">원</span>
       </div>
+
+      <div className="mt-4 text-base font-bold">
+  <span>제2조(임대차기간)</span>{" "}
+  <span className="font-normal">
+    임대인은 임차주택을 임대차 목적대로 사용·수익할 수 있는 상태로
+  </span>
+  <span className="inline-block ml-2">
+    <DatePickerInput
+      selectedDate={leaseStartDate}
+      onChange={(date) => setLeaseStartDate(date)}
+    />
+  </span>
+  <span className="font-normal ml-2">
+    까지 임차인에게 인도하고, 임대차기간은 인도일로부터
+  </span>
+  <span className="inline-block ml-2">
+    <DatePickerInput
+      selectedDate={leaseEndDate}
+      onChange={(date) => setLeaseEndDate(date)}
+    />
+  </span>
+  <span className="font-normal ml-2">까지로 한다.</span>
+</div>
+
 
       {/* Section 6: 제3조(입주 전 수리) */}
       <p className="mt-4 text-base font-bold">
@@ -368,7 +502,10 @@ const ContractBody = ({
               name="repairFacility"
               value="none"
               checked={repairFacility === "none"}
-              onChange={() => isEditable && setRepairFacility("none")}
+              onChange={() => {
+                isEditable && setRepairFacility("none")
+                setFacilitiesRepairStatus(false)
+              }}
               disabled={!isEditable}
               className="w-[16px] h-[16px] border-2 border-neutral-dark200 bg-white appearance-none checked:bg-neutral-dark200 transition-colors disabled:cursor-not-allowed"
             />
@@ -384,7 +521,11 @@ const ContractBody = ({
               name="repairFacility"
               value="needed"
               checked={repairFacility === "needed"}
-              onChange={() => isEditable && setRepairFacility("needed")}
+              onChange={() => { 
+                isEditable && setRepairFacility("needed")
+                setFacilitiesRepairStatus(true)
+              }
+              }
               disabled={!isEditable}
               className="w-[16px] h-[16px] border-2 border-neutral-dark200 bg-white appearance-none checked:bg-neutral-dark200 transition-colors disabled:cursor-not-allowed"
             />
@@ -392,7 +533,7 @@ const ContractBody = ({
             {isEditable ? (
               <EditableInputBox
                 value={repairDetail}
-                onChange={setRepairDetail}
+                onChange={handleFixThings}
                 placeholder="수리할 내용 입력"
                 customWidth="w-[240px]"
               />
@@ -437,7 +578,7 @@ const ContractBody = ({
             잔금지급 기일인{" "}
             <DatePickerInput
               selectedDate={repairCompletionDate}
-              onChange={setRepairCompletionDate}
+              onChange={handleRepairDate}
               disabled={!isEditable}
             />{" "}
             까지
@@ -460,7 +601,7 @@ const ContractBody = ({
             {isEditable ? (
               <EditableInputBox
                 value={repairCustomEtc}
-                onChange={setRepairCustomEtc}
+                onChange={handleRepairEtc}
                 placeholder="기타 사유 입력"
                 customWidth="w-[280px]"
               />
@@ -507,7 +648,7 @@ const ContractBody = ({
             잔금지급 기일인{" "}
             <DatePickerInput
               selectedDate={unrepairedDeadline}
-              onChange={setUnrepairedDeadline}
+              onChange={handleUnrepairedDate}
               disabled={!isEditable}
             />{" "}
             까지
@@ -530,7 +671,7 @@ const ContractBody = ({
             {isEditable ? (
               <EditableInputBox
                 value={unrepairedCustomEtc}
-                onChange={setUnrepairedCustomEtc}
+                onChange={handleUnrepairedEtc}
                 placeholder="기타 사유 입력"
                 customWidth="w-[280px]"
               />
@@ -589,7 +730,7 @@ const ContractBody = ({
           {isEditable ? (
             <EditableInputBox
               value={lessorDuty}
-              onChange={setLessorDuty}
+              onChange={handleLessorBurden}
               placeholder="임대인 부담 내용 입력"
               customWidth="w-[600px]"
               disabled={!isEditable}
@@ -634,7 +775,7 @@ const ContractBody = ({
           {isEditable ? (
             <EditableInputBox
               value={lesseeDuty}
-              onChange={setLesseeDuty}
+              onChange={handleLesseeBurden}
               placeholder="임차인 부담 내용 입력"
               customWidth="w-[600px]"
               disabled={!isEditable}
