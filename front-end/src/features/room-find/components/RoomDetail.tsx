@@ -32,6 +32,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { handleRoomLike } from "../../../services/likeService";
 import ModalAlert from "../../modal/pages/ModalAlert";
 import useModal from "../../modal/hooks/useModal";
+import { fetchCreateChatRoom } from "../../../apis/chat";
 
 interface RoomDetailProps {
   selectedRoomId: number | null;
@@ -40,7 +41,7 @@ interface RoomDetailProps {
 
 const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   // 모든 state와 ref를 먼저 선언
-  const { accessToken } = useAuth();
+  const { accessToken, user } = useAuth();
 
   const [isHeaderColorChange, setIsHeaderColorChange] = useState(false);
   const [isTitleScrolled, setIsTitleScrolled] = useState(false);
@@ -57,6 +58,41 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
   const textStartRef = useRef<HTMLDivElement | null>(null);
   const tabContentsRef = useRef<(HTMLDivElement | null)[]>([]);
   const { isOpen, openModal, closeModal } = useModal();
+
+  const [isAuthMenuOpenMobile, setIsAuthMenuOpenMobile] = useState(false);
+
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+
+  const allCloseMobile = () => {
+    if (isMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+    if (isAuthMenuOpenMobile) {
+      setIsAuthMenuOpenMobile(false);
+    }
+  };
+
+  const openChatWindow = () => {
+    window.open(
+      "/chat",
+      "_blank",
+      "width=1000,height=700,menubar=no,toolbar=no,location=no,status=no"
+    );
+    allCloseMobile();
+  };
+
+  const handleAsk = () => {
+    fetchCreateChatRoom(
+      {
+        "landlordId": room.memberId,
+        "roomId": room.roomId, 
+        "tenantId": Number(user.sub),
+      }
+    )
+    openChatWindow();
+  }
+
 
   // 그 다음 useQuery 훅 호출
   const {
@@ -715,7 +751,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                     />
                   </div>
                   <span className="separator"></span>
-                  <div className="flex-grow text-center">
+                  <div className="flex-grow text-center" onClick={handleAsk}>
                     <p className="cursor-pointer">문의하기</p>
                   </div>
                 </div>

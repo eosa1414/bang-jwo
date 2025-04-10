@@ -148,7 +148,7 @@ const SellerContractPage = () => {
           </div>
         </div>
 
-        <div className="w-1/3 h-full pt-[380px]">
+        <div className="w-1/3 h-full pt-[380px] fixed left-260 bottom-70">
           {agreed ? (
             <ChatbotPage />
           ) : (
