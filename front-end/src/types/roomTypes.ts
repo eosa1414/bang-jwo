@@ -55,8 +55,8 @@ export interface RoomResponse {
 // 쿼리
 export interface RoomQueryParams {
   buildingType?: string;
-  price?: string;
-  areaTypes?: string;
+  price?: number | null;
+  areaTypes?: AreaType | null;
   lat?: number;
   lng?: number;
   zoom?: number;
@@ -65,13 +65,23 @@ export interface RoomQueryParams {
 
 export const defaultParams: RoomQueryParams = {
   buildingType: "ONEROOM_TWOROOM",
-  price: "",
-  areaTypes: "",
+  price: null,
+  areaTypes: null,
   lat: 37.5,
   lng: 127.04,
   zoom: 4,
   page: 1,
 };
+
+export type AreaType =
+  | "ALL"
+  | "UNDER_TEN"
+  | "TEN_RANGE"
+  | "TWENTY_RANGE"
+  | "THIRTY_RANGE"
+  | "FORTY_RANGE"
+  | "OVER_FIFTY"
+  | null;
 
 export interface RoomImage {
   imageId: number;
