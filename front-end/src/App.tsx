@@ -30,6 +30,7 @@ import PageMyContract from "./features/mypage/contract/pages/PageMyContract";
 import ChatbotNoticePage from "./features/chatbot/pages/ChatbotNoticePage";
 import RedirectIfNotAuth from "./features/auth/components/RedirectIfNotAuth";
 import ChatbotPage from "./features/chatbot/pages/ChatbotPage";
+import PaymentTest from "./features/payment2/pages/PaymentTest";
 
 function App() {
   return (
@@ -129,6 +130,7 @@ function App() {
               </LayoutMain>
             }
           />
+          <Route path="/pay_test" element={<PaymentTest />}></Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
