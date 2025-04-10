@@ -8,7 +8,10 @@ interface ContractTypeSelectorProps {
   setContractType: (value: string) => void;
 }
 
-const ContractTypeSelector = ({ mode }: ContractTypeSelectorProps) => {
+const ContractTypeSelector = ({
+  mode,
+  setContractType,
+}: ContractTypeSelectorProps) => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -54,7 +57,10 @@ const ContractTypeSelector = ({ mode }: ContractTypeSelectorProps) => {
                 value={option.value}
                 checked={selectedType === option.value}
                 onChange={() => {
-                  if (!isLessee) setSelectedType(option.value);
+                  if (!isLessee) {
+                    setSelectedType(option.value);
+                    setContractType(option.value);
+                  }
                 }}
                 disabled={isLessee}
                 className="w-[16px] h-[16px] border-2 border-neutral-dark200 bg-white appearance-none rounded-none transition-colors checked:bg-neutral-dark200 disabled:cursor-not-allowed"

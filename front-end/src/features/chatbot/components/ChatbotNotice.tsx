@@ -9,7 +9,7 @@ const ChatbotNotice = () => {
   };
 
   return (
-    <div className="max-w-[360px] min-h-[520px] bg-neutral-light300 rounded-lg shadow-md p-6 text-neutral-black space-y-5">
+    <div className="w-full min-h-[520px] bg-neutral-light300 rounded-lg shadow-md p-6 text-neutral-black space-y-5">
       <div className="flex items-center gap-2 text-lg font-semibold">
         <span className="material-symbols-rounded text-lg text-neutral-dark200">
           info
