@@ -24,7 +24,11 @@ interface SpecialTermsProps {
   setEtc: (value: string[]) => void;
 }
 
-const SpecialTerms = ({ mode }: SpecialTermsProps) => {
+const SpecialTerms = ({
+  mode,
+  setMoveInRegistrationDate,
+  setUnpaidAmount,
+}: SpecialTermsProps) => {
   const isEditable = mode === "lessor";
 
   const [moveInDate, setMoveInDate] = useState<Date | null>(null);
@@ -42,6 +46,11 @@ const SpecialTerms = ({ mode }: SpecialTermsProps) => {
   const [customTerms, setCustomTerms] = useState<string[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [newTerm, setNewTerm] = useState("");
+
+  const handleTax = (data: string) => {
+    setTaxAmount(data);
+    setUnpaidAmount(Number(data));
+  };
 
   const handleAddNewTerm = () => {
     if (newTerm.trim()) {
@@ -64,7 +73,10 @@ const SpecialTerms = ({ mode }: SpecialTermsProps) => {
           <span className="inline-flex mx-2 align-middle">
             <DatePickerInput
               selectedDate={moveInDate}
-              onChange={(date) => isEditable && setMoveInDate(date)}
+              onChange={(date) => {
+                setMoveInDate(date);
+                setMoveInRegistrationDate(date);
+              }}
               placeholder="날짜"
               disabled={!isEditable}
             />
@@ -87,7 +99,7 @@ const SpecialTerms = ({ mode }: SpecialTermsProps) => {
             {isEditable ? (
               <EditableInputBox
                 value={taxAmount}
-                onChange={setTaxAmount}
+                onChange={handleTax}
                 placeholder="금액"
                 customWidth="w-[120px]"
                 disabled={false}

@@ -45,7 +45,7 @@ const ContractHeader = ({
       </h2>
 
       <div className="mt-6 flex justify-end gap-6 items-center">
-        <span className="text-base font-bold whitespace-nowrap">임대 유형</span>
+        <span className="text-base font-bold whitespace-nowrap"></span>
         <RentTypeSelector
           mode="lessor" // 또는 "lessee"
           value={leaseType}

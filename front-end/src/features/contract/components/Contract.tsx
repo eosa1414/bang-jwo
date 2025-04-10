@@ -76,7 +76,8 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
   const [monthlyRentAccountNumber, setMonthlyRentAccountNumber] = useState("");
   const [fixedManagementFee, setFixedManagementFee] = useState(0);
   const [unfixedManagementFee, setUnfixedManagementFee] = useState("");
-  const [leaseStartDate, setLeaseStartDate] = useState("");
+  const [leaseStartDate, setLeaseStartDate] = useState<string | null>(null);
+
   const [leaseEndDate, setLeaseEndDate] = useState("");
   const [facilitiesRepairStatus, setFacilitiesRepairStatus] = useState(false);
   const [facilitiesRepairContent, setFacilitiesRepairContent] = useState("");
@@ -108,6 +109,43 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
     lessee: { address: "", ssn: "", phone: "", name: "" },
   });
 
+  const [signatureModalOpen, setSignatureModalOpen] = useState(false);
+  const [activeSignatureType, setActiveSignatureType] = useState<
+    "unpaid" | "priority" | "receipt" | null
+  >(null);
+
+  const [unpaidTaxSignature, setUnpaidTaxSignature] = useState<string | null>(
+    null
+  );
+  const [priorityDateSignature, setPriorityDateSignature] = useState<
+    string | null
+  >(null);
+
+  const [receiptSignature, setReceiptSignature] = useState<string | null>(null);
+
+  const openSignatureModal = (type: "unpaid" | "priority" | "receipt") => {
+    if (type === "unpaid" || type === "priority" || type === "receipt") {
+      setActiveSignatureType(type);
+      setSignatureModalOpen(true);
+    }
+  };
+
+  const handleSignatureSave = (dataUrl: string) => {
+    if (activeSignatureType === "unpaid") {
+      setUnpaidTaxSignature(dataUrl);
+    } else if (activeSignatureType === "priority") {
+      setPriorityDateSignature(dataUrl);
+    } else if (activeSignatureType === "receipt") {
+      setReceiptSignature(dataUrl);
+    }
+    setSignatureModalOpen(false);
+  };
+
+  const formatDate = (value: string): string => {
+    if (!value) return "";
+    return value.replace(/\./g, "-").split("T")[0];
+  };
+
   useImperativeHandle(ref, () => ({
     getFormData: (): UpdateLandlordInfoDto => ({
       contractId: 0,
@@ -131,27 +169,27 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
       depositAmount,
       contractFee,
       middleFee,
-      interimPaymentDate,
+      interimPaymentDate: formatDate(interimPaymentDate),
       balance,
-      balancePaymentDate,
+      balancePaymentDate: formatDate(balancePaymentDate),
       monthlyRent,
-      monthlyRentPaymentDate,
+      monthlyRentPaymentDate: formatDate(monthlyRentPaymentDate),
       monthlyRentType,
       monthlyRentAccountBank,
       monthlyRentAccountNumber,
       fixedManagementFee,
       unfixedManagementFee,
-      leaseStartDate,
-      leaseEndDate,
+      leaseStartDate: formatDate(leaseStartDate ?? ""),
+      leaseEndDate: formatDate(leaseEndDate),
       facilitiesRepairStatus,
       facilitiesRepairContent,
-      repairCompletionByBalanceDate,
+      repairCompletionByBalanceDate: formatDate(repairCompletionByBalanceDate),
       repairCompletionEtc,
-      notRepairedByBalanceDate,
+      notRepairedByBalanceDate: formatDate(notRepairedByBalanceDate),
       notRepairedEtc,
       landlordBurden,
       tenantBurden,
-      moveInRegistrationDate,
+      moveInRegistrationDate: formatDate(moveInRegistrationDate),
       unpaidAmount,
       disputeResolution,
       isHousingReconstructionPlanned,
@@ -159,7 +197,7 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
       estimatedConstructionDuration,
       isDetailedAddressConsentGiven,
       etc,
-      contractWrittenDate,
+      contractWrittenDate: formatDate(contractWrittenDate),
       // Footer 정보 (임대인 정보 사용)
       address: footerInfo.lessor.address,
       residentRegistrationNumber: footerInfo.lessor.ssn,
@@ -198,8 +236,9 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
         leaseArea={rentalPartArea}
         unpaidTaxOption={taxArrears ? "exist" : "none"}
         priorityDateOption={priorityConfirmedDateYn ? "exist" : "none"}
-        unpaidTaxSignature={null}
-        priorityDateSignature={null}
+        unpaidTaxSignature={unpaidTaxSignature}
+        priorityDateSignature={priorityDateSignature}
+        openSignatureModal={openSignatureModal}
         onChange={(field, value) => {
           const map: Record<string, Dispatch<SetStateAction<string>>> = {
             leaseDetail: setRentalPartDetailAddress,
@@ -222,7 +261,6 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
           if (field === "priorityDateOption")
             setPriorityConfirmedDateYn(value === "exist");
         }}
-        openSignatureModal={() => {}}
       />
 
       <ContractBody
@@ -233,8 +271,6 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
         setContractFee={setContractFee}
         monthlyRent={monthlyRent}
         setMonthlyRent={setMonthlyRent}
-        receiptSignature={null}
-        openSignatureModal={() => {}}
         paymentMethod={monthlyRentType === "PREPAID" ? "선불" : "후불"}
         setPaymentMethod={(value: string) =>
           setMonthlyRentType(value === "선불" ? "PREPAID" : "POSTPAID")
@@ -303,6 +339,8 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
         setLandlordBurden={setLandlordBurden}
         tenantBurden={tenantBurden}
         setTenantBurden={setTenantBurden}
+        receiptSignature={receiptSignature}
+        openSignatureModal={openSignatureModal}
       />
 
       <SpecialTerms
@@ -337,7 +375,11 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
         setContractWrittenDate={setContractWrittenDate}
       />
 
-      <SignatureModal isOpen={false} onClose={() => {}} onSave={() => {}} />
+      <SignatureModal
+        isOpen={signatureModalOpen}
+        onClose={() => setSignatureModalOpen(false)}
+        onSave={handleSignatureSave}
+      />
     </section>
   );
 });

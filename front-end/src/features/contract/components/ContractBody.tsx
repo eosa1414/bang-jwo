@@ -175,32 +175,18 @@ const ContractBody = ({
           <span className="text-sm font-medium">원 매월 지불</span>
         </div>
 
-        {/* 영수 서명 */}
         <div className="flex items-center gap-2">
           <span className="w-24 text-base font-medium">영수자</span>
-          {receiptSignature ? (
-            <div
-              className={`w-[100px] h-[32px] border-2 rounded-sm bg-neutral-light200 border-neutral-gray flex items-center justify-center ${
-                isEditable ? "cursor-pointer" : "cursor-not-allowed"
-              }`}
-              onClick={() => isEditable && openSignatureModal("receipt")}
-            >
+          <div
+            onClick={() => isEditable && openSignatureModal("receipt")}
+            className={`w-[100px] h-[32px] border-2 border-neutral-light100 bg-neutral-light200 ${
+              isEditable ? "cursor-pointer" : "cursor-not-allowed"
+            }`}
+          >
+            {receiptSignature ? (
               <img src={receiptSignature} alt="서명" />
-            </div>
-          ) : isEditable ? (
-            <EditableInputBox
-              value={""}
-              onChange={() => {}}
-              placeholder="서명 입력"
-              customWidth="w-[100px]"
-            />
-          ) : (
-            <DisabledInputBox
-              value={""}
-              placeholder="서명 입력"
-              customWidth="w-[100px]"
-            />
-          )}
+            ) : null}
+          </div>
           <span className="text-sm font-medium">(인)</span>
         </div>
       </div>
