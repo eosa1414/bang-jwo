@@ -3,6 +3,7 @@ import {
   fetchDetailRoom,
   postRoom,
   fetchMyRooms,
+  patchRoom,
 } from "../apis/room";
 import {
   RoomResponse,
@@ -39,6 +40,16 @@ export const createRoom = async (formData: FormData) => {
     return result;
   } catch (err) {
     console.error("Error posting room:", err);
+    throw err;
+  }
+};
+
+export const updateRoom = async (roomId: number, formData: FormData) => {
+  try {
+    const result = await patchRoom(roomId, formData);
+    return result;
+  } catch (err) {
+    console.error("Error updating room:", err);
     throw err;
   }
 };

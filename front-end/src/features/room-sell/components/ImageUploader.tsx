@@ -1,70 +1,106 @@
 import { useRef } from "react";
 import MaterialIcon from "../../../components/MaterialIcon";
+import { RoomImage } from "../../../types/roomTypes";
 
-type ImageUploaderProps = {
-  images: File[];
-  setImages: (images: File[]) => void;
-};
+interface ImageUploaderProps {
+  existingImages: RoomImage[];
+  setExistingImages: (images: RoomImage[]) => void;
+  newImages: File[];
+  setNewImages: (images: File[]) => void;
+  onDeleteImage: (id: number) => void;
+}
 
-const ImageUploader = ({ images, setImages }: ImageUploaderProps) => {
+const ImageUploader = ({
+  existingImages,
+  setExistingImages,
+  newImages,
+  setNewImages,
+  onDeleteImage,
+}: ImageUploaderProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
     const fileList = Array.from(e.target.files);
-    const newImages = [...images, ...fileList];
+    const combined = [...newImages, ...fileList];
 
-    // 중복 제거
-    const uniqueImages = Array.from(new Set(newImages.map((f) => f.name))).map(
-      (name) => newImages.find((f) => f.name === name)!
+    const uniqueImages = Array.from(new Set(combined.map((f) => f.name))).map(
+      (name) => combined.find((f) => f.name === name)!
     );
 
-    setImages(uniqueImages);
+    setNewImages(uniqueImages);
   };
 
-  const handleClick = () => {
-    inputRef.current?.click();
-  };
+  const handleClick = () => inputRef.current?.click();
 
-  const handleRemove = (index: number) => {
-    const updated = [...images];
+  const handleRemoveNew = (index: number) => {
+    const updated = [...newImages];
     updated.splice(index, 1);
-    setImages(updated);
+    setNewImages(updated);
   };
+
+  const handleRemoveExisting = (index: number) => {
+    const imageToRemove = existingImages[index];
+    onDeleteImage(imageToRemove.imageId);
+    const updated = [...existingImages];
+    updated.splice(index, 1);
+    setExistingImages(updated);
+  };
+
+  const merged = [
+    ...existingImages.map((img) => ({ type: "existing" as const, data: img })),
+    ...newImages.map((file) => ({ type: "new" as const, data: file })),
+  ];
 
   return (
     <div className="flex flex-wrap gap-3">
-      {/* upload */}
+      {/* Upload Button */}
       <div
         onClick={handleClick}
         className="transition-all hover:text-gold text-neutral-gray w-[11.25rem] h-[7.75rem] rounded-md border-2 border-dashed border-neutral-light100 flex items-center justify-center cursor-pointer hover:border-gold"
       >
         <MaterialIcon icon="add" />
       </div>
-      {/* preview */}
-      {images.map((file, index) => {
-        const imageUrl = URL.createObjectURL(file);
+
+      {/* Render All Images */}
+      {merged.map((item, index) => {
         const isFirst = index === 0;
+
+        const imageUrl =
+          item.type === "existing"
+            ? item.data.imageUrl
+            : URL.createObjectURL(item.data);
 
         return (
           <div
-            key={index}
+            key={
+              item.type === "existing"
+                ? `existing-${item.data.imageId}`
+                : `new-${item.data.name}`
+            }
             className="relative w-[11.25rem] h-[7.75rem] bg-neutral-light200 rounded-md overflow-hidden border-1 border-neutral-light100"
           >
             <img
               src={imageUrl}
-              alt={`preview-${index}`}
+              alt="preview"
               className="w-full h-full object-cover"
             />
-            {/* 대표 이미지 */}
+
+            {/* 대표 태그 */}
             {isFirst && (
-              <span className="absolute top-2 left-2 bg-gold-dark text-neutral-white text-sm  px-2.5 py-[2px] z-10 rounded-sm">
+              <span className="absolute top-2 left-2 bg-gold-dark text-white text-sm px-2.5 py-[2px] z-10 rounded-sm">
                 대표
               </span>
             )}
+
+            {/* 삭제 버튼 */}
             <button
-              onClick={() => handleRemove(index)}
+              onClick={() =>
+                item.type === "existing"
+                  ? handleRemoveExisting(index)
+                  : handleRemoveNew(index - existingImages.length)
+              }
               className="cursor-pointer w-7 h-7 absolute top-1 right-1 bg-neutral-black/60 text-white text-xs rounded-full border-2 border-netral-white/60"
             >
               <MaterialIcon icon="close" />

@@ -11,7 +11,8 @@ export interface RoomSellCreateContext {
   handleNext: (
     form: CreateRoomRequestDto | UpdateRoomRequestDto,
     images: File[],
-    deleteImageIds?: number[]
+    deleteImageIds?: number[],
+    latLng?: { lat: number; lng: number }
   ) => void;
   formData: CreateRoomRequestDto | null;
   images: File[];

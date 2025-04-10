@@ -26,6 +26,15 @@ export const postRoom = async (formData: FormData) => {
   return res.data;
 };
 
+export const patchRoom = async (roomId: number, formData: FormData) => {
+  const res = await axiosInstance.patch(`/api/v1/room/${roomId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res.data;
+};
+
 export const fetchMyRooms = async (page: number = 0, size: number) => {
   const res = await axiosInstance.get<RoomResponse>("/api/v1/room/me", {
     params: { page, size },
