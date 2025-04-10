@@ -2,6 +2,7 @@ import { ChangeEvent, KeyboardEvent, useState } from "react";
 import MaterialIcon from "./MaterialIcon";
 import { useNavigate } from "react-router-dom";
 import { getLatLngFromKeyword, loadKakaoMapScript } from "../utils/kakaoMap";
+import Toast from "../features/toast/components/Toast";
 
 // SearchBar를 재사용 가능하도록 틀로 따로 빼고, 로직은 별도 컴포넌트로 만들어서 feature 단위로 분리할까 하기도 했는데,
 // 현재 검색바를 쓰는 용도가 매물 검색밖에 없어서 일단은 이쪽에 그대로 구현해놨습니다.
@@ -13,8 +14,9 @@ interface SearchBarProps {
 }
 
 const SearchBar = ({ category }: SearchBarProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
 
   const search = async () => {
     if (!searchQuery.trim()) return;
@@ -26,6 +28,7 @@ const SearchBar = ({ category }: SearchBarProps) => {
       const queryParams = `?lat=${lat}&lng=${lng}`;
       navigate(`${path}${queryParams}`);
     } catch (err) {
+      setToastMessage("검색 결과가 없습니다.");
       console.error("Failed to search address:", err);
     }
   };
@@ -58,6 +61,9 @@ const SearchBar = ({ category }: SearchBarProps) => {
       >
         <MaterialIcon icon="search" />
       </div>
+      {toastMessage && (
+        <Toast message={toastMessage} onClose={() => setToastMessage("")} />
+      )}
     </div>
   );
 };

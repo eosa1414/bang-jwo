@@ -78,7 +78,7 @@ const Button = ({
   return (
     <Component
       className={classNames(
-        "font-semibold inline-flex items-center justify-center whitespace-nowrap",
+        "font-semibold inline-flex items-center justify-center text-center",
         disabled
           ? "cursor-not-allowed"
           : as === "div"

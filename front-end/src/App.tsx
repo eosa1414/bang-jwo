@@ -33,6 +33,7 @@ import PaymentTest from "./features/payment2/pages/PaymentTest";
 import PageWelcome from "./features/auth/pages/PageWelcome";
 import ChatbotNoticePage from "./features/chatbot/pages/ChatbotNoticePage";
 import ThreeJSScene from "./features/contract/pages/ThreeJSScene";
+import PageRegistry from "./features/registry/pages/PageRegistry";
 
 function App() {
   return (
@@ -140,6 +141,14 @@ function App() {
                 darkHeader
               >
                 <PageNotFound />
+              </LayoutMain>
+            }
+          />
+          <Route
+            path="/registry/:paymentId"
+            element={
+              <LayoutMain>
+                <PageRegistry />
               </LayoutMain>
             }
           />

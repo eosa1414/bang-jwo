@@ -8,3 +8,13 @@ export const fetchRiskAnalysis = async (paymentId: number) => {
   );
   return res.data;
 };
+
+export const fetchPdf = async (paymentId: number): Promise<Blob> => {
+  const res = await axiosInstance.get(`/api/v1/registry/pdf/${paymentId}`, {
+    responseType: "blob",
+    headers: {
+      Accept: "application/pdf",
+    },
+  });
+  return res.data;
+};
