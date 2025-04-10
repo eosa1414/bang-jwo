@@ -117,6 +117,7 @@ function App() {
           <Route path="/chat" element={<ChatPageOnly />} />
           <Route path="/chatbot-notice" element={<ChatbotNoticePage />} />
           <Route path="/chatbot" element={<ChatbotPage />} />
+          <Route path="/pay_test" element={<PaymentTest />}></Route>
           {/* 그 외 모든 페이지는 404 not found */}
           <Route
             path="*"
@@ -130,7 +131,6 @@ function App() {
               </LayoutMain>
             }
           />
-          <Route path="/pay_test" element={<PaymentTest />}></Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
