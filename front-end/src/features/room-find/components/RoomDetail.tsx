@@ -26,6 +26,8 @@ import {
 import ModalPhoneCheck from "../../modal/pages/ModalPhoneCheck";
 import RoundedImage from "../../../components/RoundedImage";
 import MaterialIcon from "../../../components/MaterialIcon";
+import { useIamportPayment } from "../../registry/hooks/useIamportPayment";
+import { validatePayment } from "../../../apis/pay";
 
 interface RoomDetailProps {
   selectedRoomId: number | null;
@@ -151,6 +153,49 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
       boxElement?.removeEventListener("scroll", handleScroll);
     };
   });
+
+  //등기사항전부증명서 결제 처리
+  const { requestPayment, scriptLoaded } = useIamportPayment();
+  const handleClick = () => {
+    if (!scriptLoaded) {
+      console.warn("결제 모듈이 아직 로딩되지 않았어요");
+      return;
+    }
+
+    requestPayment(
+      {
+        merchant_uid: `test_${Date.now()}`,
+        name: "테스트 상품",
+        amount: 100,
+        buyer_email: "test@example.com",
+        buyer_name: "홍길동",
+        buyer_tel: "01012345678",
+        buyer_addr: "서울시 테스트구",
+        buyer_postcode: "12345",
+      },
+      async (rsp) => {
+        console.log("결제 결과:", rsp);
+
+        if (rsp.success) {
+          console.log("✅ 결제 성공, imp_uid:", rsp.imp_uid);
+
+          const impUid = rsp.imp_uid;
+
+          try {
+            const validateData = await validatePayment(impUid);
+            console.log("아이디값");
+            console.log(validateData); //id
+            const newWindowUrl = `/registry/${validateData ?? ""}`;
+            window.open(newWindowUrl, "_blank");
+          } catch (validateError) {
+            console.log("Failed to verify payment:", rsp.error_msg);
+          }
+        } else {
+          console.log("Failed to pay:", rsp.error_msg);
+        }
+      }
+    );
+  };
 
   // 조건부 렌더링 처리
   if (!selectedRoomId) return null;
@@ -308,7 +353,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                     </span>
                   </div>
                   {/* review buttom */}
-                  <div className="flex flex-wrap gap-1 items-center cursor-pointer">
+                  {/* <div className="flex flex-wrap gap-1 items-center cursor-pointer">
                     <i className="material-symbols-rounded text-lg">reviews</i>
                     <span className="font-semibold">
                       리뷰 ${room.reviewCnt}개
@@ -316,7 +361,7 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                     <i className="material-symbols-rounded text-base">
                       arrow_forward_ios
                     </i>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* save price */}
@@ -503,12 +548,17 @@ const RoomDetail = ({ selectedRoomId, onClose }: RoomDetailProps) => {
                   scrollMarginTop={48 + tabMenuHeight}
                 >
                   <InfoText text="등기부등본을 확인하기 위해서는 700원의 수수료가 필요합니다." />
-                  <Button size="large" variant="point" className="w-full">
-                    [유료] 등기부등본·위험도 확인하러 가기
+                  <Button
+                    size="large"
+                    variant="point"
+                    className="w-full"
+                    onClick={handleClick}
+                  >
+                    [유료] 등기사항전부증명서·위험도 확인
                   </Button>
-                  <Button size="large" className="w-full">
+                  {/* <Button size="large" className="w-full">
                     지난 위험도 분석 결과 확인하기
-                  </Button>
+                  </Button> */}
                 </TabContent>
               </div>
               {/* box footer */}
