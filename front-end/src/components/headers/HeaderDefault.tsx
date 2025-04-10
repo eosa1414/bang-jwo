@@ -4,7 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import Button from "../buttons/Button";
 import ButtonIcon from "../buttons/ButtonIcon";
 import HeaderNavItem from "./HeaderNavItem";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface HeaderProps {
@@ -13,31 +13,61 @@ interface HeaderProps {
 }
 
 const Header = ({ title, variant = "light" }: HeaderProps) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [isAuthMenuOpen, setIsAuthMenuOpen] = useState(false);
+  const [isAuthMenuOpenMobile, setIsAuthMenuOpenMobile] = useState(false);
 
-  // 모바일 가로일 때 메뉴 동작 - 차후 추가
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
+  const allCloseMobile = () => {
+    if (isMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+    if (isAuthMenuOpenMobile) {
+      setIsAuthMenuOpenMobile(false);
+    }
+  };
+
   const openChatWindow = () => {
     window.open(
       "/chat",
       "_blank",
       "width=1000,height=700,menubar=no,toolbar=no,location=no,status=no"
     );
-    if (isMobileMenuOpen) {
-      setIsMobileMenuOpen(false);
-    }
+    allCloseMobile();
   };
 
-  const openAuthBox = () => {
-    console.log("눌렸다!");
-    if (isMobileMenuOpen) {
-      setIsMobileMenuOpen(false);
-    }
+  const handleLogout = () => {
+    logout();
+    allCloseMobile();
   };
+
+  const authMenuRef = useRef<HTMLDivElement>(null);
+  const authMenuButtonRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        authMenuRef.current &&
+        !authMenuRef.current.contains(event.target as Node) &&
+        authMenuButtonRef.current &&
+        !authMenuButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsAuthMenuOpen(false);
+        setIsAuthMenuOpenMobile(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="flex w-full h-[55px] p-[12px_14px] justify-center items-center gap-[16px] border-b-1 border-neutral-light100">
@@ -84,8 +114,22 @@ const Header = ({ title, variant = "light" }: HeaderProps) => {
                     <li>
                       <ButtonIcon icon="chat" onClick={openChatWindow} />
                     </li>
-                    <li>
-                      <ButtonIcon icon="account_circle" onClick={openAuthBox} />
+                    <li className="relative">
+                      <ButtonIcon
+                        icon="account_circle"
+                        onClick={() => {
+                          setIsAuthMenuOpen(!isAuthMenuOpen);
+                        }}
+                        ref={authMenuButtonRef}
+                      />
+                      {isAuthMenuOpen && (
+                        <div
+                          ref={authMenuRef}
+                          className="z-1 cursor-pointer absolute right-0 min-w-[6rem] text-center px-4 py-2 border-1 border-neutral-light100 rounded-md max-w-[10rem] w-fit mx-auto my-2 shadow-md bg-neutral-white"
+                        >
+                          로그아웃
+                        </div>
+                      )}
                     </li>
                   </>
                 ) : (
@@ -118,7 +162,7 @@ const Header = ({ title, variant = "light" }: HeaderProps) => {
             <ul className="flex flex-col gap-8 text-lg text-neutral-dark200">
               <div
                 className="md:hidden text-center flex items-center justify-center"
-                onClick={toggleMobileMenu}
+                onClick={allCloseMobile}
               >
                 <ButtonIcon
                   icon="close"
@@ -165,9 +209,16 @@ const Header = ({ title, variant = "light" }: HeaderProps) => {
                   <li>
                     <ButtonIcon
                       icon="account_circle"
-                      onClick={openAuthBox}
+                      onClick={() => {
+                        setIsAuthMenuOpenMobile(true);
+                      }}
                       addClassName="w-fit h-fit m-auto"
                     />
+                    {isAuthMenuOpenMobile && (
+                      <div className="px-4 py-2 border-1 border-neutral-light100 rounded-md max-w-[10rem] mx-auto my-2 shadow-md bg-neutral-white">
+                        <p onClick={handleLogout}>로그아웃</p>
+                      </div>
+                    )}
                   </li>
                 </>
               ) : (
