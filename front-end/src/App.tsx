@@ -32,6 +32,7 @@ import ChatbotPage from "./features/chatbot/pages/ChatbotPage";
 import PaymentTest from "./features/payment2/pages/PaymentTest";
 import PageWelcome from "./features/auth/pages/PageWelcome";
 import ChatbotNoticePage from "./features/chatbot/pages/ChatbotNoticePage";
+import ThreeJSScene from "./features/contract/pages/ThreeJSScene";
 import PageRegistry from "./features/registry/pages/PageRegistry";
 
 function App() {
@@ -129,6 +130,7 @@ function App() {
           />{" "}
           <Route path="/chatbot" element={<ChatbotPage />} />
           <Route path="/pay_test" element={<PaymentTest />}></Route>
+          <Route path="/blockchain-loading" element={<ThreeJSScene />} />
           {/* 그 외 모든 페이지는 404 not found */}
           <Route
             path="*"

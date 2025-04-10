@@ -7,9 +7,8 @@ interface SystemMessageProps {
 
 const SystemMessage: FC<SystemMessageProps> = ({ role }) => {
   const handleClick = () => {
-    const path =
-      role === "임대인" ? "/seller-contract-form" : "/tenant-contract-form";
-    window.open(path, "_blank"); // ✅ 새 탭에서 열기
+    const path = role === "임대인" ? "/seller-contract" : "/buyer-contract";
+    window.open(path, "_blank");
   };
 
   return (

@@ -141,14 +141,9 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
     setSignatureModalOpen(false);
   };
 
-  const formatDate = (value: string): string => {
-    if (!value) return "";
-    return value.replace(/\./g, "-").split("T")[0];
-  };
-
   useImperativeHandle(ref, () => ({
     getFormData: (): UpdateLandlordInfoDto => ({
-      contractId: 1,
+      contractId: 2,
       leaseType,
       rentalPropertyAddress,
       rentalPartAddress,
@@ -234,7 +229,7 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
         buildingArea={propertyArea}
         leaseDetail={rentalPartDetailAddress}
         leaseArea={rentalPartArea}
-        unpaidTaxOption={taxArrears ? "exist" : "none"}
+        unpaidTaxOption={taxArrears}
         priorityDateOption={priorityConfirmedDateYn ? "exist" : "none"}
         unpaidTaxSignature={unpaidTaxSignature}
         priorityDateSignature={priorityDateSignature}
@@ -366,7 +361,7 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
       />
 
       <ContractFooterSection
-        mode="lessor" // or "lessee" - 권한 부여
+        mode={mode} // or "lessee" - 권한 부여
         footerInfo={footerInfo}
         setFooterInfo={setFooterInfo}
         contractWrittenDate={contractWrittenDate}

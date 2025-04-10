@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import EditableInputBox from "./EditableInputBox";
 import DisabledInputBox from "./DisabledInputBox";
 import NoticeGray from "../../../components/notices/NoticeGray";
@@ -114,7 +114,8 @@ const ContractFooterSection = ({
 
       {/* 임대인, 임차인 정보 입력 */}
       {["lessor", "lessee"].map((roleKey) => {
-        const role = roleKey as "lessor" | "lessee";
+        const [showSignatureHelp, setShowSignatureHelp] = useState(false);
+        const role = roleKey;
         const label = role === "lessor" ? "임대인" : "임차인";
         const editable =
           (role === "lessor" && isLessor) || (role === "lessee" && isLessee);
@@ -125,7 +126,12 @@ const ContractFooterSection = ({
               <span className="w-[51px] font-bold">{label}</span>
               <div className="flex items-center gap-4 w-full">
                 <span className="w-[100px]">주소</span>
-                {renderInputBox(role, "address", "", "w-full")}
+                {renderInputBox(
+                  role,
+                  "address",
+                  role === "lessor" ? "서울시 강남구 가로수길 5" : "",
+                  "w-full"
+                )}
               </div>
             </div>
             <div className="ml-[100px] flex flex-col gap-4">
@@ -134,7 +140,7 @@ const ContractFooterSection = ({
                 {renderInputBox(
                   role,
                   "ssn",
-                  "하이픈(-) 없이 숫자만 입력해주세요",
+                  role === "lessor" ? "9309091234567" : "",
                   "w-[300px]"
                 )}
               </div>
@@ -143,13 +149,18 @@ const ContractFooterSection = ({
                 {renderInputBox(
                   role,
                   "phone",
-                  "하이픈(-) 없이 숫자만 입력해주세요",
+                  role === "lessor" ? "01037289573" : "",
                   "w-[300px]"
                 )}
               </div>
               <div className="flex items-center gap-4">
                 <span className="w-[100px]">성명</span>
-                {renderInputBox(role, "name", "", "w-[160px]")}
+                {renderInputBox(
+                  role,
+                  "name",
+                  role === "lessor" ? "하정수" : "",
+                  "w-[160px]"
+                )}
               </div>
 
               {/* 서명 */}
@@ -159,10 +170,21 @@ const ContractFooterSection = ({
                   {editable && (
                     <button
                       type="button"
-                      onClick={() => {}}
+                      onClick={() => setShowSignatureHelp((prev) => !prev)}
                       className="material-symbols-rounded text-lg text-neutral-dark100 hover:text-neutral-black cursor-pointer mt-0.5"
                     >
-                      help
+                      <span
+                        className="material-symbols-rounded text-neutral-dark200"
+                        style={{
+                          fontVariationSettings: `'FILL' ${
+                            showSignatureHelp ? 1 : 0
+                          }, 'wght' 400, 'GRAD' 0, 'opsz' 24`,
+                          fontSize: "18px",
+                          lineHeight: "1",
+                        }}
+                      >
+                        help
+                      </span>
                     </button>
                   )}
                 </div>
@@ -173,7 +195,7 @@ const ContractFooterSection = ({
               </div>
 
               {/* 안내 문구 */}
-              {editable && (
+              {showSignatureHelp && (
                 <NoticeGray arrowOffsetLeft="28px">
                   서명은 계약서 최종 확인 후에 작성해요.
                 </NoticeGray>
