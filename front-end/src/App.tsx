@@ -73,7 +73,7 @@ function App() {
             <Route index element={<RoomSellNotice />} />
             <Route path="write" element={<RoomForm type="create" />} />
             <Route path="verify/:roomId" element={<VerifyOwner />} />
-            <Route path="success" element={<CreateSuccess />} />
+            <Route path="success/:roomId" element={<CreateSuccess />} />
           </Route>
           <Route
             path="/room/update/:roomId"
