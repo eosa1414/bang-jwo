@@ -1,20 +1,17 @@
-import { useNavigate } from "react-router-dom";
 import Button from "../../../components/buttons/Button";
+import { FC } from "react";
+interface ChatbotNoticePageProps {
+  onAgree: () => void;
+}
 
-const ChatbotNotice = () => {
-  const navigate = useNavigate();
-
-  const handleAgree = () => {
-    navigate("/chatbot"); // → ChatbotPage로 이동
-  };
-
+const ChatbotNoticePage: FC<ChatbotNoticePageProps> = ({ onAgree }) => {
   return (
     <div className="max-w-[360px] min-h-[520px] bg-neutral-light300 rounded-lg shadow-md p-6 text-neutral-black space-y-5">
       <div className="flex items-center gap-2 text-lg font-semibold">
         <span className="material-symbols-rounded text-lg text-neutral-dark200">
           info
         </span>
-        <span>챗봇 유의사항</span>
+        <span>AI 챗봇 유의사항</span>
       </div>
 
       <div className="space-y-3 text-sm leading-relaxed">
@@ -41,7 +38,14 @@ const ChatbotNotice = () => {
       </div>
 
       <div className="pt-2 flex justify-center">
-        <Button size="medium" variant="point" onClick={handleAgree}>
+        <Button
+          size="medium"
+          variant="point"
+          onClick={() => {
+            console.log("버튼 클릭됨!");
+            onAgree(); // 이게 실행돼야 setAgreed(true)
+          }}
+        >
           동의하고 시작하기
         </Button>
       </div>
@@ -49,4 +53,4 @@ const ChatbotNotice = () => {
   );
 };
 
-export default ChatbotNotice;
+export default ChatbotNoticePage;
