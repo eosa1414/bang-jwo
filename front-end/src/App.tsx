@@ -27,7 +27,6 @@ import PageMySell from "./features/mypage/sell/pages/PageMySell";
 import PageMyLike from "./features/mypage/like/pages/PageMyLike";
 import BuyerContractPage from "./features/contract/pages/BuyerContractPage";
 import PageMyContract from "./features/mypage/contract/pages/PageMyContract";
-import { PaymentPage } from "./features/payment2/pages/PaymentPage"
 import PaymentTest from "./features/payment2/pages/PaymentTest";
 
 function App() {
