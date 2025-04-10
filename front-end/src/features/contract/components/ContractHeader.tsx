@@ -47,7 +47,7 @@ const ContractHeader = ({
       <div className="mt-6 flex justify-end gap-6 items-center">
         <span className="text-base font-bold whitespace-nowrap"></span>
         <RentTypeSelector
-          mode="lessor" // 또는 "lessee"
+          mode={mode} // 또는 "lessee"
           value={leaseType}
           onChange={setLeaseType}
         />
@@ -67,7 +67,7 @@ const ContractHeader = ({
         ) : (
           <DisabledInputBox
             value={lessorName}
-            placeholder="성명"
+            placeholder="하정수"
             customWidth="w-[100px]"
           />
         )}

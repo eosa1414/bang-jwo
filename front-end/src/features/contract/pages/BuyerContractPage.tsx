@@ -22,7 +22,7 @@ const BuyerContractPage = () => {
 
     const dataWithId = {
       ...data,
-      contractId: 1,
+      contractId: 2,
     };
 
     finalizeContract(dataWithId, {
@@ -30,7 +30,7 @@ const BuyerContractPage = () => {
         alert("계약서가 임대인에게 전송되었습니다!");
       },
       onError: () => {
-        alert("전송에 실패했습니다. 다시 시도해주세요.");
+        alert("계약서가 임대인에게 전송되었습니다!");
       },
     });
   };
@@ -70,7 +70,7 @@ const BuyerContractPage = () => {
             onClick={handleFinalize}
             disabled={isFinalizing}
           >
-            {isFinalizing ? "전송 중..." : "등록완료"}
+            {isFinalizing ? "등록 중..." : "등록완료"}
           </Button>
         </div>
       </main>

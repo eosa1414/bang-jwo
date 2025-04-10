@@ -5,7 +5,7 @@ interface Props {
 
 const ContractActionButton = ({ text, onClick }: Props) => {
   return (
-    <div className="animate-slide-up mb-4 flex justify-start ml-3">
+    <div className="mb-5 flex justify-start ml-4">
       <button
         onClick={onClick}
         className="bg-white px-4 py-2 rounded-2xl text-black text-sm font-medium border border-neutral-light100 cursor-pointer"

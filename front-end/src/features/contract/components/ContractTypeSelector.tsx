@@ -12,7 +12,7 @@ const ContractTypeSelector = ({
   mode,
   setContractType,
 }: ContractTypeSelectorProps) => {
-  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<string | null>("NEW");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [deposit, setDeposit] = useState("");

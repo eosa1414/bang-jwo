@@ -4,7 +4,7 @@ import { ChatMessage, RequestMessage } from "../types/chatTypes";
 import { fetchChatMessages } from "../apis/chat";
 import { useChatStore } from "../store/chatStore";
 import { useQueryClient } from "@tanstack/react-query";
-
+import { useAuth } from "../contexts/AuthContext"
 
 const SOCKET_URL = `${import.meta.env.VITE_API_BASE_URL}/chat`;
 
@@ -13,6 +13,7 @@ export const connectSocket = (id: number | null, scrollRef: any) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { chatRoom } = useChatStore();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   
   const sendMessage = (message: string) => {
     const now = new Date();
@@ -28,7 +29,7 @@ export const connectSocket = (id: number | null, scrollRef: any) => {
           chatRoomId: id,
           roomId: chatRoom?.roomId, // Replace with actual roomId if available
           receiverId: chatRoom?.otherId, // Replace with actual receiverId if available
-          senderId: 1, // Replace with actual senderId
+          senderId: Number(user.sub), // Replace with actual senderId
           senderNickname: "asdfasdf", // Replace with actual nickname if available
           message: message,
           sendAt: localISOTime,
