@@ -6,7 +6,7 @@ import { useChatRooms } from "../../../hooks/useChatRooms";
 import { useQueryClient } from "@tanstack/react-query";
 
 const ChatList = () => {
-  const { selectedChatId, setSelectedChatId, messagesByChat, setChatRoom } = useChatStore();
+  const { selectedChatId, setSelectedChatId, setChatRoom } = useChatStore();
   const { data: chatRooms, isLoading, isError } = useChatRooms();
   const queryClient = useQueryClient();
 
@@ -18,7 +18,6 @@ const ChatList = () => {
       <ChatListHeader />
       <div className="flex-1 overflow-y-auto px-4 custom-scroll">
         {chatRooms.map((room) => {
-
           return (
             <ChatListItem
               key={room.chatRoomId} // 고유한 키 사용
@@ -32,11 +31,10 @@ const ChatList = () => {
               isSelected={room.chatRoomId === selectedChatId}
               roomImage={room.roomImage}
               onClick={() => {
-                setSelectedChatId(room.chatRoomId)
+                setSelectedChatId(room.chatRoomId);
                 setChatRoom(room);
                 queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
-              }
-              }
+              }}
             />
           );
         })}
@@ -46,8 +44,6 @@ const ChatList = () => {
 };
 
 export default ChatList;
-
-
 
 // // src/components/chat/ChatList.tsx
 // import ChatListHeader from "./ChatListHeader";

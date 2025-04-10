@@ -8,7 +8,6 @@ import SystemMessage from "./SystemMessage";
 import ContractActionButton from "./ContractActionButton";
 import { connectSocket } from "../../../utils/chatSocket";
 import { useChatStore } from "../../../store/chatStore";
-import { redirect } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 
 // ChatRoom은 실시간 메시지와 API로 받아온 메시지를 모두 관리합니다.
@@ -19,10 +18,10 @@ interface ChatRoomProps {
 const ChatRoom = ({ chatId }: ChatRoomProps) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [showContractButton, setShowContractButton] = useState(false);
-  const { chatRoom, selectedChatId } = useChatStore();
+  const { chatRoom } = useChatStore();
   const { user } = useAuth();
 
-  const myId = Number(user.sub);
+  const myId = Number(user?.sub);
 
   // ④ 소켓 연결: ChatRoom 컴포넌트에서 채팅방 ID가 있을 때 소켓 연결하고 실시간 메시지를 반영
   // connectSocket은 [소켓메시지배열, sendMessage 함수]를 반환합니다.

@@ -4,7 +4,7 @@ import { ChatMessage, RequestMessage } from "../types/chatTypes";
 import { fetchChatMessages } from "../apis/chat";
 import { useChatStore } from "../store/chatStore";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "../contexts/AuthContext"
+import { useAuth } from "../contexts/AuthContext";
 
 const SOCKET_URL = `${import.meta.env.VITE_API_BASE_URL}/chat`;
 
@@ -14,7 +14,7 @@ export const connectSocket = (id: number | null, scrollRef: any) => {
   const { chatRoom } = useChatStore();
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  
+
   const sendMessage = (message: string) => {
     const now = new Date();
     const timezoneOffset = now.getTimezoneOffset() * 60000; // 분 -> 밀리초 변환
@@ -29,7 +29,7 @@ export const connectSocket = (id: number | null, scrollRef: any) => {
           chatRoomId: id,
           roomId: chatRoom?.roomId, // Replace with actual roomId if available
           receiverId: chatRoom?.otherId, // Replace with actual receiverId if available
-          senderId: Number(user.sub), // Replace with actual senderId
+          senderId: Number(user?.sub), // Replace with actual senderId
           senderNickname: "asdfasdf", // Replace with actual nickname if available
           message: message,
           sendAt: localISOTime,
@@ -61,11 +61,11 @@ export const connectSocket = (id: number | null, scrollRef: any) => {
     console.log("headers", headers, "socket", socket);
 
     socket.onerror = (error) => {
-      console.error('Socket error:', error);
+      console.error("Socket error:", error);
     };
-    
+
     socket.onclose = (event) => {
-      console.log('Socket closed:', event.code, event.reason);
+      console.log("Socket closed:", event.code, event.reason);
     };
 
     stomp.debug = (msg) => console.log("📡", msg);
@@ -73,11 +73,14 @@ export const connectSocket = (id: number | null, scrollRef: any) => {
     stomp.connect(headers, () => {
       console.log("Connected to STOMP server");
 
-      const subscription = stomp.subscribe(`/sub/chat/room/${id}`, (message) => {
-        console.log(message);
-        setMessages((prev) => [...prev, JSON.parse(message.body)]);
-        queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
-      });
+      const subscription = stomp.subscribe(
+        `/sub/chat/room/${id}`,
+        (message) => {
+          console.log(message);
+          setMessages((prev) => [...prev, JSON.parse(message.body)]);
+          queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
+        }
+      );
 
       setStompClient(stomp);
 
@@ -88,9 +91,9 @@ export const connectSocket = (id: number | null, scrollRef: any) => {
         });
       };
     });
-  return () => {
-    socket.close();
-  };
+    return () => {
+      socket.close();
+    };
   }, [id]);
 
   useEffect(() => {
@@ -99,5 +102,5 @@ export const connectSocket = (id: number | null, scrollRef: any) => {
     }
   }, [messages, scrollRef]);
 
-  return [ messages, sendMessage ];
+  return [messages, sendMessage];
 };

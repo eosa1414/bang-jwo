@@ -1,5 +1,5 @@
 import SearchBar from "../components/SearchBar";
-import MainImage from "../assets/images/tmp_main_image.png";
+import MainImage from "../assets/images/main_image.png";
 import Video from "../assets/videos/9629254-hd_1920_1080_24fps.mp4";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";

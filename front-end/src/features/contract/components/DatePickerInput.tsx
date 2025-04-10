@@ -52,6 +52,7 @@ const DatePickerInput = ({
   placeholder = "YYYY.MM.DD",
   disabled = false,
 }: DatePickerInputProps) => {
+  console.log(selectedDate); //임시 타입 해결
   return (
     <DatePicker
       selected={new Date(Date.now())}

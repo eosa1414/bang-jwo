@@ -121,47 +121,31 @@ const ContractFooterSection = ({
         const editable =
           (role === "lessor" && isLessor) || (role === "lessee" && isLessee);
 
+        if (role !== "lessor" && role !== "lessee") {
+          return; //임시 타입스크립트 오류 해결
+        }
+
         return (
           <div key={role} className="mt-6">
             <div className="flex items-center gap-14 mb-4">
               <span className="w-[51px] font-bold">{label}</span>
               <div className="flex items-center gap-4 w-full">
                 <span className="w-[100px]">주소</span>
-                {renderInputBox(
-                  role,
-                  "address",
-                  "",
-                  "w-full"
-                )}
+                {renderInputBox(role, "address", "", "w-full")}
               </div>
             </div>
             <div className="ml-[100px] flex flex-col gap-4">
               <div className="flex items-center gap-4">
                 <span className="w-[100px]">주민등록번호</span>
-                {renderInputBox(
-                  role,
-                  "ssn",
-                  "",
-                  "w-[300px]"
-                )}
+                {renderInputBox(role, "ssn", "", "w-[300px]")}
               </div>
               <div className="flex items-center gap-4">
                 <span className="w-[100px]">전화</span>
-                {renderInputBox(
-                  role,
-                  "phone",
-                  "",
-                  "w-[300px]"
-                )}
+                {renderInputBox(role, "phone", "", "w-[300px]")}
               </div>
               <div className="flex items-center gap-4">
                 <span className="w-[100px]">성명</span>
-                {renderInputBox(
-                  role,
-                  "name",
-                  "",
-                  "w-[160px]"
-                )}
+                {renderInputBox(role, "name", "", "w-[160px]")}
               </div>
 
               {/* 서명 */}
