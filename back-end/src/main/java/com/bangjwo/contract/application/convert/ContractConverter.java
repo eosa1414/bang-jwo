@@ -3,6 +3,7 @@ package com.bangjwo.contract.application.convert;
 import java.math.BigDecimal;
 
 import com.bangjwo.contract.application.dto.request.CreateContractRequestDto;
+import com.bangjwo.contract.application.dto.response.ContractVerificationStatusDto;
 import com.bangjwo.contract.domain.entity.Contract;
 import com.bangjwo.contract.domain.entity.LandlordInfo;
 import com.bangjwo.contract.domain.entity.SpecialClause;
@@ -111,6 +112,13 @@ public class ContractConverter {
 			.estimatedConstructionDuration(null)
 			.isDetailedAddressConsentGiven(null)
 			.etc(null)
+			.build();
+	}
+
+	public static ContractVerificationStatusDto convertContractVerify(Contract contract) {
+		return ContractVerificationStatusDto.builder()
+			.landlordVerified(contract.getLandlordAuth())
+			.tenantVerified(contract.getTenantAuth())
 			.build();
 	}
 }

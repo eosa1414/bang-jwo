@@ -25,6 +25,7 @@ import com.bangjwo.room.application.dto.request.UpdateRoomStatusDto;
 import com.bangjwo.room.application.dto.request.VerifyRoomRequestDto;
 import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
+import com.bangjwo.room.application.dto.response.RoomVerificationStatusDto;
 import com.bangjwo.room.application.dto.response.SearchDetailRoomResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
 import com.bangjwo.room.domain.entity.Address;
@@ -277,6 +278,8 @@ public class RoomService {
 
 		spec = spec.and(RoomSpecification.roomInAddressBounds(minLat, maxLat, minLng, maxLng));
 
+		spec = spec.and(RoomSpecification.statusEquals(RoomStatus.ON_SALE));
+
 		return spec;
 	}
 
@@ -340,4 +343,14 @@ public class RoomService {
 		}
 	}
 
+	@Transactional(readOnly = true)
+	public RoomVerificationStatusDto getRoomVerificationStatus(Long roomId, Long memberId) {
+		var room = findRoom(roomId);
+
+		if (!room.getMemberId().equals(memberId)) {
+			throw new BusinessException(RoomErrorCode.NO_AUTH_TO_SEARCH_ROOM);
+		}
+
+		return RoomConverter.convertSearchVerifyRoom(room);
+	}
 }

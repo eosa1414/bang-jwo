@@ -26,6 +26,7 @@ import com.bangjwo.contract.application.dto.request.UpdateTenantInfoDto;
 import com.bangjwo.contract.application.dto.request.VerifyContractMemberDto;
 import com.bangjwo.contract.application.dto.response.ContractDetailResponseDto;
 import com.bangjwo.contract.application.dto.response.ContractStatusResponseDto;
+import com.bangjwo.contract.application.dto.response.ContractVerificationStatusDto;
 import com.bangjwo.contract.application.dto.response.LandlordInfoResponseDto;
 import com.bangjwo.contract.application.dto.response.TenantInfoResponseDto;
 import com.bangjwo.contract.application.dto.validation.FinalSave;
@@ -287,7 +288,7 @@ public class ContractController {
 		@MemberHeader Long memberId
 	) {
 		contractService.verifyContractMember(dto, memberId);
-		
+
 		return ResponseEntity.noContent().build();
 	}
 
@@ -312,13 +313,26 @@ public class ContractController {
 	public ResponseEntity<?> getContractDocs(@PathVariable Long contractId, @MemberHeader Long memberId) {
 		byte[] pdf = contractService.getPdf(contractId, memberId);
 		HttpHeaders headers = new HttpHeaders();
-		// 파일 형식 PDF
 		headers.setContentType(MediaType.APPLICATION_PDF);
-		// 다운로드 형식으로 응답 (파일 이름은 필요에 따라 설정)
-		// 필요하면 응답 형식 변경
 		headers.setContentDisposition(ContentDisposition.builder("inline")
 			.filename("contract.pdf")
 			.build());
+
 		return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
+	}
+
+	@Operation(
+		summary = "계약서 본인 인증 여부 조회",
+		description = "해당 계약서에 대해 임대인과 임차인의 본인 인증 여부를 조회합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
+	@ApiResponse(responseCode = "200", description = "계약서의 임대인/임차인 본인 인증 여부를 반환합니다.")
+	@GetMapping("/{contractId}/verify")
+	public ResponseEntity<ContractVerificationStatusDto> getContractVerificationStatus(
+		@PathVariable Long contractId,
+		@MemberHeader Long memberId) {
+		ContractVerificationStatusDto status = contractService.getVerificationStatus(contractId, memberId);
+		
+		return ResponseEntity.ok(status);
 	}
 }

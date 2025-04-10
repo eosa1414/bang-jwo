@@ -9,6 +9,7 @@ import com.bangjwo.room.application.dto.request.UpdateRoomMemoRequestDto;
 import com.bangjwo.room.application.dto.response.ImageResponseDto;
 import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomSummaryResponse;
+import com.bangjwo.room.application.dto.response.RoomVerificationStatusDto;
 import com.bangjwo.room.application.dto.response.SearchDetailRoomResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
 import com.bangjwo.room.domain.entity.Address;
@@ -177,6 +178,13 @@ public class RoomConverter {
 			.imageUrl(ImageUrl)
 			.lat(address.getLat())
 			.lng(address.getLng())
+			.build();
+	}
+
+	public static RoomVerificationStatusDto convertSearchVerifyRoom(Room room) {
+		return RoomVerificationStatusDto.builder()
+			.verified(room.getVerified())
+			.registryPaid(room.getRegistryPaid())
 			.build();
 	}
 }

@@ -25,6 +25,7 @@ import com.bangjwo.room.application.dto.request.UpdateRoomStatusDto;
 import com.bangjwo.room.application.dto.request.VerifyRoomRequestDto;
 import com.bangjwo.room.application.dto.response.IsRoomLikedResponseDto;
 import com.bangjwo.room.application.dto.response.RoomListResponseDto;
+import com.bangjwo.room.application.dto.response.RoomVerificationStatusDto;
 import com.bangjwo.room.application.dto.response.SearchDetailRoomResponseDto;
 import com.bangjwo.room.application.dto.response.SearchRoomMemoResponseDto;
 import com.bangjwo.room.application.service.RoomService;
@@ -240,4 +241,20 @@ public class RoomController {
 
 		return ResponseEntity.ok().build();
 	}
+
+	@Operation(
+		summary = "매물 인증 상태 조회",
+		description = "해당 매물의 본인 인증 여부(verified)와 등록비 결제 여부(registryPaid)를 반환합니다.",
+		security = @SecurityRequirement(name = "JWT")
+	)
+	@ApiResponse(responseCode = "200", description = "매물의 인증 상태 정보를 성공적으로 반환했습니다.")
+	@GetMapping("/{roomId}/verify")
+	public ResponseEntity<RoomVerificationStatusDto> getRoomVerificationStatus(
+		@PathVariable Long roomId,
+		@MemberHeader Long memberId
+	) {
+		RoomVerificationStatusDto status = roomService.getRoomVerificationStatus(roomId, memberId);
+		return ResponseEntity.ok(status);
+	}
+
 }

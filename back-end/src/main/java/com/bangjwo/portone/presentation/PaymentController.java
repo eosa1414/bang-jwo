@@ -51,7 +51,7 @@ public class PaymentController {
 	public ResponseEntity<Map<String, Object>> prepareOrder(
 		@RequestBody PaymentDto.RequestDto dto) {    // 매물 + 회원 ID
 		String merchantUid = "ORD" + System.currentTimeMillis();
-		int amount = 100;
+		int amount = 1000;
 
 		paymentService.registerPaymentPrepare(merchantUid, amount);
 		paymentService.prePayment(dto, merchantUid);    // dto를 받아오는데 저장을 안하고 있음
@@ -63,12 +63,7 @@ public class PaymentController {
 
 		return ResponseEntity.ok(response);
 	}
-
-	/*
-	 * 결제 검증
-	 * 프론트에서 결제 완료를 하고 나서 나온 UUID와
-	 * 포트원에 결제 단건 조회 API 요청해서 나온 응답값 비교
-	 * */
+	
 	@Operation(
 		summary = "결제 검증",
 		description = "포트원에 결제 내역을 검증을 요청하고 결제 내역을 DB에 저장합니다."
@@ -87,9 +82,6 @@ public class PaymentController {
 		return paymentService.validateIamport(impUid);
 	}
 
-	/*
-	 * 결제 내역 상세조회
-	 * */
 	@Operation(
 		summary = "결제 상세 조회",
 		description = "결제 상세 내역을 조회합니다.",
@@ -106,9 +98,6 @@ public class PaymentController {
 		return ResponseEntity.ok().body(paymentService.getPaymentResult(paymentId));
 	}
 
-	/*
-	 * 결제 목록 조회
-	 * */
 	@Operation(
 		summary = "결제 목록 조회",
 		description = "결제 목록을 조회합니다.",

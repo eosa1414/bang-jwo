@@ -10,6 +10,7 @@ import com.bangjwo.room.domain.entity.Address;
 import com.bangjwo.room.domain.entity.Room;
 import com.bangjwo.room.domain.vo.RoomAreaType;
 import com.bangjwo.room.domain.vo.RoomBuildingType;
+import com.bangjwo.room.domain.vo.RoomStatus;
 
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Subquery;
@@ -65,5 +66,9 @@ public class RoomSpecification {
 
 	public static Specification<Room> buildingTypeEquals(RoomBuildingType buildingType) {
 		return (root, query, cb) -> cb.equal(root.get("buildingType"), buildingType);
+	}
+
+	public static Specification<Room> statusEquals(RoomStatus status) {
+		return (root, query, builder) -> builder.equal(root.get("status"), status);
 	}
 }
