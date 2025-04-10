@@ -11,6 +11,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQA
@@ -187,6 +188,19 @@ else:
     stored_final_url = None
 
 app = FastAPI(root_path="/ai")
+
+origins = [
+    "http://localhost:5173",
+    "https://j12a404.p.ssafy.io"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class Question(BaseModel):
     question: str
