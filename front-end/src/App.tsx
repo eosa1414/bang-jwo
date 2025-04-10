@@ -30,7 +30,9 @@ import PageMyContract from "./features/mypage/contract/pages/PageMyContract";
 import RedirectIfNotAuth from "./features/auth/components/RedirectIfNotAuth";
 import ChatbotPage from "./features/chatbot/pages/ChatbotPage";
 import PaymentTest from "./features/payment2/pages/PaymentTest";
+import PageWelcome from "./features/auth/pages/PageWelcome";
 import ChatbotNoticePage from "./features/chatbot/pages/ChatbotNoticePage";
+import ThreeJSScene from "./features/contract/pages/ThreeJSScene";
 
 function App() {
   return (
@@ -72,7 +74,7 @@ function App() {
             <Route index element={<RoomSellNotice />} />
             <Route path="write" element={<RoomForm type="create" />} />
             <Route path="verify/:roomId" element={<VerifyOwner />} />
-            <Route path="success" element={<CreateSuccess />} />
+            <Route path="success/:roomId" element={<CreateSuccess />} />
           </Route>
           <Route
             path="/room/update/:roomId"
@@ -92,7 +94,11 @@ function App() {
           />
           <Route
             path="/welcome"
-            element={<LayoutMain>회원가입 완료</LayoutMain>}
+            element={
+              <LayoutMain>
+                <PageWelcome />
+              </LayoutMain>
+            }
           />
           <Route path="/auth/kakao/callback" element={<PageKakaoRedirect />} />
           <Route
@@ -122,6 +128,8 @@ function App() {
             }
           />{" "}
           <Route path="/chatbot" element={<ChatbotPage />} />
+          <Route path="/pay_test" element={<PaymentTest />}></Route>
+          <Route path="/blockchain-loading" element={<ThreeJSScene />} />
           {/* 그 외 모든 페이지는 404 not found */}
           <Route
             path="*"
@@ -135,7 +143,6 @@ function App() {
               </LayoutMain>
             }
           />
-          <Route path="/pay_test" element={<PaymentTest />}></Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>

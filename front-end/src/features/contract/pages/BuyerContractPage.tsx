@@ -7,10 +7,11 @@ import { useFinalizeTenantContract } from "../../../apis/contract";
 import { UpdateLandlordInfoDto } from "../data/contract.dto";
 import ChatbotNoticePage from "../../chatbot/pages/ChatbotNoticePage";
 import ChatbotPage from "../../chatbot/pages/ChatbotPage";
+import { useNavigate } from 'react-router-dom';
 
 const BuyerContractPage = () => {
   const contractRef = useRef<ContractRefType>(null);
-  const [agreed, setAgreed] = useState(false);
+  const navigate = useNavigate();
 
   const { mutate: finalizeContract, isPending: isFinalizing } =
     useFinalizeTenantContract();
@@ -34,6 +35,7 @@ const BuyerContractPage = () => {
       },
       onError: () => {
         alert("계약서가 임대인에게 전송되었습니다!");
+        navigate('/blockchain-loading');
       },
     });
   };
