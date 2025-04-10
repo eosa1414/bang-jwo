@@ -275,16 +275,17 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
     if (createKeys.includes(name)) {
       setExtraFieldsCreate((prev) => ({ ...prev, [name]: parsedValue }));
     } else {
-      // 일반 층 입력 시 underground 모드 해제
+      // floor 입력 시 처리 (일반 층, 반지하, 지하)
       if (name === "floor") {
-        setIsUndergroundMode(false);
+        setIsUndergroundMode(false); // 일반 층 입력 시 underground 모드 해제
 
+        // 일반 층 처리
         const num = Number(value);
-        const text = !isNaN(num) && num > 0 ? `${num}층` : "";
+        const text = !isNaN(num) && num > 0 ? `${num}층` : ""; // 숫자일 경우 "층"을 추가
 
         setFormData((prev) => ({
           ...prev,
-          floor: text,
+          floor: text, // text로 "층" 추가
         }));
       } else {
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -436,7 +437,7 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
                 deposit: Number(e.target.value),
               }))
             }
-            text="만원"
+            text="원"
             size="small"
             required
           />
@@ -452,7 +453,7 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
                 monthlyRent: Number(e.target.value),
               }))
             }
-            text="만원"
+            text="원"
             size="small"
             required
           />
@@ -724,13 +725,7 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
             <InputBasic
               type="number"
               name="floor"
-              value={
-                formData.floor !== "반지하" &&
-                !isUndergroundMode &&
-                Number(formData.floor) > 0
-                  ? formData.floor
-                  : ""
-              }
+              value={formData.floor.replace("층", "")} // "층" 제외한 숫자만 보여주기
               onChange={handleInputChange}
               text="층"
               size="small"
@@ -745,7 +740,7 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
                 setIsUndergroundMode(false);
                 setFormData((prev) => ({
                   ...prev,
-                  floor: "반지하",
+                  floor: "반지하", // 반지하 선택 시 "반지하"로 저장
                 }));
               }}
               checked={formData.floor === "반지하"}
@@ -755,11 +750,11 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
             <InputButton
               label="지하"
               onClick={() => {
-                setIsUndergroundMode(true);
-                setUndergroundInput("");
+                setIsUndergroundMode(true); // 지하 선택 시 underground mode 활성화
+                setUndergroundInput(""); // 입력 초기화
                 setFormData((prev) => ({
                   ...prev,
-                  floor: "-1",
+                  floor: "", // 기본 지하 설정 (나중에 지하 층수로 바뀜)
                 }));
               }}
               checked={isUndergroundMode}
@@ -778,12 +773,12 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
                   if (!isNaN(numeric) && numeric > 0) {
                     setFormData((prev) => ({
                       ...prev,
-                      floor: `지하 ${numeric}층`,
+                      floor: `지하 ${numeric}층`, // "지하 X층" 형식으로 저장
                     }));
                   } else {
                     setFormData((prev) => ({
                       ...prev,
-                      floor: "",
+                      floor: "", // 유효하지 않으면 빈 값
                     }));
                   }
                 }}
