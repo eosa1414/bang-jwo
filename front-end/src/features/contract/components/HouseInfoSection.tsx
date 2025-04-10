@@ -2,11 +2,14 @@ import EditableInputBox from "./EditableInputBox";
 import NoticeGray from "../../../components/notices/NoticeGray";
 import ContractTypeSelector from "./ContractTypeSelector";
 import { useState } from "react";
-import DisabledInputBox from "./DisabledInputBox"; // 비활성화 박스도 import
+import DisabledInputBox from "./DisabledInputBox";
 import { openAddressSearch } from "../../../utils/openAddressSearch";
 
 interface HouseInfoSectionProps {
   mode: "lessor" | "lessee";
+  contractType: string;
+  setContractType: (value: string) => void;
+  rentalPartDetailAddress: string;
 
   address: string;
   detailAddress: string;
@@ -15,8 +18,8 @@ interface HouseInfoSectionProps {
   buildingStructure: string;
   buildingUsage: string;
   buildingArea: string;
-  leaseDetail: string;
   leaseArea: string;
+  leaseDetail: string;
 
   unpaidTaxOption: string | null;
   priorityDateOption: string | null;
@@ -32,6 +35,9 @@ interface HouseInfoSectionProps {
 
 const HouseInfoSection = ({
   mode,
+  contractType,
+  setContractType,
+  rentalPartDetailAddress,
   address,
   detailAddress,
   landPurpose,
@@ -39,7 +45,6 @@ const HouseInfoSection = ({
   buildingStructure,
   buildingUsage,
   buildingArea,
-  leaseDetail,
   leaseArea,
   unpaidTaxOption,
   priorityDateOption,
@@ -51,7 +56,6 @@ const HouseInfoSection = ({
 }: HouseInfoSectionProps) => {
   const [showLandNotice, setShowLandNotice] = useState(false);
   const [showBuildingNotice, setShowBuildingNotice] = useState(false);
-
   const isLessee = mode === "lessee";
 
   return (
@@ -61,6 +65,7 @@ const HouseInfoSection = ({
       <div className="mt-4 flex items-center gap-3">
         <span className="text-base font-medium whitespace-nowrap">소재지</span>
         <div className="flex gap-2">
+          {/* 도로명주소 클릭 시 주소 검색 팝업 실행 */}
           <div
             className={isLessee ? "cursor-default" : "cursor-pointer"}
             onClick={() => {
@@ -86,22 +91,24 @@ const HouseInfoSection = ({
                 customWidth="w-[340px]"
               />
             )}
-            {isLessee ? (
-              <DisabledInputBox
-                value={detailAddress}
-                placeholder="상세주소"
-                customWidth="w-[300px]"
-              />
-            ) : (
-              <EditableInputBox
-                value={detailAddress}
-                onChange={(val) => onChange("detailAddress", val)}
-                placeholder="상세주소"
-                maxLength={50}
-                customWidth="w-[300px]"
-              />
-            )}
           </div>
+
+          {/* 상세주소는 별도 입력 */}
+          {isLessee ? (
+            <DisabledInputBox
+              value={detailAddress}
+              placeholder="상세주소"
+              customWidth="w-[300px]"
+            />
+          ) : (
+            <EditableInputBox
+              value={detailAddress}
+              onChange={(val) => onChange("detailAddress", val)}
+              placeholder="상세주소"
+              maxLength={50}
+              customWidth="w-[300px]"
+            />
+          )}
         </div>
       </div>
 
@@ -246,14 +253,14 @@ const HouseInfoSection = ({
         </span>
         {isLessee ? (
           <DisabledInputBox
-            value={leaseDetail}
+            value={rentalPartDetailAddress}
             placeholder="상세주소가 있는 경우 동·층·호를 정확히 기재하세요"
             customWidth="w-[400px]"
           />
         ) : (
           <EditableInputBox
-            value={leaseDetail}
-            onChange={(val) => onChange("leaseDetail", val)}
+            value={rentalPartDetailAddress}
+            onChange={(val) => onChange("rentalPartDetailAddress", val)}
             placeholder="상세주소가 있는 경우 동·층·호를 정확히 기재하세요"
             maxLength={100}
             customWidth="w-[400px]"
@@ -277,27 +284,30 @@ const HouseInfoSection = ({
         <span className="text-sm font-medium">m²</span>
       </div>
 
-      {/* 계약의 종류 */}
       <div className="mt-6 flex items-start gap-4">
         <span className="text-base font-medium whitespace-nowrap mt-[6px]">
           계약의종류
         </span>
-        <ContractTypeSelector mode={mode} />
+        <ContractTypeSelector
+          mode={mode}
+          contractType={contractType}
+          setContractType={setContractType}
+        />
       </div>
 
-      {/* 미납 국세·지방세 */}
       <div className="mt-6 flex items-start gap-4">
         <span className="text-base font-medium whitespace-nowrap mt-[6px]">
           미납 국세·지방세
         </span>
         <div
-          className={`border-3 rounded-sm p-4 flex flex-col gap-3 w-fit
-    ${
-      isLessee
-        ? "bg-neutral-light200 border-neutral-light100"
-        : "bg-white " +
-          (unpaidTaxOption === null ? "border-green" : "border-neutral-gray")
-    }`}
+          className={`border-3 rounded-sm p-4 flex flex-col gap-3 w-fit ${
+            isLessee
+              ? "bg-neutral-light200 border-neutral-light100"
+              : "bg-white " +
+                (unpaidTaxOption === null
+                  ? "border-green"
+                  : "border-neutral-gray")
+          }`}
         >
           <label
             className={`flex items-center gap-2 text-sm font-bold ${
@@ -328,7 +338,6 @@ const HouseInfoSection = ({
             </div>
             (인) )
           </label>
-
           <label
             className={`flex items-center gap-2 text-sm font-bold ${
               isLessee ? "cursor-not-allowed" : "cursor-pointer"
@@ -350,19 +359,19 @@ const HouseInfoSection = ({
         </div>
       </div>
 
-      {/* 선순위 확정일자 현황 */}
       <div className="mt-6 flex items-start gap-4">
         <span className="text-base font-medium whitespace-nowrap mt-[6px]">
           선순위 확정일자 현황
         </span>
         <div
-          className={`border-3 rounded-sm p-4 flex flex-col gap-3 w-fit
-    ${
-      isLessee
-        ? "bg-neutral-light200 border-neutral-light100"
-        : "bg-white " +
-          (priorityDateOption === null ? "border-green" : "border-neutral-gray")
-    }`}
+          className={`border-3 rounded-sm p-4 flex flex-col gap-3 w-fit ${
+            isLessee
+              ? "bg-neutral-light200 border-neutral-light100"
+              : "bg-white " +
+                (priorityDateOption === null
+                  ? "border-green"
+                  : "border-neutral-gray")
+          }`}
         >
           <label
             className={`flex items-center gap-2 text-sm font-bold ${
@@ -393,7 +402,6 @@ const HouseInfoSection = ({
             </div>
             (인) )
           </label>
-
           <label
             className={`flex items-center gap-2 text-sm font-bold ${
               isLessee ? "cursor-not-allowed" : "cursor-pointer"

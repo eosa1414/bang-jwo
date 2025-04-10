@@ -27,7 +27,9 @@ import PageMySell from "./features/mypage/sell/pages/PageMySell";
 import PageMyLike from "./features/mypage/like/pages/PageMyLike";
 import BuyerContractPage from "./features/contract/pages/BuyerContractPage";
 import PageMyContract from "./features/mypage/contract/pages/PageMyContract";
+import ChatbotNoticePage from "./features/chatbot/pages/ChatbotNoticePage";
 import RedirectIfNotAuth from "./features/auth/components/RedirectIfNotAuth";
+import ChatbotPage from "./features/chatbot/pages/ChatbotPage";
 
 function App() {
   return (
@@ -112,6 +114,8 @@ function App() {
           <Route path="/seller-contract" element={<SellerContractPage />} />
           <Route path="/buyer-contract" element={<BuyerContractPage />} />
           <Route path="/chat" element={<ChatPageOnly />} />
+          <Route path="/chatbot-notice" element={<ChatbotNoticePage />} />
+          <Route path="/chatbot" element={<ChatbotPage />} />
           {/* 그 외 모든 페이지는 404 not found */}
           <Route
             path="*"

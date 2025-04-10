@@ -1,13 +1,27 @@
-// SpecialTerms.tsx (mode 기반 리팩토링 버전)
-
 import { useState } from "react";
 import EditableInputBox from "./EditableInputBox";
+import DisabledInputBox from "./DisabledInputBox";
 import Button from "../../../components/buttons/Button";
 import DatePickerInput from "./DatePickerInput";
-import DisabledInputBox from "./DisabledInputBox";
 
 interface SpecialTermsProps {
   mode: "lessor" | "lessee";
+  moveInRegistrationDate: Date | null;
+  setMoveInRegistrationDate: (date: Date | null) => void;
+  unpaidAmount: number;
+  setUnpaidAmount: (value: number) => void;
+  disputeResolution: boolean;
+  setDisputeResolution: (value: boolean) => void;
+  isHousingReconstructionPlanned: boolean;
+  setIsHousingReconstructionPlanned: (value: boolean) => void;
+  constructionPeriod: string;
+  setConstructionPeriod: (value: string) => void;
+  estimatedConstructionDuration: number;
+  setEstimatedConstructionDuration: (value: number) => void;
+  isDetailedAddressConsentGiven: boolean;
+  setIsDetailedAddressConsentGiven: (value: boolean) => void;
+  etc: string[];
+  setEtc: (value: string[]) => void;
 }
 
 const SpecialTerms = ({ mode }: SpecialTermsProps) => {
@@ -46,7 +60,7 @@ const SpecialTerms = ({ mode }: SpecialTermsProps) => {
       <h3 className="text-lg font-extrabold mb-4">[특약사항]</h3>
       <ul className="flex flex-col gap-4">
         <li>
-          • 주택을 인도받은 임차인은
+          • 주택을 인도받은 임차인은{" "}
           <span className="inline-flex mx-2 align-middle">
             <DatePickerInput
               selectedDate={moveInDate}
@@ -62,13 +76,13 @@ const SpecialTerms = ({ mode }: SpecialTermsProps) => {
 
         <li>
           • 임대인이 위 특약에 위반하여 임차주택에 저당권 등 담보권을 설정한
-          경우에는 임차인은 임대차계약을 해제 또는 해지할 수 있다. 이 경우
+          경우에는 임차인은 임대차계약을 해제 또는 해지할 수 있으며, 이 경우
           임대인은 임차인에게 위 특약 위반으로 인한 손해를 배상하여야 한다.
         </li>
 
         <li>
           • 임대차계약을 체결한 임차인은 계약 시 기준으로 임대인이 고지하지 않은
-          선순위 임대차 정보 또는 체납 세금이
+          선순위 임대차 정보 또는 체납 세금이{" "}
           <span className="inline-flex mx-2 align-middle">
             {isEditable ? (
               <EditableInputBox
@@ -91,7 +105,7 @@ const SpecialTerms = ({ mode }: SpecialTermsProps) => {
 
         <li>
           • 주택 임대차 계약과 관련한 분쟁이 있는 경우 먼저 분쟁조정위원회에
-          조정을 신청한다
+          조정을 신청한다.
           <div
             className={`mt-2 px-4 py-3 rounded-sm border-3 flex gap-4 w-fit ${
               !isEditable
@@ -118,9 +132,7 @@ const SpecialTerms = ({ mode }: SpecialTermsProps) => {
                     setDisputeConsent(option as "agree" | "disagree")
                   }
                   disabled={!isEditable}
-                  className={`w-[16px] h-[16px] appearance-none border-2 border-neutral-dark200 
-          checked:bg-neutral-dark200 bg-white transition-colors
-          ${isEditable ? "cursor-pointer" : "cursor-not-allowed"}`}
+                  className="w-[16px] h-[16px] appearance-none border-2 border-neutral-dark200 bg-white checked:bg-neutral-dark200 transition-colors"
                 />
                 {option === "agree" ? "동의" : "미동의"}
               </label>
@@ -131,14 +143,13 @@ const SpecialTerms = ({ mode }: SpecialTermsProps) => {
         <li>
           • 주택의 철거 또는 재건축에 대한 계획
           <div
-            className={`mt-2 px-4 py-3 rounded-sm border-3 flex gap-4 flex-wrap items-center w-fit 
-      ${
-        !isEditable
-          ? "bg-neutral-light200 border-neutral-light100"
-          : rebuildPlan === null
-          ? "border-green"
-          : "border-neutral-gray"
-      }`}
+            className={`mt-2 px-4 py-3 rounded-sm border-3 flex gap-4 flex-wrap items-center w-fit ${
+              !isEditable
+                ? "bg-neutral-light200 border-neutral-light100"
+                : rebuildPlan === null
+                ? "border-green"
+                : "border-neutral-gray"
+            }`}
           >
             {["none", "exist"].map((option) => (
               <label
@@ -156,9 +167,7 @@ const SpecialTerms = ({ mode }: SpecialTermsProps) => {
                     isEditable && setRebuildPlan(option as "none" | "exist")
                   }
                   disabled={!isEditable}
-                  className={`w-[16px] h-[16px] appearance-none border-2 border-neutral-dark200
-            bg-white checked:bg-neutral-dark200 transition-colors 
-            ${isEditable ? "cursor-pointer" : "cursor-not-allowed"}`}
+                  className="w-[16px] h-[16px] appearance-none border-2 border-neutral-dark200 bg-white checked:bg-neutral-dark200 transition-colors"
                 />
                 {option === "none" ? (
                   "없음"
@@ -171,7 +180,7 @@ const SpecialTerms = ({ mode }: SpecialTermsProps) => {
                         onChange={setConstructionPeriod}
                         placeholder="예: 2025.06"
                         customWidth="w-[120px] mx-1"
-                        disabled={false}
+                        disabled={!isEditable}
                       />
                     ) : (
                       <DisabledInputBox
@@ -187,7 +196,7 @@ const SpecialTerms = ({ mode }: SpecialTermsProps) => {
                         onChange={setConstructionDuration}
                         placeholder="개월"
                         customWidth="w-[80px] mx-1"
-                        disabled={false}
+                        disabled={!isEditable}
                       />
                     ) : (
                       <DisabledInputBox
@@ -207,15 +216,13 @@ const SpecialTerms = ({ mode }: SpecialTermsProps) => {
         <li>
           • 상세주소가 없는 경우 소유자의 동의 여부
           <div
-            className={`mt-2 px-4 py-3 rounded-sm border-3 flex gap-4 w-fit
-      ${
-        !isEditable
-          ? "bg-neutral-light200 border-neutral-light100"
-          : ownerConsent === null
-          ? "border-green"
-          : "border-neutral-gray"
-      }
-    `}
+            className={`mt-2 px-4 py-3 rounded-sm border-3 flex gap-4 w-fit ${
+              !isEditable
+                ? "bg-neutral-light200 border-neutral-light100"
+                : ownerConsent === null
+                ? "border-green"
+                : "border-neutral-gray"
+            }`}
           >
             {["agree", "disagree"].map((option) => (
               <label
@@ -234,9 +241,7 @@ const SpecialTerms = ({ mode }: SpecialTermsProps) => {
                     setOwnerConsent(option as "agree" | "disagree")
                   }
                   disabled={!isEditable}
-                  className={`w-[16px] h-[16px] appearance-none border-2 border-neutral-dark200 
-            bg-white checked:bg-neutral-dark200 transition-colors
-            ${isEditable ? "cursor-pointer" : "cursor-not-allowed"}`}
+                  className="w-[16px] h-[16px] appearance-none border-2 border-neutral-dark200 bg-white checked:bg-neutral-dark200 transition-colors"
                 />
                 {option === "agree" ? "동의" : "미동의"}
               </label>
