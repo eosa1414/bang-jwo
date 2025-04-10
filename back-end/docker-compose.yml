@@ -15,6 +15,7 @@ services:
       - "13306:3306"
     volumes:
       - db-volume:/var/lib/mysql
+      - ./src/main/resources/init.sql:/docker-entrypoint-initdb.d/0-init.sql
       - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
       - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/2-data.sql
     healthcheck:
