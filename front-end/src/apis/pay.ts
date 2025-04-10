@@ -1,5 +1,6 @@
 // // src/apis/paymentAPI.ts
 import { loadIamportScript } from "../utils/loadIamport";
+import axiosInstance from "../utils/axiosInstances";
 
 export interface PaymentRequestParams {
   merchant_uid: string;    // 주문번호 등 고유 식별값
@@ -185,37 +186,43 @@ export interface PaymentPrepareResponse {
     // DB에 저장된 결제 내역 관련 필드들...
   }
   
-  const API_BASE_URL = "http://localhost:8080/api/v1/payment";
-  
-  export const preparePayment = async (memberId: number, roomId: number): Promise<PaymentPrepareResponse> => {
+  /**
+ * 결제 준비 API 호출 (회원 아이디와 방 아이디 전달)
+ * axiosInstance의 baseURL 및 헤더 설정을 그대로 활용합니다.
+ */
+export const preparePayment = async (memberId: number, roomId: number): Promise<PaymentPrepareResponse> => {
     const requestData = { memberId, roomId };
   
-    const response = await fetch(`${API_BASE_URL}/prepare`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestData),
-    });
-    if (!response.ok) {
-      throw new Error(`preparePayment 실패: ${response.status}`);
+    try {
+      // 이미 axiosInstance에 baseURL이 설정되어 있으므로, endpoint만 입력합니다.
+      const response = await axiosInstance.post('/api/v1/payment/prepare', requestData);
+      return response.data as PaymentPrepareResponse;
+    } catch (error: any) {
+      throw new Error(`preparePayment 실패: ${error?.response?.status || error.message}`);
     }
-    return await response.json();
   };
   
-  export const validatePayment = async (impUid: string): Promise<JSON> => {
-    const response = await fetch(`${API_BASE_URL}/validation/${impUid}`, {
-      method: "POST",
-    });
-    if (!response.ok) {
-      throw new Error(`validatePayment 실패: ${response.status}`);
+  /**
+   * 결제 검증 API 호출 (아임포트 결제 아이디 전달)
+   */
+  export const validatePayment = async (impUid: string): Promise<PaymentValidationResponse> => {
+    try {
+      const response = await axiosInstance.post(`/api/v1/payment/validation/${impUid}`);
+      return response.data as PaymentValidationResponse;
+    } catch (error: any) {
+      throw new Error(`validatePayment 실패: ${error?.response?.status || error.message}`);
     }
-    return await response.json();
   };
   
-  export const getPaymentDetail = async (paymentId: string): Promise<JSON> => {
-    const response = await fetch(`${API_BASE_URL}/result/${paymentId}`);
-    if (!response.ok) {
-      throw new Error(`getPaymentDetail 실패: ${response.status}`);
+  /**
+   * 결제 상세 조회 API 호출 (결제 ID 전달)
+   */
+  export const getPaymentDetail = async (paymentId: string): Promise<PaymentDetailResponse> => {
+    try {
+      const response = await axiosInstance.get(`/api/v1/payment/result/${paymentId}`);
+      return response.data as PaymentDetailResponse;
+    } catch (error: any) {
+      throw new Error(`getPaymentDetail 실패: ${error?.response?.status || error.message}`);
     }
-    return await response.json();
   };
   
