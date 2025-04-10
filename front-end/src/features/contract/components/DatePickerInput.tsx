@@ -49,7 +49,7 @@ CustomInput.displayName = "CustomInput";
 const DatePickerInput = ({
   selectedDate,
   onChange,
-  placeholder = "날짜 선택",
+  placeholder = "2025.04.18",
   disabled = false,
 }: DatePickerInputProps) => {
   return (

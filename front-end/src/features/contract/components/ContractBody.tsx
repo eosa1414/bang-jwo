@@ -3,7 +3,7 @@ import EditableInputBox from "./EditableInputBox";
 import DisabledInputBox from "./DisabledInputBox";
 import NoticeGray from "../../../components/notices/NoticeGray";
 import DatePickerInput from "./DatePickerInput";
-import {MonthlyRentType} from "../data/contract.dto";
+import { MonthlyRentType } from "../data/contract.dto";
 
 interface ContractBodyProps {
   mode: "lessor" | "lessee";
@@ -106,9 +106,17 @@ const ContractBody = ({
   landlordBurden,
   setLandlordBurden,
   tenantBurden,
-  setTenantBurden
+  setTenantBurden,
 }: ContractBodyProps) => {
   const isEditable = mode === "lessor";
+
+  if (!isEditable) {
+    setDeposit(100000000);
+    setContractFee(50000000);
+    setMiddleFee(30000000);
+    setMonthlyRent(2000000);
+    setFinalPayment(20000000);
+  }
 
   // 하위 컴포넌트 내부에서만 사용하는 상태들
   const [monthlyRentDay, setMonthlyRentDay] = useState("");
@@ -142,50 +150,50 @@ const ContractBody = ({
 
   const [payType, setPayType] = useState("");
 
-  const handleMonthlyRentDay = (value: string) => {    
-      setMonthlyRentDay(value);
-      setMonthlyRentPaymentDate(value);
-  }
+  const handleMonthlyRentDay = (value: string) => {
+    setMonthlyRentDay(value);
+    setMonthlyRentPaymentDate(value);
+  };
 
   const handleFixThings = (value: string) => {
     setFacilitiesRepairContent(value);
     setRepairDetail(value);
-  }
+  };
 
   const handleRepairDate = (value: Date | null) => {
     setRepairCompletionDate(value);
     setRepairCompletionByBalanceDate(value);
-  }
+  };
 
   const handleRepairEtc = (value: string) => {
     setRepairCustomEtc(value);
     setRepairCompletionEtc(value);
-  }
+  };
 
   const handleUnrepairedDate = (value: Date | null) => {
     setUnrepairedDeadline(value);
     setNotRepairedByBalanceDate(value);
-  }
+  };
 
   const handleUnrepairedEtc = (value: string) => {
     setUnrepairedCustomEtc(value);
     setNotRepairedEtc(value);
-  }
+  };
 
   const handleLessorBurden = (value: string) => {
     setLandlordBurden(value);
     setLessorDuty(value);
-  }
+  };
 
   const handleLesseeBurden = (value: string) => {
     setTenantBurden(value);
     setLesseeDuty(value);
-  }
+  };
 
   const handlePayMethod = (value: string) => {
     setPaymentMethod(value == "선불" ? "PREPAID" : "POSTPAID");
     setPayType(value);
-  }
+  };
 
   return (
     <div className="mt-10 text-base leading-relaxed">
@@ -387,7 +395,6 @@ const ContractBody = ({
         )}
       </div>
 
-
       {/* Section 4: 입금은행 */}
       <div className="flex items-center gap-2 mt-6 ml-24">
         <span className="w-24 text-base font-medium">입금은행</span>
@@ -428,7 +435,6 @@ const ContractBody = ({
         <span className="text-sm font-medium">원</span>
       </div>
 
-
       <div className="flex items-center gap-2 mt-6">
         <span className="w-22 text-base font-medium">관리비</span>
         <span className="w-32 text-base font-medium">정액이 아닌 경우</span>
@@ -450,28 +456,27 @@ const ContractBody = ({
       </div>
 
       <div className="mt-4 text-base font-bold">
-  <span>제2조(임대차기간)</span>{" "}
-  <span className="font-normal">
-    임대인은 임차주택을 임대차 목적대로 사용·수익할 수 있는 상태로
-  </span>
-  <span className="inline-block ml-2">
-    <DatePickerInput
-      selectedDate={leaseStartDate}
-      onChange={(date) => setLeaseStartDate(date)}
-    />
-  </span>
-  <span className="font-normal ml-2">
-    까지 임차인에게 인도하고, 임대차기간은 인도일로부터
-  </span>
-  <span className="inline-block ml-2">
-    <DatePickerInput
-      selectedDate={leaseEndDate}
-      onChange={(date) => setLeaseEndDate(date)}
-    />
-  </span>
-  <span className="font-normal ml-2">까지로 한다.</span>
-</div>
-
+        <span>제2조(임대차기간)</span>{" "}
+        <span className="font-normal">
+          임대인은 임차주택을 임대차 목적대로 사용·수익할 수 있는 상태로
+        </span>
+        <span className="inline-block ml-2">
+          <DatePickerInput
+            selectedDate={leaseStartDate}
+            onChange={(date) => setLeaseStartDate(date)}
+          />
+        </span>
+        <span className="font-normal ml-2">
+          까지 임차인에게 인도하고, 임대차기간은 인도일로부터
+        </span>
+        <span className="inline-block ml-2">
+          <DatePickerInput
+            selectedDate={leaseEndDate}
+            onChange={(date) => setLeaseEndDate(date)}
+          />
+        </span>
+        <span className="font-normal ml-2">까지로 한다.</span>
+      </div>
 
       {/* Section 6: 제3조(입주 전 수리) */}
       <p className="mt-4 text-base font-bold">
@@ -503,8 +508,8 @@ const ContractBody = ({
               value="none"
               checked={repairFacility === "none"}
               onChange={() => {
-                isEditable && setRepairFacility("none")
-                setFacilitiesRepairStatus(false)
+                isEditable && setRepairFacility("none");
+                setFacilitiesRepairStatus(false);
               }}
               disabled={!isEditable}
               className="w-[16px] h-[16px] border-2 border-neutral-dark200 bg-white appearance-none checked:bg-neutral-dark200 transition-colors disabled:cursor-not-allowed"
@@ -521,11 +526,10 @@ const ContractBody = ({
               name="repairFacility"
               value="needed"
               checked={repairFacility === "needed"}
-              onChange={() => { 
-                isEditable && setRepairFacility("needed")
-                setFacilitiesRepairStatus(true)
-              }
-              }
+              onChange={() => {
+                isEditable && setRepairFacility("needed");
+                setFacilitiesRepairStatus(true);
+              }}
               disabled={!isEditable}
               className="w-[16px] h-[16px] border-2 border-neutral-dark200 bg-white appearance-none checked:bg-neutral-dark200 transition-colors disabled:cursor-not-allowed"
             />

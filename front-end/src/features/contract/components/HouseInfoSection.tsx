@@ -21,7 +21,7 @@ interface HouseInfoSectionProps {
   leaseArea: string;
   leaseDetail: string;
 
-  unpaidTaxOption: string | null;
+  unpaidTaxOption: boolean;
   priorityDateOption: string | null;
 
   unpaidTaxSignature: string | null;
@@ -79,7 +79,7 @@ const HouseInfoSection = ({
             {isLessee ? (
               <DisabledInputBox
                 value={address}
-                placeholder="도로명주소"
+                placeholder="테헤란로 212 멀티캠퍼스"
                 customWidth="w-[340px]"
               />
             ) : (
@@ -97,7 +97,7 @@ const HouseInfoSection = ({
           {isLessee ? (
             <DisabledInputBox
               value={detailAddress}
-              placeholder="상세주소"
+              placeholder="1202호"
               customWidth="w-[300px]"
             />
           ) : (
@@ -137,7 +137,7 @@ const HouseInfoSection = ({
           {isLessee ? (
             <DisabledInputBox
               value={landPurpose}
-              placeholder="예) 대"
+              placeholder="대"
               customWidth="w-[160px]"
             />
           ) : (
@@ -152,7 +152,7 @@ const HouseInfoSection = ({
           {isLessee ? (
             <DisabledInputBox
               value={landArea}
-              placeholder="0"
+              placeholder="1200"
               customWidth="w-[160px]"
             />
           ) : (
@@ -197,7 +197,7 @@ const HouseInfoSection = ({
           {isLessee ? (
             <DisabledInputBox
               value={buildingStructure}
-              placeholder="예) 철근콘크리트"
+              placeholder="철근콘크리트"
               customWidth="w-[160px]"
             />
           ) : (
@@ -212,7 +212,7 @@ const HouseInfoSection = ({
           {isLessee ? (
             <DisabledInputBox
               value={buildingUsage}
-              placeholder="예) 공동주택"
+              placeholder="사무실"
               customWidth="w-[160px]"
             />
           ) : (
@@ -227,7 +227,7 @@ const HouseInfoSection = ({
           {isLessee ? (
             <DisabledInputBox
               value={buildingArea}
-              placeholder="0"
+              placeholder="1100"
               customWidth="w-[160px]"
             />
           ) : (
@@ -254,7 +254,7 @@ const HouseInfoSection = ({
         {isLessee ? (
           <DisabledInputBox
             value={rentalPartDetailAddress}
-            placeholder="상세주소가 있는 경우 동·층·호를 정확히 기재하세요"
+            placeholder="1202호"
             customWidth="w-[400px]"
           />
         ) : (
@@ -270,7 +270,7 @@ const HouseInfoSection = ({
         {isLessee ? (
           <DisabledInputBox
             value={leaseArea}
-            placeholder="0"
+            placeholder="550"
             customWidth="w-[160px]"
           />
         ) : (
@@ -318,7 +318,7 @@ const HouseInfoSection = ({
               type="radio"
               name="unpaidTax"
               value="none"
-              checked={unpaidTaxOption === "none"}
+              checked={!unpaidTaxOption}
               onChange={() =>
                 !isLessee && onOptionChange("unpaidTaxOption", "none")
               }
@@ -347,7 +347,7 @@ const HouseInfoSection = ({
               type="radio"
               name="unpaidTax"
               value="exist"
-              checked={unpaidTaxOption === "exist"}
+              checked={unpaidTaxOption}
               onChange={() =>
                 !isLessee && onOptionChange("unpaidTaxOption", "exist")
               }
