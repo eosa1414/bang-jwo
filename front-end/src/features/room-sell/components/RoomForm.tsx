@@ -27,6 +27,7 @@ import { RoomSellCreateContext } from "../pages/PageRoomSellCreate";
 import { useOutletContext } from "react-router-dom";
 import Textarea from "../../../components/TextArea";
 import { createRoom } from "../../../services/roomService";
+import InputDate from "../../../components/InputDate";
 
 type RoomFormType = "create" | "update";
 
@@ -76,7 +77,7 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
     direction: "",
     discussable: false,
     discussDetail: "",
-    reviewable: true,
+    reviewable: false,
     isPhonePublic: true,
     maintenanceIncludes: [],
     options: [],
@@ -183,34 +184,47 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
       ...extraFieldsUpdate,
     };
 
-    const form = new FormData();
-    Object.entries(createData).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((v) => form.append(`${key}`, v));
-      } else {
-        form.append(key, value as any);
-      }
-    });
-
-    newImages.forEach((image) => {
-      form.append("images", image);
-    });
-
-    //임시 등록 테스트용
-    // try {
-    //   const result = await createRoom(form); // 실제 등록 요청
-    //   alert("방 등록 성공!");
-    //   console.log("등록 결과:", result);
-    // } catch (err) {
-    //   alert("방 등록 실패");
-    //   console.error(err);
-    // }
-
     const finalData = type === "create" ? createData : updateData;
     const deleteImageIds =
-      type === "update" ? extraFieldsUpdate.deleteImageIds : undefined;
+      type === "update" ? extraFieldsUpdate.deleteImageIds : [];
 
-    handleSubmitExternal(finalData, newImages, deleteImageIds);
+    try {
+      const form = new FormData();
+
+      Object.entries(finalData).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach((v) => form.append(`${key}`, v));
+        } else {
+          form.append(key, value as any);
+        }
+      });
+
+      newImages.forEach((image) => {
+        form.append("images", image);
+      });
+
+      if (type !== "create" && deleteImageIds.length > 0) {
+        deleteImageIds.forEach((id) => {
+          form.append("deleteImageIds", id.toString());
+        });
+      }
+
+      //dev용 콘솔
+      for (const [key, value] of form.entries()) {
+        console.log(key, value);
+      }
+
+      const result =
+        type === "create"
+          ? await createRoom(form)
+          : console.log("수정 구현 예정");
+
+      console.log("등록 결과:", result);
+      handleSubmitExternal(result, newImages, deleteImageIds);
+    } catch (err) {
+      alert("방 등록 실패");
+      console.error(err);
+    }
   };
 
   return (
@@ -442,31 +456,32 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
       <TitleBox title="집 정보" required>
         <ContentWithTitle title="입주 가능일">
           <div className="flex gap-2 items-center">
-            <InputBasic
+            <InputDate
               name="availableFrom"
-              value={
-                formData.availableFrom === "즉시 입주 가능"
-                  ? ""
-                  : formData.availableFrom
-              }
+              value={formData.availableFrom}
               onChange={handleInputChange}
               placeholder="입주 가능일"
             />
+
             <InputButton
               label="즉시 입주 가능"
               onClick={() =>
-                setFormData((prev) => ({
-                  ...prev,
-                  availableFrom:
-                    prev.availableFrom === "즉시 입주 가능"
-                      ? ""
-                      : "즉시 입주 가능",
-                }))
+                setFormData((prev) => {
+                  const today = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD'
+                  return {
+                    ...prev,
+                    availableFrom: prev.availableFrom === today ? "" : today,
+                  };
+                })
               }
-              checked={formData.availableFrom === "즉시 입주 가능"}
+              checked={
+                formData.availableFrom ===
+                new Date().toISOString().split("T")[0]
+              }
             />
           </div>
         </ContentWithTitle>
+
         <ContentWithTitle title="면적">
           공급 면적
           <InputBasic
@@ -616,7 +631,7 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
           placeholder="상세 설명"
         />
       </TitleBox>
-      <TitleBox title="리뷰 설정" required>
+      {/* <TitleBox title="리뷰 설정" required>
         <InfoText text="리뷰는 매물 단위로 쌓이며, 이 리뷰들을 표시 및 새로운 리뷰를 등록할 수 있는지 여부를 설정할 수 있습니다." />
         <div className="flex gap-2">
           <InputRadio
@@ -638,7 +653,7 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
             }
           />
         </div>
-      </TitleBox>
+      </TitleBox> */}
 
       <TitleBox title="연락처 공개 여부" required>
         <InfoText text="이후 본인 인증에서 입력한 연락처를 공개할지 여부를 설정할 수 있습니다." />

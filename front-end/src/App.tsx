@@ -28,7 +28,8 @@ import PageMyLike from "./features/mypage/like/pages/PageMyLike";
 import BuyerContractPage from "./features/contract/pages/BuyerContractPage";
 import PageMyContract from "./features/mypage/contract/pages/PageMyContract";
 import ChatbotNoticePage from "./features/chatbot/pages/ChatbotNoticePage";
-import ChatbotPage from "./features/chatbot/pages/ChatBotPage";
+import RedirectIfNotAuth from "./features/auth/components/RedirectIfNotAuth";
+import ChatbotPage from "./features/chatbot/pages/ChatbotPage";
 
 function App() {
   return (
@@ -58,14 +59,18 @@ function App() {
           <Route
             path="/room/sell"
             element={
-              <LayoutMain>
-                <PageRoomSellCreate />
-              </LayoutMain>
+              <RedirectIfNotLoggedIn>
+                <RedirectIfNotAuth>
+                  <LayoutMain>
+                    <PageRoomSellCreate />
+                  </LayoutMain>
+                </RedirectIfNotAuth>
+              </RedirectIfNotLoggedIn>
             }
           >
             <Route index element={<RoomSellNotice />} />
             <Route path="write" element={<RoomForm type="create" />} />
-            <Route path="verify" element={<VerifyOwner />} />
+            <Route path="verify/:roomId" element={<VerifyOwner />} />
             <Route path="success" element={<CreateSuccess />} />
           </Route>
           <Route

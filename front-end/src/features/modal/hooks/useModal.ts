@@ -2,7 +2,7 @@ import { useState } from "react";
 
 type ModalId = string;
 
-export default function useModalManager() {
+export default function useModal() {
   const [openModals, setOpenModals] = useState<Record<ModalId, boolean>>({});
 
   const openModal = (id: ModalId) => {
