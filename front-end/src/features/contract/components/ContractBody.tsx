@@ -67,7 +67,6 @@ const ContractBody = ({
   setMonthlyRent,
   receiptSignature,
   openSignatureModal,
-  monthlyRentType,
   setPaymentMethod,
   middleFee,
   setMiddleFee,
@@ -77,7 +76,6 @@ const ContractBody = ({
   setMiddlePaymentDate,
   balancePaymentDate,
   setBalancePaymentDate,
-  monthlyRentPaymentDate,
   setMonthlyRentPaymentDate,
   monthlyRentAccountBank,
   setMonthlyRentAccountBank,
@@ -91,19 +89,12 @@ const ContractBody = ({
   setLeaseStartDate,
   leaseEndDate,
   setLeaseEndDate,
-  facilitiesRepairStatus,
   setFacilitiesRepairStatus,
-  facilitiesRepairContent,
   setFacilitiesRepairContent,
-  repairCompletionByBalanceDate,
   setRepairCompletionByBalanceDate,
-  repairCompletionEtc,
   setRepairCompletionEtc,
-  notRepairedByBalanceDate,
   setNotRepairedByBalanceDate,
-  notRepairedEtc,
   setNotRepairedEtc,
-  landlordBurden,
   setLandlordBurden,
   tenantBurden,
   setTenantBurden,
@@ -122,7 +113,7 @@ const ContractBody = ({
   const [monthlyRentDay, setMonthlyRentDay] = useState("");
   // const [monthlyRentAccountNumber, setMonthlyRentAccountNumber] = useState("");
   // const [fixedManagementFee, setFixedManagementFee] = useState(0);
-  const [variableMaintenance, setVariableMaintenance] = useState("");
+  // const [variableMaintenance, setVariableMaintenance] = useState("");
 
   const [repairFacility, setRepairFacility] = useState<
     "none" | "needed" | null
