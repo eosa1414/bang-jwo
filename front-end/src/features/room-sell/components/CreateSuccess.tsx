@@ -8,7 +8,7 @@ const CreateSuccess = () => {
     navigate("/");
   };
   const seeRegistRoom = () => {
-    navigate("/");
+    navigate("/mypage/sell");
   };
 
   return (

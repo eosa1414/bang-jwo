@@ -320,7 +320,7 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
       const form = new FormData();
 
       Object.entries(finalData).forEach(([key, value]) => {
-        if (key === "images") return; //initialData의 문자열 데이터 받지 않음
+        if (type !== "create" && key === "images") return; //initialData의 문자열 데이터 받지 않음
         if (Array.isArray(value)) {
           value.forEach((v) => form.append(`${key}`, v));
         } else {
@@ -337,6 +337,10 @@ const RoomForm = ({ type, initialData, onSubmit }: RoomFormProps) => {
           form.append("deleteImageIds", id.toString());
         });
       }
+
+      // for (let [key, value] of form.entries()) {
+      //   console.log(key, value);
+      // }
 
       const result =
         type === "create"

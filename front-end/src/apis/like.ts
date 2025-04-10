@@ -2,7 +2,6 @@ import { RoomResponse } from "../types/roomTypes";
 import axiosInstance from "../utils/axiosInstances";
 
 export const fetchLikedRooms = async (page: number, size: number) => {
-  console.log(page + "/" + size);
   const res = await axiosInstance.get<RoomResponse>("/api/v1/member/like", {
     params: { page, size },
   });
