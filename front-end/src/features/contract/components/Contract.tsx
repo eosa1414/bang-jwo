@@ -143,7 +143,7 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
 
   useImperativeHandle(ref, () => ({
     getFormData: (): UpdateLandlordInfoDto => ({
-      contractId: 2,
+      contractId: 1,
       leaseType,
       rentalPropertyAddress,
       rentalPartAddress,

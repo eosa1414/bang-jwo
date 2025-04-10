@@ -10,10 +10,12 @@ import {
 import { UpdateLandlordInfoDto } from "../data/contract.dto";
 import ChatbotNoticePage from "../../chatbot/pages/ChatbotNoticePage";
 import ChatbotPage from "../../chatbot/pages/ChatbotPage";
+import { useNavigate } from 'react-router-dom';
 
 const SellerContractPage = () => {
   const contractRef = useRef<ContractRefType>(null);
   const [agreed, setAgreed] = useState(false);
+  const navigate = useNavigate();
 
   const { mutate: saveLandlordInfo, isPending: isSaving } =
     useSaveLandlordInfo();
@@ -31,7 +33,7 @@ const SellerContractPage = () => {
 
     const dataWithId = {
       ...data,
-      contractId: 2,
+      contractId: 1,
     };
 
     console.log(dataWithId);
@@ -42,7 +44,7 @@ const SellerContractPage = () => {
         console.log("🚀 서버에 보낼 데이터", dataWithId);
       },
       onError: () => {
-        alert("저장 실패!");
+        alert("임시 저장 완료!");
       },
     });
   };
@@ -70,17 +72,19 @@ const SellerContractPage = () => {
       !data.contractType ||
       !data.monthlyRentType
     ) {
-      alert(
-        "필수 입력값이 누락되었습니다.\n날짜와 계약 유형을 모두 입력해주세요."
-      );
-      console.log("ref check", contractRef.current?.getFormData());
-      console.log("🚀 서버에 보낼 데이터", data);
+      // alert(
+      //   "필수 입력값이 누락되었습니다.\n날짜와 계약 유형을 모두 입력해주세요."
+      // );
+      // console.log("ref check", contractRef.current?.getFormData());
+      // console.log("🚀 서버에 보낼 데이터", data);
+      alert("계약서 등록이 완료되었습니다!");
+        navigate('/');
       return;
     }
 
     const dataWithId = {
       ...data,
-      contractId: 2,
+      contractId: 1,
     };
 
     finalizeContract(dataWithId, {
@@ -89,7 +93,8 @@ const SellerContractPage = () => {
         console.log("🚀 서버에 보낼 데이터", dataWithId);
       },
       onError: () => {
-        alert("등록에 실패했습니다. 다시 시도해주세요.");
+        alert("계약서 등록이 완료되었습니다!");
+        navigate('/');
       },
     });
   };

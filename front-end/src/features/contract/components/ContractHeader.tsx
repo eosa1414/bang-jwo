@@ -29,6 +29,9 @@ const ContractHeader = ({
     lessorName.length >= 2 ? (hasBatchim(lessorName) ? "과" : "와") : "와";
   const eunNeun =
     lesseeName.length >= 2 ? (hasBatchim(lesseeName) ? "은" : "는") : "는";
+    lessorName = lessorName.length >= 2 ? lessorName : "하정수";
+  leaseType = leaseType === null ? "MONTHLY_WITH_DEPOSIT" : leaseType;
+
 
   return (
     <>
@@ -59,7 +62,7 @@ const ContractHeader = ({
           <EditableInputBox
             value={lessorName}
             onChange={onLessorNameChange}
-            placeholder="성명"
+            placeholder="하정수"
             minLength={2}
             maxLength={10}
             customWidth="w-[100px]"

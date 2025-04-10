@@ -35,6 +35,7 @@ const ContractFooterSection = ({
   // 어떤 필드를 수정할 수 있을지 결정
   const isLessor = mode === "lessor";
   const isLessee = mode === "lessee";
+  setContractWrittenDate("2025.04.11");
 
   /**
    * FooterInfo 갱신 함수
@@ -129,7 +130,7 @@ const ContractFooterSection = ({
                 {renderInputBox(
                   role,
                   "address",
-                  role === "lessor" ? "서울시 강남구 가로수길 5" : "",
+                  "",
                   "w-full"
                 )}
               </div>
@@ -140,7 +141,7 @@ const ContractFooterSection = ({
                 {renderInputBox(
                   role,
                   "ssn",
-                  role === "lessor" ? "9309091234567" : "",
+                  "",
                   "w-[300px]"
                 )}
               </div>
@@ -149,7 +150,7 @@ const ContractFooterSection = ({
                 {renderInputBox(
                   role,
                   "phone",
-                  role === "lessor" ? "01037289573" : "",
+                  "",
                   "w-[300px]"
                 )}
               </div>
@@ -158,7 +159,7 @@ const ContractFooterSection = ({
                 {renderInputBox(
                   role,
                   "name",
-                  role === "lessor" ? "하정수" : "",
+                  "",
                   "w-[160px]"
                 )}
               </div>
