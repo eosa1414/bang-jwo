@@ -4,6 +4,8 @@ import DisabledInputBox from "./DisabledInputBox";
 
 interface ContractTypeSelectorProps {
   mode: "lessor" | "lessee";
+  contractType: string;
+  setContractType: (value: string) => void;
 }
 
 const ContractTypeSelector = ({ mode }: ContractTypeSelectorProps) => {
@@ -16,11 +18,11 @@ const ContractTypeSelector = ({ mode }: ContractTypeSelectorProps) => {
   const isLessee = mode === "lessee";
 
   const contractOptions = [
-    { label: "신규 계약", value: "new" },
-    { label: "합의에 의한 재계약", value: "renewal" },
+    { label: "신규 계약", value: "NEW" },
+    { label: "합의에 의한 재계약", value: "RENEW_BY_AGREEMENT" },
     {
       label: "주택임대차보호법 제6조의3의 계약갱신요구권 행사에 의한 갱신계약",
-      value: "legal-renewal",
+      value: "EXTENSION",
     },
   ];
 

@@ -1,72 +1,57 @@
-import { useState } from "react";
-
 interface RentTypeSelectorProps {
   mode: "lessor" | "lessee";
+  value: "MONTHLY_WITH_DEPOSIT" | "PURE_MONTHLY" | null;
+  onChange: (value: "MONTHLY_WITH_DEPOSIT" | "PURE_MONTHLY") => void;
 }
 
-const RentTypeSelector = ({ mode }: RentTypeSelectorProps) => {
-  const [selected, setSelected] = useState<string | null>(null);
-  const isDisabled = mode === "lessee";
+// RentTypeSelector.tsx 내부 수정
+const RentTypeSelector = ({ mode, value, onChange }: RentTypeSelectorProps) => {
+  const isLessee = mode === "lessee";
 
   const rentOptions = [
-    { label: "보증금 있는 월세", value: "deposit-monthly" },
-    { label: "월세", value: "monthly" },
+    { label: "보증금 있는 월세", value: "MONTHLY_WITH_DEPOSIT" as const },
+    { label: "월세", value: "PURE_MONTHLY" as const },
   ];
 
   return (
     <div
-      className={`border-3 p-3 w-[150px] rounded-sm
+      className={`border-3 rounded-sm p-4 flex flex-col gap-3 w-fit
         ${
-          isDisabled
+          isLessee
             ? "bg-neutral-light200 border-neutral-light100"
-            : "bg-white"
-        }
-        ${
-          selected === null && !isDisabled
-            ? "border-green"
-            : "border-neutral-gray"
+            : "bg-white " +
+              (value === null ? "border-green" : "border-neutral-gray")
         }`}
     >
-      <fieldset className="flex flex-col gap-3">
-        {rentOptions.map((option) => (
-          <label
-            key={option.value}
-            className={`flex items-center gap-2 text-sm font-bold
-              ${
-                isDisabled
-                  ? "text-neutral-black cursor-not-allowed"
-                  : "cursor-pointer"
-              }`}
-          >
-            <input
-              type="radio"
-              name="rentType"
-              value={option.value}
-              checked={selected === option.value}
-              onChange={() => {
-                if (!isDisabled) {
-                  setSelected(option.value);
-                }
-              }}
-              disabled={isDisabled}
-              className={`w-[16px] h-[16px] border-2 rounded-none appearance-none
-                transition-colors
-                ${
-                  isDisabled
-                    ? "bg-white border-neutral-dark100"
-                    : "bg-white border-neutral-dark200 cursor-pointer"
-                }
-                ${
-                  selected === option.value && !isDisabled
-                    ? "checked:bg-neutral-dark200"
-                    : ""
-                }
-              `}
-            />
-            {option.label}
-          </label>
-        ))}
-      </fieldset>
+      {rentOptions.map((option) => (
+        <label
+          key={option.value}
+          className={`flex items-center gap-2 text-sm font-bold ${
+            isLessee ? "cursor-not-allowed" : "cursor-pointer"
+          }`}
+        >
+          <input
+            type="radio"
+            name="rentType"
+            value={option.value}
+            checked={value === option.value}
+            onChange={() => !isLessee && onChange(option.value)}
+            disabled={isLessee}
+            className={`
+            sr-only
+          `}
+          />
+          <div
+            className={`
+            w-[16px] h-[16px] border-2
+            ${value === option.value ? "bg-neutral-dark200" : "bg-white"}
+            ${isLessee ? "border-neutral-dark100" : "border-neutral-dark200"}
+            ${isLessee ? "cursor-not-allowed" : "cursor-pointer"}
+          `}
+          />
+          {option.label}
+        </label>
+      ))}
     </div>
   );
 };
