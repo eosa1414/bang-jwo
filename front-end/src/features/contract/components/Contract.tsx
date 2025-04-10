@@ -148,7 +148,7 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
 
   useImperativeHandle(ref, () => ({
     getFormData: (): UpdateLandlordInfoDto => ({
-      contractId: 0,
+      contractId: 1,
       leaseType,
       rentalPropertyAddress,
       rentalPartAddress,
@@ -169,27 +169,27 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
       depositAmount,
       contractFee,
       middleFee,
-      interimPaymentDate: formatDate(interimPaymentDate),
+      interimPaymentDate,
       balance,
-      balancePaymentDate: formatDate(balancePaymentDate),
+      balancePaymentDate,
       monthlyRent,
-      monthlyRentPaymentDate: formatDate(monthlyRentPaymentDate),
+      monthlyRentPaymentDate,
       monthlyRentType,
       monthlyRentAccountBank,
       monthlyRentAccountNumber,
       fixedManagementFee,
       unfixedManagementFee,
-      leaseStartDate: formatDate(leaseStartDate ?? ""),
-      leaseEndDate: formatDate(leaseEndDate),
+      leaseStartDate: leaseStartDate ?? "",
+      leaseEndDate,
       facilitiesRepairStatus,
       facilitiesRepairContent,
-      repairCompletionByBalanceDate: formatDate(repairCompletionByBalanceDate),
+      repairCompletionByBalanceDate,
       repairCompletionEtc,
-      notRepairedByBalanceDate: formatDate(notRepairedByBalanceDate),
+      notRepairedByBalanceDate,
       notRepairedEtc,
       landlordBurden,
       tenantBurden,
-      moveInRegistrationDate: formatDate(moveInRegistrationDate),
+      moveInRegistrationDate,
       unpaidAmount,
       disputeResolution,
       isHousingReconstructionPlanned,
@@ -197,7 +197,7 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
       estimatedConstructionDuration,
       isDetailedAddressConsentGiven,
       etc,
-      contractWrittenDate: formatDate(contractWrittenDate),
+      contractWrittenDate,
       // Footer 정보 (임대인 정보 사용)
       address: footerInfo.lessor.address,
       residentRegistrationNumber: footerInfo.lessor.ssn,
@@ -271,10 +271,8 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
         setContractFee={setContractFee}
         monthlyRent={monthlyRent}
         setMonthlyRent={setMonthlyRent}
-        paymentMethod={monthlyRentType === "PREPAID" ? "선불" : "후불"}
-        setPaymentMethod={(value: string) =>
-          setMonthlyRentType(value === "선불" ? "PREPAID" : "POSTPAID")
-        }
+        monthlyRentType={monthlyRentType}
+        setPaymentMethod={setMonthlyRentType}
         middleFee={middleFee}
         setMiddleFee={setMiddleFee}
         finalPayment={balance}
@@ -292,10 +290,10 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
           setBalancePaymentDate(date ? date.toISOString() : "")
         }
         monthlyRentPaymentDate={
-          monthlyRentPaymentDate ? new Date(monthlyRentPaymentDate) : null
+          monthlyRentPaymentDate ? new String(monthlyRentPaymentDate) : null
         }
-        setMonthlyRentPaymentDate={(date: Date | null) =>
-          setMonthlyRentPaymentDate(date ? date.toISOString() : "")
+        setMonthlyRentPaymentDate={(date: String | null) =>
+          setMonthlyRentPaymentDate(date ? date.toString() : "")
         }
         monthlyRentAccountBank={monthlyRentAccountBank}
         setMonthlyRentAccountBank={setMonthlyRentAccountBank}
@@ -358,7 +356,7 @@ const Contract = forwardRef<ContractRefType, ContractProps>(({ mode }, ref) => {
         isHousingReconstructionPlanned={isHousingReconstructionPlanned}
         setIsHousingReconstructionPlanned={setIsHousingReconstructionPlanned}
         constructionPeriod={constructionPeriod}
-        setConstructionPeriod={setConstructionPeriod}
+        setConstructionPeriod2={setConstructionPeriod}
         estimatedConstructionDuration={estimatedConstructionDuration}
         setEstimatedConstructionDuration={setEstimatedConstructionDuration}
         isDetailedAddressConsentGiven={isDetailedAddressConsentGiven}

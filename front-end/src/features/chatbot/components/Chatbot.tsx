@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import ChatbotHeader from "./ChatbotHeader";
 import ChatbotBubble from "./ChatbotBubble";
@@ -38,17 +38,13 @@ const Chatbot = ({ messages, setMessages }: ChatbotProps) => {
     mutationFn: fetchChatbot,
     onSuccess: (response) => {
       // API 반환 배열에서 chatbot 메시지만 필터링합니다.
-      const chatbotMsg = response.data.find(
-        (msg) => msg.sender === "chatbot"
-      );
+      const chatbotMsg = response.data.find((msg) => msg.sender === "chatbot");
       if (chatbotMsg) {
         const botMessage: Message = {
-          id: messages.length+1,
+          id: messages.length + 1,
           sender: "chatbot",
           text: chatbotMsg.message,
-          timestamp: new Date(chatbotMsg.timestamp)
-            .toTimeString()
-            .slice(0, 5),
+          timestamp: new Date(chatbotMsg.timestamp).toTimeString().slice(0, 5),
         };
         setMessages((prevMessages) => [...prevMessages, botMessage]);
       }
@@ -77,11 +73,10 @@ const Chatbot = ({ messages, setMessages }: ChatbotProps) => {
     // 사용자 메시지를 상태에 추가
     setMessages((prevMessages) => [...prevMessages, userMessage]);
 
-    console.log(text)
+    console.log(text);
 
     // mutate로 API 호출 (API 응답에서 chatbot 메시지만 따로 처리)
     mutate({ question: text });
-    
   };
 
   // 메시지 추가 시 스크롤을 맨 아래로 이동
@@ -94,7 +89,10 @@ const Chatbot = ({ messages, setMessages }: ChatbotProps) => {
   return (
     <div className="max-w-[360px] h-[520px] flex flex-col border border-neutral-light200 rounded-lg overflow-hidden bg-neutral-light300">
       <ChatbotHeader />
-      <div ref={scrollRef} className="flex-1 px-4 py-3 overflow-y-auto space-y-2">
+      <div
+        ref={scrollRef}
+        className="flex-1 px-4 py-3 overflow-y-auto space-y-2"
+      >
         {messages.map((msg) => (
           <ChatbotBubble
             key={msg.id}
@@ -111,13 +109,7 @@ const Chatbot = ({ messages, setMessages }: ChatbotProps) => {
 
 export default Chatbot;
 
-
-
-
 ///////////////
-
-
-
 
 // import { useEffect, useRef, useState } from "react";
 // import { useMutation } from "@tanstack/react-query";
@@ -243,16 +235,13 @@ export default Chatbot;
 
 // export default Chatbot;
 
-
-
 //////////////////
-
 
 // import { useEffect, useRef, useState } from "react";
 // import ChatbotHeader from "./ChatbotHeader";
 // import ChatbotBubble from "./ChatbotBubble";
 // import ChatbotInput from "./ChatbotInput";
-// import { fetchChatbot } from "../../../apis/ai"; 
+// import { fetchChatbot } from "../../../apis/ai";
 
 // interface Message {
 //   id: number;

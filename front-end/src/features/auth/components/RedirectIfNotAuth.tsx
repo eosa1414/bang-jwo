@@ -87,7 +87,6 @@ const RedirectIfNotAuth = ({
         title="안내"
         text={`본인 인증 여부를 확인하지 못했습니다.\n다시 로그인하거나, 다시 접속해주세요.`}
       />
-      ;
     </LayoutMain>
   );
 };

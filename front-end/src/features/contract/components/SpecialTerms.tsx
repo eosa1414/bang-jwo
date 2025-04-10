@@ -15,7 +15,7 @@ interface SpecialTermsProps {
   isHousingReconstructionPlanned: boolean;
   setIsHousingReconstructionPlanned: (value: boolean) => void;
   constructionPeriod: string;
-  setConstructionPeriod: (value: string) => void;
+  setConstructionPeriod2: (value: string) => void;
   estimatedConstructionDuration: number;
   setEstimatedConstructionDuration: (value: number) => void;
   isDetailedAddressConsentGiven: boolean;
@@ -28,6 +28,13 @@ const SpecialTerms = ({
   mode,
   setMoveInRegistrationDate,
   setUnpaidAmount,
+  setDisputeResolution,
+  setIsHousingReconstructionPlanned,
+  setConstructionPeriod2,
+  setEstimatedConstructionDuration,
+  setIsDetailedAddressConsentGiven,
+  etc,
+  setEtc
 }: SpecialTermsProps) => {
   const isEditable = mode === "lessor";
 
@@ -52,9 +59,21 @@ const SpecialTerms = ({
     setUnpaidAmount(Number(data));
   };
 
+  const handleDuration = (data: string) => {
+    setConstructionDuration(data);
+    setEstimatedConstructionDuration(Number(data));
+  };
+
+  const handlePeriod = (data: string) => {
+    setConstructionPeriod(data);
+    setConstructionPeriod2(data);
+  }
+
   const handleAddNewTerm = () => {
-    if (newTerm.trim()) {
-      setCustomTerms((prev) => [...prev, newTerm.trim()]);
+    const trimmedTerm = newTerm.trim();
+    if (trimmedTerm) {
+      setCustomTerms((prev) => [...prev, trimmedTerm]);
+      setEtc([...etc, trimmedTerm]);
       setNewTerm("");
       setIsAdding(false);
     }
@@ -139,9 +158,11 @@ const SpecialTerms = ({
                   name="disputeConsent"
                   value={option}
                   checked={disputeConsent === option}
-                  onChange={() =>
-                    isEditable &&
+                  onChange={() =>{
+                    isEditable
                     setDisputeConsent(option as "agree" | "disagree")
+                    setDisputeResolution(option == "agree");
+                  }
                   }
                   disabled={!isEditable}
                   className="w-[16px] h-[16px] appearance-none border-2 border-neutral-dark200 bg-white checked:bg-neutral-dark200 transition-colors"
@@ -175,8 +196,10 @@ const SpecialTerms = ({
                   name="rebuildPlan"
                   value={option}
                   checked={rebuildPlan === option}
-                  onChange={() =>
+                  onChange={() =>{
                     isEditable && setRebuildPlan(option as "none" | "exist")
+                    setIsHousingReconstructionPlanned(option == "exist")
+                  }
                   }
                   disabled={!isEditable}
                   className="w-[16px] h-[16px] appearance-none border-2 border-neutral-dark200 bg-white checked:bg-neutral-dark200 transition-colors"
@@ -189,7 +212,9 @@ const SpecialTerms = ({
                     {isEditable ? (
                       <EditableInputBox
                         value={constructionPeriod}
-                        onChange={setConstructionPeriod}
+                        onChange={
+                          handlePeriod
+                        }
                         placeholder="예: 2025.06"
                         customWidth="w-[120px] mx-1"
                         disabled={!isEditable}
@@ -205,7 +230,7 @@ const SpecialTerms = ({
                     {isEditable ? (
                       <EditableInputBox
                         value={constructionDuration}
-                        onChange={setConstructionDuration}
+                        onChange={handleDuration}
                         placeholder="개월"
                         customWidth="w-[80px] mx-1"
                         disabled={!isEditable}
@@ -248,9 +273,11 @@ const SpecialTerms = ({
                   name="ownerConsent"
                   value={option}
                   checked={ownerConsent === option}
-                  onChange={() =>
+                  onChange={() => {
                     isEditable &&
                     setOwnerConsent(option as "agree" | "disagree")
+                    setIsDetailedAddressConsentGiven(option == "agree")
+                  }
                   }
                   disabled={!isEditable}
                   className="w-[16px] h-[16px] appearance-none border-2 border-neutral-dark200 bg-white checked:bg-neutral-dark200 transition-colors"

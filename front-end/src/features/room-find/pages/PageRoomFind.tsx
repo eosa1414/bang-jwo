@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../../../services/roomService";
 import {
+  AreaType,
   RoomQueryParams,
   RoomResponse,
   defaultParams,
@@ -28,6 +29,7 @@ const PageRoomFind = () => {
     const lng = urlParams.get("lng");
     const zoom = urlParams.get("zoom");
     const roomId = urlParams.get("roomId");
+    const areaTypes = urlParams.get("areaTypes");
 
     setParams((prevParams) => ({
       ...prevParams,
@@ -35,6 +37,7 @@ const PageRoomFind = () => {
       lng: lng ? parseFloat(lng) : prevParams.lng,
       zoom: zoom ? parseInt(zoom, 10) : prevParams.zoom,
       buildingType: category ?? "ONEROOM_TWOROOM",
+      areaTypes: areaTypes ? (areaTypes as AreaType) : null,
     }));
 
     if (roomId) {
@@ -64,6 +67,26 @@ const PageRoomFind = () => {
     enabled: !!params.lat && !!params.lng,
   });
 
+  const handleApplyFilters = (filters: {
+    price: number;
+    areaTypes: AreaType[];
+  }) => {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    console.log("Filters applied:", filters);
+    if (filters.price > 0) {
+      urlParams.set("price", String(filters.price));
+    } else {
+      urlParams.delete("price");
+    }
+    if (filters.areaTypes.length > 0) {
+      urlParams.set("areaTypes", String(filters.areaTypes));
+    } else {
+      urlParams.delete("areaTypes");
+    }
+    navigate(`?${urlParams.toString()}`, { replace: true });
+  };
+
   return (
     <div className="flex w-full min-h-0">
       <SideBar />
@@ -74,6 +97,9 @@ const PageRoomFind = () => {
           <FilterPannel
             childrenTop={<SearchBar />}
             childrenBottom={<InfoText text="'방줘'에는 월세만 있습니다." />}
+            selectedPrice={0}
+            selectedAreaTypes={[]}
+            onApplyFilters={handleApplyFilters}
           />
 
           {isLoading ? (

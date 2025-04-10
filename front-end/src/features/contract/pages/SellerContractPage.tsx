@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import Button from "../../../components/buttons/Button";
 import HeaderContract from "../../../components/headers/HeaderContract";
 import NoticeDefault from "../../../components/notices/NoticeDefault";
@@ -9,9 +9,11 @@ import {
 } from "../../../apis/contract";
 import { UpdateLandlordInfoDto } from "../data/contract.dto";
 import ChatbotNoticePage from "../../chatbot/pages/ChatbotNoticePage";
+import ChatbotPage from "../../chatbot/pages/ChatbotPage";
 
 const SellerContractPage = () => {
   const contractRef = useRef<ContractRefType>(null);
+  const [agreed, setAgreed] = useState(false);
 
   const { mutate: saveLandlordInfo, isPending: isSaving } =
     useSaveLandlordInfo();
@@ -29,8 +31,10 @@ const SellerContractPage = () => {
 
     const dataWithId = {
       ...data,
-      contractId: 13,
+      contractId: 1,
     };
+
+    console.log(dataWithId)
 
     saveLandlordInfo(dataWithId, {
       onSuccess: () => {
@@ -51,6 +55,13 @@ const SellerContractPage = () => {
       return;
     }
 
+    console.log(data.contractWrittenDate)
+    console.log(data.leaseStartDate)
+    console.log(data.leaseEndDate)
+    console.log(data.moveInRegistrationDate)
+    console.log(data.contractType)
+    console.log(data.monthlyRentType)
+
     if (
       !data.contractWrittenDate ||
       !data.leaseStartDate ||
@@ -69,7 +80,7 @@ const SellerContractPage = () => {
 
     const dataWithId = {
       ...data,
-      contractId: 13,
+      contractId: 1,
     };
 
     finalizeContract(dataWithId, {
@@ -132,9 +143,12 @@ const SellerContractPage = () => {
           </div>
         </div>
 
-        {/* 오른쪽: 챗봇 영역 */}
-        <div className="w-1/3 h-full">
-          <ChatbotNoticePage />
+        <div className="w-1/3 h-full pt-[380px]">
+          {agreed ? (
+            <ChatbotPage />
+          ) : (
+            <ChatbotNoticePage onAgree={() => setAgreed(true)} />
+          )}
         </div>
       </main>
     </div>

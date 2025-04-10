@@ -22,7 +22,7 @@ const BuyerContractPage = () => {
 
     const dataWithId = {
       ...data,
-      contractId: 9,
+      contractId: 1,
     };
 
     finalizeContract(dataWithId, {
