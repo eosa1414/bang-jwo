@@ -1,0 +1,4 @@
+실행환경정보
+OS : Ubuntu 22.04.4 LTS
+JVM :  java17
+Node  : v20.19.0

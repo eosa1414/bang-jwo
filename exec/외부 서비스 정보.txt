@@ -1,0 +1,11 @@
+외부 서비스 정보
+
+서비스 로그인 : kakao social login
+
+PortOne
+Kakao Auth
+Kakao Map
+Pinata(IPFS)
+Infura
+
+
