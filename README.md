@@ -13,6 +13,8 @@
 - 계약서 작성이 어려울 땐 AI 챗봇이 도와드립니다.
 - 계약은 블록체인에 기록되어 위변조 걱정 없이 투명하게!
 
+## 시스템 아키텍처처
+
 <p align="center">
   <img src="./images/bangjwo_architecture.png" alt="Architecture Diagram" width="600"/>
 </p>
@@ -32,10 +34,14 @@
 
 ---
 
+## 요구사항 명세서
+
 <p align="center">
   <img src="./images/bangjwo_requirement_statement.JPG" alt="Requirement Statement" width="600"/>
 </p>
 
+
+## API 명세서
 
 <p align="center">
   <img src="./images/bangjwo_api_statement.JPG" alt="API Statement" width="600"/>
@@ -63,11 +69,15 @@
    - 챗봇 연동을 통한 용어/조항 실시간 설명
    - 사용자 중심의 직관적 계약서 작성 환경
 
+## Figma
+
 <p align="center">
   <img src="./images/bangjwo_figma.jpg" alt="Figma Design" width="600"/>
 </p>
 
 ---
+
+## ERD
 
 <p align="center">
   <img src="./images/bangjwo_erd.png" alt="ERD Diagram" width="600"/>
