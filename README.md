@@ -73,6 +73,8 @@
 
 <p align="center">
   <img src="./images/bangjwo_figma.jpg" alt="Figma Design" width="600"/>
+  <img src="./images/bangjwo_figma_2.jpg" alt="Figma Design" width="600"/>
+  <img src="./images/bangjwo_figma_3.jpg" alt="Figma Design" width="600"/>
 </p>
 
 ---
@@ -90,7 +92,7 @@
 | 이름 | 역할 | 담당 |
 |------|------|------|
 | 김범준 | PM, Backend, Infra | 일정관리, 채팅/포트원, 서버 |
-| 강현지 | Frontend | 계약서/채팅/챗봇/영상 |
+| 강현지 | Frontend | 계약서/채팅/챗봇, 영상 제작 |
 | 백지민 | Frontend | 메인페이지/매물/회원/Info |
 | 강보영 | AI | OpenAI 챗봇 시스템 |
 | 하정수 | Backend, BlockChain | 블록체인, 계약/암호화 |
