@@ -25,7 +25,7 @@
 
 | 분야 | 기술 |
 |------|------|
-| **Frontend** | React, React Query, Typescript, TailwindCSS |
+| **Frontend** | React, Typescript, TailwindCSS, TanStack Query |
 | **Backend** | Spring Boot, Spring Data JPA |
 | **Database** | MySQL, Redis, MongoDB, AWS S3 |
 | **Infrastructure** | AWS EC2, Docker, Nginx |
@@ -90,7 +90,7 @@
 | 이름 | 역할 | 담당 |
 |------|------|------|
 | 김범준 | PM, Backend, Infra | 일정관리, 채팅/포트원, 서버 |
-| 강현지 | Frontend | 계약서/영상 |
+| 강현지 | Frontend | 계약서/채팅/챗봇/영상 |
 | 백지민 | Frontend | 메인페이지/매물/회원/Info |
 | 강보영 | AI | OpenAI 챗봇 시스템 |
 | 하정수 | Backend, BlockChain | 블록체인, 계약/암호화 |
