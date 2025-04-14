@@ -73,8 +73,8 @@
 
 <p align="center">
   <img src="./images/bangjwo_figma.jpg" alt="Figma Design" width="600"/>
-  <img src="./images/bangjwo_figma_2.jpg" alt="Figma Design" width="600"/>
-  <img src="./images/bangjwo_figma_3.jpg" alt="Figma Design" width="600"/>
+  <img src="./images/bangjwo_figma_2.png" alt="Figma Design 2" width="600"/>
+  <img src="./images/bangjwo_figma_3.png" alt="Figma Design 3" width="600"/>
 </p>
 
 ---
